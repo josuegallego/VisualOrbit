@@ -28,7 +28,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: WebGL Settings
   m_EditorClassIdentifier: 
-  m_LoaderManagerInstance: {fileID: 7690357954099428381}
+  m_Manager: {fileID: 7690357954099428381}
   m_InitManagerOnStart: 1
 --- !u!114 &-1061985669535203489
 MonoBehaviour:
@@ -42,7 +42,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: Standalone Settings
   m_EditorClassIdentifier: 
-  m_LoaderManagerInstance: {fileID: 7123551527053655920}
+  m_Manager: {fileID: 7123551527053655920}
   m_InitManagerOnStart: 1
 --- !u!114 &-829562415854771913
 MonoBehaviour:
@@ -56,7 +56,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: Metro Settings
   m_EditorClassIdentifier: 
-  m_LoaderManagerInstance: {fileID: -7456538013730850479}
+  m_Manager: {fileID: -7456538013730850479}
   m_InitManagerOnStart: 1
 --- !u!114 &11400000
 MonoBehaviour:
@@ -70,14 +70,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2dc886499c26824283350fa532d087d, type: 3}
   m_Name: XRGeneralSettingsPerBuildTarget
   m_EditorClassIdentifier: 
-  Keys: 010000000700000024000000190000000e0000000d000000
-  Values:
-  - {fileID: -1061985669535203489}
-  - {fileID: 9030113687040111788}
-  - {fileID: 7084830832594350999}
-  - {fileID: 7984842980809760440}
-  - {fileID: -829562415854771913}
-  - {fileID: -5070038876970964298}
+  Keys: 
+  Values: []
+  m_SettingsPerBuildTarget:
+  - buildTarget: 1
+    settings: {fileID: -1061985669535203489}
+  - buildTarget: 7
+    settings: {fileID: 9030113687040111788}
+  - buildTarget: 36
+    settings: {fileID: 7084830832594350999}
+  - buildTarget: 25
+    settings: {fileID: 7984842980809760440}
+  - buildTarget: 14
+    settings: {fileID: -829562415854771913}
+  - buildTarget: 13
+    settings: {fileID: -5070038876970964298}
 --- !u!114 &887921883259697423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -123,7 +130,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: VisionOS Settings
   m_EditorClassIdentifier: 
-  m_LoaderManagerInstance: {fileID: 8131422915342183921}
+  m_Manager: {fileID: 8131422915342183921}
   m_InitManagerOnStart: 1
 --- !u!114 &7123551527053655920
 MonoBehaviour:
@@ -171,7 +178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: tvOS Settings
   m_EditorClassIdentifier: 
-  m_LoaderManagerInstance: {fileID: 887921883259697423}
+  m_Manager: {fileID: 887921883259697423}
   m_InitManagerOnStart: 1
 --- !u!114 &8131422915342183921
 MonoBehaviour:
@@ -201,5 +208,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d236b7d11115f2143951f1e14045df39, type: 3}
   m_Name: Android Settings
   m_EditorClassIdentifier: 
-  m_LoaderManagerInstance: {fileID: 4715281296909672918}
+  m_Manager: {fileID: 4715281296909672918}
   m_InitManagerOnStart: 1
