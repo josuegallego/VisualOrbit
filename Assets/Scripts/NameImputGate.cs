@@ -1,12 +1,15 @@
-using TMPro;
+Ôªøusing TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
 /// <summary>
-/// Vive en el panel de inicio. Bloquea el botÛn "Iniciar Experiencia"
-/// hasta que el TMP_InputField tenga un nombre v·lido.
-/// Al confirmar, guarda el nombre en PlayerDataStore (JSON).
+/// Vive en el panel de inicio. Bloquea el bot√≥n "Iniciar Experiencia"
+/// hasta que el TMP_InputField tenga un nombre v√°lido.
+/// Al confirmar, a√±ade una nueva sesi√≥n al hist√≥rico (JSON).
+///
+/// IMPORTANTE: NO restaura el nombre guardado al iniciar. Cada sesi√≥n
+/// empieza con el campo vac√≠o para que se vea el placeholder "Tu nombre".
 /// </summary>
 public class NameInputGate : MonoBehaviour
 {
@@ -15,7 +18,7 @@ public class NameInputGate : MonoBehaviour
     [SerializeField] private Button startButton;
 
     [Header("Reglas")]
-    [Tooltip("Longitud mÌnima del nombre para permitir continuar.")]
+    [Tooltip("Longitud m√≠nima del nombre para permitir continuar.")]
     [SerializeField] private int minLength = 2;
     [Tooltip("Quitar espacios al inicio/final antes de validar.")]
     [SerializeField] private bool trim = true;
@@ -26,7 +29,7 @@ public class NameInputGate : MonoBehaviour
     [SerializeField] private Color disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.6f);
 
     [Header("Eventos")]
-    [Tooltip("Se dispara cuando el nombre es v·lido y se guardÛ. Conecta aquÌ Next/GoTo del VRPanelNavigator.")]
+    [Tooltip("Se dispara cuando el nombre es v√°lido y se guard√≥. Conecta aqu√≠ Next/GoTo del VRPanelNavigator.")]
     public UnityEvent onConfirmed;
 
     // ---------------------------------------------------------------- Ciclo de vida
@@ -40,15 +43,11 @@ public class NameInputGate : MonoBehaviour
             return;
         }
 
-        // Al cambiar el texto, re-evaluamos el estado del botÛn.
-        nameInput.onValueChanged.AddListener(OnNameChanged);
-        // Al pulsar el botÛn, primero validamos + guardamos y luego disparamos el evento.
-        startButton.onClick.AddListener(OnStartClicked);
+        // Cada sesi√≥n empieza con el campo vac√≠o (se ve el placeholder).
+        nameInput.text = string.Empty;
 
-        // Restaurar el nombre guardado previamente (si existe).
-        var saved = PlayerDataStore.Current.nombre;
-        if (!string.IsNullOrEmpty(saved))
-            nameInput.text = saved;
+        nameInput.onValueChanged.AddListener(OnNameChanged);
+        startButton.onClick.AddListener(OnStartClicked);
 
         RefreshState();
     }
@@ -59,7 +58,7 @@ public class NameInputGate : MonoBehaviour
         if (startButton != null) startButton.onClick.RemoveListener(OnStartClicked);
     }
 
-    // ---------------------------------------------------------------- LÛgica
+    // ---------------------------------------------------------------- L√≥gica
 
     private void OnNameChanged(string _)
     {
@@ -79,7 +78,6 @@ public class NameInputGate : MonoBehaviour
             warningLabel.gameObject.SetActive(!valid);
         }
 
-        // Feedback visual opcional en el botÛn.
         var img = startButton.targetGraphic as Image;
         if (img != null && !valid)
             img.color = disabledColor;
@@ -89,19 +87,17 @@ public class NameInputGate : MonoBehaviour
     {
         string value = trim ? nameInput.text.Trim() : nameInput.text;
 
-        // Doble check por seguridad (por si alguien llama al botÛn por cÛdigo).
         if (value.Length < minLength)
         {
             RefreshState();
             return;
         }
 
-        // 1) Guardar en JSON
-        PlayerDataStore.Current.nombre = value;
-        PlayerDataStore.Current.fechaInicio = System.DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-        PlayerDataStore.Save();
+        // 1) A√±adir una nueva sesi√≥n al hist√≥rico con fecha de inicio.
+        var session = PlayerDataStore.AddSession(value);
+        Debug.Log($"[NameInputGate] Nueva sesi√≥n: '{session.nombre}' ({session.fechaInicio}). Total: {PlayerDataStore.Current.sesiones.Count}");
 
-        // 2) Disparar la navegaciÛn (conecta Next/GoTo en el Inspector)
+        // 2) Disparar la navegaci√≥n (Next/GoTo del VRPanelNavigator).
         onConfirmed?.Invoke();
     }
 }
