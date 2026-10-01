@@ -75,7 +75,7 @@ public class DecisionCard : MonoBehaviour
     IEnumerator OpenAfterDelay()
     {
         yield return new WaitForSecondsRealtime(feedback.openDelay);
-        feedback.Open();
+        feedback.Open(PanelFader.RootPanelOf(transform));
     }
 
     void SetSiblingsInteractable(bool value)

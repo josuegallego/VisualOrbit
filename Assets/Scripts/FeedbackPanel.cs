@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 /// - Las tarjetas le pasan titulo y texto.
 /// - El decide a donde va el boton Continuar, segun la ronda (desayuno, almuerzo, cena).
 /// - Guarda cada decision en el JSON de la sesion.
+/// No usa VRPanelNavigator.
 /// </summary>
 public class FeedbackPanel : MonoBehaviour
 {
@@ -15,8 +16,8 @@ public class FeedbackPanel : MonoBehaviour
     public class Round
     {
         public string nombre;
-        [Tooltip("Panel al que va Continuar (indice en la lista del navegador). -1 = siguiente de la lista")]
-        public int continueToPanelIndex = -1;
+        [Tooltip("Panel que se muestra al darle Continuar (ej. el panel de las 2 PM)")]
+        public GameObject nextPanel;
         [Tooltip("Opcional: si escribes una escena, Continuar la carga en vez de ir a un panel")]
         public string continueToScene = "";
     }
@@ -25,25 +26,13 @@ public class FeedbackPanel : MonoBehaviour
     public TMP_Text titleText;
     public TMP_Text bodyText;
 
-    [Header("Navegacion")]
-    public VRPanelNavigator navigator;
-    [Tooltip("Indice de ESTE panel en la lista Panels del navegador")]
-    public int thisPanelIndex = -1;
-    [Tooltip("Pausa corta tras elegir, antes de abrir este panel")]
+    [Tooltip("Pausa corta tras elegir una opcion, antes de abrir este panel")]
     public float openDelay = 0.6f;
 
-    [Header("A donde va Continuar, por ronda (Element 0 = desayuno, 1 = almuerzo, 2 = cena)")]
+    [Header("Despues de Continuar (Element 0 = desayuno, 1 = almuerzo, 2 = cena)")]
     public Round[] rounds;
 
     int round = -1;   // ronda actual (0 = desayuno)
-
-    // El navegador deja los paneles ocultos con alpha 0. Si este panel se activa
-    // por otro camino (un evento On Click, por ejemplo), evitamos que quede invisible.
-    void OnEnable()
-    {
-        var cg = GetComponent<CanvasGroup>();
-        if (cg != null && cg.alpha < 1f) cg.alpha = 1f;
-    }
 
     // La tarjeta llama a esto al elegir
     public void Prepare(string title, string body, int optionNumber)
@@ -52,7 +41,6 @@ public class FeedbackPanel : MonoBehaviour
 
         if (titleText == null) Debug.LogWarning("[FeedbackPanel] 'Title Text' esta vacio en el Inspector.", this);
         if (bodyText == null) Debug.LogWarning("[FeedbackPanel] 'Body Text' esta vacio en el Inspector.", this);
-        Debug.Log($"[FeedbackPanel] Ronda {round} | titulo='{title}' | cuerpo({(body == null ? 0 : body.Length)} letras) | panel='{name}'", this);
 
         if (titleText != null) titleText.text = title;
         if (bodyText != null) bodyText.text = body;
@@ -60,28 +48,30 @@ public class FeedbackPanel : MonoBehaviour
         PlayerDataStore.SetDecision(round, optionNumber);
     }
 
-    public void Open()
+    // La tarjeta llama a esto despues de la pausa: oculta el panel de decisiones y muestra este
+    public void Open(GameObject decisionPanel)
     {
-        if (navigator == null) { Debug.LogWarning("[FeedbackPanel] Falta asignar el VRPanelNavigator."); return; }
-        if (thisPanelIndex < 0) { Debug.LogWarning("[FeedbackPanel] Falta poner 'This Panel Index'."); return; }
-        navigator.GoTo(thisPanelIndex);
+        PanelFader.Switch(decisionPanel, gameObject);
     }
 
-    // Conectar en el On Click del boton Continuar
+    // Conectar en el On Click del boton Continuar (o dejar que lo haga solo, ver abajo)
     public void Continue()
     {
-        if (navigator == null) { Debug.LogWarning("[FeedbackPanel] Falta asignar el VRPanelNavigator."); return; }
-
         Round r = (rounds != null && round >= 0 && round < rounds.Length) ? rounds[round] : null;
 
-        if (r != null && !string.IsNullOrEmpty(r.continueToScene))
+        if (r == null)
+        {
+            Debug.LogWarning("[FeedbackPanel] No hay datos en 'Rounds' para la ronda " + round);
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(r.continueToScene))
         {
             SceneManager.LoadScene(r.continueToScene);
             return;
         }
 
-        if (r != null && r.continueToPanelIndex >= 0) navigator.GoTo(r.continueToPanelIndex);
-        else navigator.Next();
+        PanelFader.Switch(gameObject, r.nextPanel);
     }
 
     // Opcional: llamar al empezar una partida nueva
