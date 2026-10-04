@@ -2116,7 +2116,31 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 0}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1574566874}
+        m_TargetAssemblyTypeName: HandsEmissionPulse, Assembly-CSharp
+        m_MethodName: StopPulse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1574566876}
+        m_TargetAssemblyTypeName: TextGlowPulse, Assembly-CSharp
+        m_MethodName: StopPulse
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!65 &813270042
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2932,8 +2956,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18.71
-  m_fontSizeBase: 18.71
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -3827,6 +3851,82 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1550712853}
   m_CullTransparentMesh: 1
+--- !u!1 &1574566873
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1574566875}
+  - component: {fileID: 1574566874}
+  - component: {fileID: 1574566876}
+  m_Layer: 0
+  m_Name: PulsoManos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1574566874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1574566873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: baca02b051c8e514abc9f6555dd6abf7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  materialName: Manos
+  glowColor: {r: 0, g: 1, b: 1, a: 1}
+  minIntensity: 0.2
+  maxIntensity: 10
+  speed: 2
+  startDelay: 1
+  stopIntensity: 0
+  fadeOutTime: 0.5
+--- !u!4 &1574566875
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1574566873}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -1.0857507, y: 0.1889266, z: 3.7849448}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1574566876
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1574566873}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a5ac876d30592e44be58946dd398d4c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  texts:
+  - {fileID: 1106817771}
+  glowColor: {r: 0, g: 8, b: 8, a: 1}
+  minPower: 0.1
+  maxPower: 0.92
+  glowOuter: 0.6
+  pulseFaceBrightness: 1
+  minBrightness: 0.401
+  speed: 2
+  startDelay: 1
+  fadeOutTime: 0.5
 --- !u!1 &1614370087
 GameObject:
   m_ObjectHideFlags: 0
@@ -4975,3 +5075,4 @@ SceneRoots:
   - {fileID: 1339454480}
   - {fileID: 736052590}
   - {fileID: 8733550}
+  - {fileID: 1574566875}
