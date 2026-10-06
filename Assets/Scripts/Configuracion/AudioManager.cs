@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityEngine.Audio;
 
 public class AudioManager : MonoBehaviour
 {
     public AudioSource spatialMusic;
-    public AudioMixer audioMixer;
+    public AudioSource voiceAudio;
+    public AudioSource[] effectsAudio;
 
     public void SetSpatialMusic(bool isOn)
     {
@@ -20,7 +20,14 @@ public class AudioManager : MonoBehaviour
 
     public void SetVoiceVolume(float volume)
     {
-        float volumeDB = Mathf.Log10(Mathf.Max(volume, 0.0001f)) * 20f;
-        audioMixer.SetFloat("VocesVolume", volumeDB);
+        voiceAudio.volume = volume;
+    }
+
+    public void SetEffectsVolume(float volume)
+    {
+        foreach (AudioSource effect in effectsAudio)
+        {
+            effect.volume = volume;
+        }
     }
 }
