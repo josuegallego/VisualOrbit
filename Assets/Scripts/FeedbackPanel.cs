@@ -1,27 +1,16 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Va en el panel de retroalimentacion (uno solo, compartido por todas las comidas).
+/// Va en el panel de retroalimentacion de CADA escena de decisiones
+/// (Decisiones = desayuno, Decisiones 2 = almuerzo, Decisiones 3 = cena...).
 /// - Las tarjetas le pasan titulo y texto.
-/// - El decide a donde va el boton Continuar, segun la ronda (desayuno, almuerzo, cena).
-/// - Guarda cada decision en el JSON de la sesion.
-/// No usa VRPanelNavigator.
+/// - Guarda la decision en el JSON de la sesion.
+/// - El boton Continuar (On Click -> FeedbackPanel.Continue) va a la escena o panel siguiente.
 /// </summary>
 public class FeedbackPanel : MonoBehaviour
 {
-    [Serializable]
-    public class Round
-    {
-        public string nombre;
-        [Tooltip("Panel que se muestra al darle Continuar (ej. el panel de las 2 PM)")]
-        public GameObject nextPanel;
-        [Tooltip("Opcional: si escribes una escena, Continuar la carga en vez de ir a un panel")]
-        public string continueToScene = "";
-    }
-
     [Header("Textos del panel")]
     public TMP_Text titleText;
     public TMP_Text bodyText;
@@ -29,23 +18,26 @@ public class FeedbackPanel : MonoBehaviour
     [Tooltip("Pausa corta tras elegir una opcion, antes de abrir este panel")]
     public float openDelay = 0.6f;
 
-    [Header("Despues de Continuar (Element 0 = desayuno, 1 = almuerzo, 2 = cena)")]
-    public Round[] rounds;
+    [Header("Registro")]
+    [Tooltip("0 = desayuno, 1 = almuerzo, 2 = cena")]
+    public int decisionIndex = 0;
 
-    int round = -1;   // ronda actual (0 = desayuno)
+    [Header("Al presionar Continuar (usa UNO de los dos)")]
+    [Tooltip("Nombre exacto de la escena siguiente (debe estar en Build Settings). Ej: Decisiones 2")]
+    public string nextScene = "";
+    [Tooltip("O bien, un panel de esta misma escena")]
+    public GameObject nextPanel;
 
     // La tarjeta llama a esto al elegir
     public void Prepare(string title, string body, int optionNumber)
     {
-        round++;
-
         if (titleText == null) Debug.LogWarning("[FeedbackPanel] 'Title Text' esta vacio en el Inspector.", this);
         if (bodyText == null) Debug.LogWarning("[FeedbackPanel] 'Body Text' esta vacio en el Inspector.", this);
 
         if (titleText != null) titleText.text = title;
         if (bodyText != null) bodyText.text = body;
 
-        PlayerDataStore.SetDecision(round, optionNumber);
+        PlayerDataStore.SetDecision(decisionIndex, optionNumber);
     }
 
     // La tarjeta llama a esto despues de la pausa: oculta el panel de decisiones y muestra este
@@ -54,26 +46,28 @@ public class FeedbackPanel : MonoBehaviour
         PanelFader.Switch(decisionPanel, gameObject);
     }
 
-    // Conectar en el On Click del boton Continuar (o dejar que lo haga solo, ver abajo)
+    // Conectar en el On Click del boton Continuar
     public void Continue()
     {
-        Round r = (rounds != null && round >= 0 && round < rounds.Length) ? rounds[round] : null;
+        Debug.Log("[FeedbackPanel] Continuar presionado. Escena: '" + nextScene + "' | Panel: " + (nextPanel != null ? nextPanel.name : "ninguno"), this);
 
-        if (r == null)
+        if (!string.IsNullOrEmpty(nextScene))
         {
-            Debug.LogWarning("[FeedbackPanel] No hay datos en 'Rounds' para la ronda " + round);
+            if (!Application.CanStreamedLevelBeLoaded(nextScene))
+            {
+                Debug.LogError("[FeedbackPanel] La escena '" + nextScene + "' no esta en Build Settings (File > Build Profiles > Scene List) o el nombre no coincide.", this);
+                return;
+            }
+            SceneManager.LoadScene(nextScene);
             return;
         }
 
-        if (!string.IsNullOrEmpty(r.continueToScene))
+        if (nextPanel != null)
         {
-            SceneManager.LoadScene(r.continueToScene);
+            PanelFader.Switch(gameObject, nextPanel);
             return;
         }
 
-        PanelFader.Switch(gameObject, r.nextPanel);
+        Debug.LogWarning("[FeedbackPanel] No hay 'Next Scene' ni 'Next Panel' configurado.", this);
     }
-
-    // Opcional: llamar al empezar una partida nueva
-    public void ResetRounds() { round = -1; }
 }
