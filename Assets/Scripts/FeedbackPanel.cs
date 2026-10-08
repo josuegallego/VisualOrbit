@@ -28,9 +28,28 @@ public class FeedbackPanel : MonoBehaviour
     [Tooltip("O bien, un panel de esta misma escena")]
     public GameObject nextPanel;
 
-    // La tarjeta llama a esto al elegir
-    public void Prepare(string title, string body, int optionNumber)
+    // Efectos pendientes: se aplican cuando el panel aparece, para que las barras
+    // se muevan (y suenen) aqui y no en el panel de decisiones.
+    bool hasPending;
+    float pEnergy, pInterference, pMemory;
+
+    void OnEnable()
     {
+        if (!hasPending) return;
+        hasPending = false;
+
+        if (PlayerStats.Instance != null)
+            PlayerStats.Instance.ApplyEffects(pEnergy, pInterference, pMemory);
+        else
+            Debug.LogWarning("[FeedbackPanel] No hay PlayerStats en la escena.", this);
+    }
+
+    // La tarjeta llama a esto al elegir
+    public void Prepare(string title, string body, int optionNumber, float dEnergy, float dInterference, float dMemory)
+    {
+        hasPending = true;
+        pEnergy = dEnergy; pInterference = dInterference; pMemory = dMemory;
+
         if (titleText == null) Debug.LogWarning("[FeedbackPanel] 'Title Text' esta vacio en el Inspector.", this);
         if (bodyText == null) Debug.LogWarning("[FeedbackPanel] 'Body Text' esta vacio en el Inspector.", this);
 

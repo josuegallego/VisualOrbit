@@ -49,11 +49,6 @@ public class DecisionCard : MonoBehaviour
             return;
         }
 
-        if (PlayerStats.Instance != null)
-            PlayerStats.Instance.ApplyEffects(energyChange, interferenceChange, memoryChange);
-        else
-            Debug.LogWarning("[DecisionCard] No hay PlayerStats en la escena.");
-
         // Numero de esta opcion (1, 2 o 3) segun su posicion entre las tarjetas hermanas
         int option = 1;
         if (transform.parent != null)
@@ -63,7 +58,7 @@ public class DecisionCard : MonoBehaviour
                 if (cards[i] == this) { option = i + 1; break; }
         }
 
-        feedback.Prepare(feedbackTitle, feedbackBody, option);
+        feedback.Prepare(feedbackTitle, feedbackBody, option, energyChange, interferenceChange, memoryChange);
 
         SetSiblingsInteractable(false);   // no se puede elegir otra opcion
 

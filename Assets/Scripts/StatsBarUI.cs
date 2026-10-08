@@ -28,6 +28,24 @@ public class StatsBarUI : MonoBehaviour
 
     float shown;
 
+    // --- Estado compartido para el sonido (ver StatsBarSound) ---
+    /// <summary>Cuantas barras se estan animando ahora mismo.</summary>
+    public static int AnimatingCount { get; private set; }
+    /// <summary>Suma de "mejora" de las barras en movimiento: positivo = mejorando, negativo = empeorando.</summary>
+    public static float TrendSum { get; private set; }
+
+    bool moving;
+    float myTrend;
+
+    void SetMoving(bool on, float trend)
+    {
+        if (on && !moving) { moving = true; AnimatingCount++; myTrend = trend; TrendSum += trend; }
+        else if (on && moving) { TrendSum += trend - myTrend; myTrend = trend; }
+        else if (!on && moving) { moving = false; AnimatingCount = Mathf.Max(0, AnimatingCount - 1); TrendSum -= myTrend; myTrend = 0f; }
+    }
+
+    void OnDisable() { SetMoving(false, 0f); }
+
     public static void ForgetLastValues() { lastShown[0] = lastShown[1] = lastShown[2] = -1f; }
 
     float Target()
@@ -54,8 +72,16 @@ public class StatsBarUI : MonoBehaviour
         float t = Target();
         if (Mathf.Abs(shown - t) > 0.0005f)
         {
+            // Para Interferencia, que la barra suba es empeorar
+            float sign = Mathf.Sign(t - shown);
+            SetMoving(true, stat == StatType.Interference ? -sign : sign);
+
             shown = Mathf.MoveTowards(shown, t, animSpeed * Time.unscaledDeltaTime);
             Apply(shown);
+        }
+        else
+        {
+            SetMoving(false, 0f);
         }
     }
 
