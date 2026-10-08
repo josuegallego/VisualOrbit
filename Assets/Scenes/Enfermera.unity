@@ -933,6 +933,91 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 763522a439f36ac4d881f5652181a2ee, type: 3}
+--- !u!1001 &737176440
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -166.38211
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -691.0642
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.6675915
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0.74452776
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 96.237
+      objectReference: {fileID: 0}
+    - target: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -7432468960868576843, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 6fe8d1aa592eb9243911b1f72015a46b, type: 2}
+    - target: {fileID: -3780233397246838218, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e2cfe16da8c86604290a35834e387ff8, type: 2}
+    - target: {fileID: -2544995674346578120, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d341f14866c7e434d9e949415c08540e, type: 2}
+    - target: {fileID: 919132149155446097, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_Name
+      value: Enfermera UAO
+      objectReference: {fileID: 0}
+    - target: {fileID: 1956726480295649596, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e17e24899a27f7d4f950c06057f010f8, type: 2}
+    - target: {fileID: 5552828595238731026, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: f4992eae32772ad428ad0b214807e9ba, type: 2}
+    - target: {fileID: 5754139758204550826, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: e2cfe16da8c86604290a35834e387ff8, type: 2}
+    - target: {fileID: 7300419628527280454, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 12a86d4593750234287983c5b19a01c3, type: 2}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2efecddcc82585f49981e92625d61516, type: 3}
 --- !u!1 &813270037
 GameObject:
   m_ObjectHideFlags: 0
@@ -1887,3 +1972,4 @@ SceneRoots:
   - {fileID: 736052590}
   - {fileID: 8733550}
   - {fileID: 1635120810}
+  - {fileID: 737176440}
