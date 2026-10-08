@@ -1757,8 +1757,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 60.4
-  m_fontSizeBase: 60.4
+  m_fontSize: 55
+  m_fontSizeBase: 55
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -4068,7 +4068,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0.00000023842, y: 79}
+  m_AnchoredPosition: {x: 0.00000023842, y: 96}
   m_SizeDelta: {x: 2093.34, y: 229.19}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &615787887
@@ -9345,6 +9345,18 @@ PrefabInstance:
       value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 3766955175015954747, guid: ef29085a7258f02449cc84dae269049a, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.01808171
+      objectReference: {fileID: 0}
+    - target: {fileID: 3766955175015954747, guid: ef29085a7258f02449cc84dae269049a, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.02974309
+      objectReference: {fileID: 0}
+    - target: {fileID: 3766955175015954747, guid: ef29085a7258f02449cc84dae269049a, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.022334678
+      objectReference: {fileID: 0}
+    - target: {fileID: 3766955175015954747, guid: ef29085a7258f02449cc84dae269049a, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -9374,7 +9386,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3766955175015954747, guid: ef29085a7258f02449cc84dae269049a, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 1.379
+      value: 1.28
       objectReference: {fileID: 0}
     - target: {fileID: 3766955175015954747, guid: ef29085a7258f02449cc84dae269049a, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -9398,7 +9410,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8635668053342170548, guid: ef29085a7258f02449cc84dae269049a, type: 3}
       propertyPath: m_text
-      value: Inciar Jornada
+      value: Iniciar Jornada
       objectReference: {fileID: 0}
     - target: {fileID: 8635668053342170548, guid: ef29085a7258f02449cc84dae269049a, type: 3}
       propertyPath: m_margin.z
@@ -12583,6 +12595,58 @@ MonoBehaviour:
     prote\xEDna se neutraliza porque el Suntea triplica el l\xEDmite de az\xFAcar
     (10g) de las DGA\n(Gu\xEDas Alimentarias). Cambia a agua para alcanzar tu estado
     cognitivo \xF3ptimo."
+--- !u!1 &2064328772
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2064328774}
+  - component: {fileID: 2064328773}
+  m_Layer: 0
+  m_Name: EntornoManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2064328773
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2064328772}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f79eb9242d910b744a2d39ff09384021, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  materialSkybox: {fileID: 2100000, guid: b71927b32d033f94899fb90c0efc062b, type: 2}
+  exposureMejor: 1.5
+  exposurePeor: -1
+  pesoInterferencia: 0.5
+  pesoMemoria: 0.3
+  pesoEnergia: 0.2
+  duracionTransicion: 1
+  mostrarLogs: 1
+--- !u!4 &2064328774
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2064328772}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.4825444, y: -0.65535975, z: 12.382459}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2069175309
 GameObject:
   m_ObjectHideFlags: 0
@@ -13280,3 +13344,4 @@ SceneRoots:
   - {fileID: 263068972}
   - {fileID: 2010804433}
   - {fileID: 1676940139}
+  - {fileID: 2064328774}
