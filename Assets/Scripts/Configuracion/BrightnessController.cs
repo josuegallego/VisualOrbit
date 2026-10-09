@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.Rendering.Universal; // Necesario si usas URP
+using UnityEngine.Rendering.Universal;
 
 public class BrightnessController : MonoBehaviour
 {

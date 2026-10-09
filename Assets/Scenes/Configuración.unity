@@ -420,7 +420,7 @@ GameObject:
   - component: {fileID: 152367239}
   - component: {fileID: 152367238}
   m_Layer: 5
-  m_Name: T.#Voces (1)
+  m_Name: T.%Efectos
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -438,11 +438,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 2049270928}
+  m_Father: {fileID: 335240255}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 216.45105, y: -75.80856}
+  m_AnchoredPosition: {x: 221.41547, y: -8.971481}
   m_SizeDelta: {x: 379.9842, y: 44.0351}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &152367238
@@ -1310,6 +1310,7 @@ GameObject:
   m_Component:
   - component: {fileID: 335240255}
   - component: {fileID: 335240256}
+  - component: {fileID: 335240257}
   m_Layer: 5
   m_Name: EfectosSlider
   m_TagString: Untagged
@@ -1332,6 +1333,7 @@ RectTransform:
   - {fileID: 1915540269}
   - {fileID: 1766700834}
   - {fileID: 671688689}
+  - {fileID: 152367237}
   m_Father: {fileID: 2049270928}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1402,6 +1404,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &335240257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 335240254}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b51f2924e1a640a4b929fb7e859c63f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSlider: {fileID: 335240256}
+  percentageText: {fileID: 152367238}
+  showAsPercentage: 1
+  decimals: 2
 --- !u!1 &387171059
 GameObject:
   m_ObjectHideFlags: 0
@@ -1414,7 +1432,7 @@ GameObject:
   - component: {fileID: 387171062}
   - component: {fileID: 387171061}
   m_Layer: 5
-  m_Name: T.#Voces (1)
+  m_Name: T.%Brillo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1432,11 +1450,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1524530272}
+  m_Father: {fileID: 470249061}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 322, y: -77.53769}
+  m_AnchoredPosition: {x: 215.73344, y: -7.5356674}
   m_SizeDelta: {x: 379.9842, y: 44.0351}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &387171061
@@ -1459,7 +1477,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100%
+  m_text: 0%
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1c8e694e60c3dad41bd14a26ba849865, type: 2}
   m_sharedMaterial: {fileID: -3009694975347919624, guid: 1c8e694e60c3dad41bd14a26ba849865, type: 2}
@@ -1549,6 +1567,7 @@ GameObject:
   m_Component:
   - component: {fileID: 417023483}
   - component: {fileID: 417023484}
+  - component: {fileID: 417023485}
   m_Layer: 5
   m_Name: VocesSlider
   m_TagString: Untagged
@@ -1571,6 +1590,7 @@ RectTransform:
   - {fileID: 1090115907}
   - {fileID: 1862791066}
   - {fileID: 969680586}
+  - {fileID: 671699977}
   m_Father: {fileID: 700848752}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -1641,6 +1661,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &417023485
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417023482}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b51f2924e1a640a4b929fb7e859c63f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSlider: {fileID: 417023484}
+  percentageText: {fileID: 671699978}
+  showAsPercentage: 1
+  decimals: 2
 --- !u!1 &424800646
 GameObject:
   m_ObjectHideFlags: 0
@@ -2034,6 +2070,7 @@ GameObject:
   m_Component:
   - component: {fileID: 470249061}
   - component: {fileID: 470249062}
+  - component: {fileID: 470249063}
   m_Layer: 5
   m_Name: BrilloSlider
   m_TagString: Untagged
@@ -2056,6 +2093,7 @@ RectTransform:
   - {fileID: 1434392335}
   - {fileID: 1400043867}
   - {fileID: 206753077}
+  - {fileID: 387171060}
   m_Father: {fileID: 1524530272}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -2126,6 +2164,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &470249063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 470249060}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b51f2924e1a640a4b929fb7e859c63f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSlider: {fileID: 470249062}
+  percentageText: {fileID: 387171061}
+  showAsPercentage: 1
+  decimals: 2
 --- !u!1 &480630695
 GameObject:
   m_ObjectHideFlags: 0
@@ -2480,7 +2534,7 @@ GameObject:
   - component: {fileID: 671699979}
   - component: {fileID: 671699978}
   m_Layer: 5
-  m_Name: T.#Voces
+  m_Name: T.%Voces
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2498,11 +2552,11 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 700848752}
+  m_Father: {fileID: 417023483}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 233.4, y: -76}
+  m_AnchoredPosition: {x: 221.42944, y: -10.163162}
   m_SizeDelta: {x: 379.9842, y: 44.0351}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &671699978
@@ -2525,7 +2579,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 100%
+  m_text: 0%
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1c8e694e60c3dad41bd14a26ba849865, type: 2}
   m_sharedMaterial: {fileID: -3009694975347919624, guid: 1c8e694e60c3dad41bd14a26ba849865, type: 2}
@@ -2636,7 +2690,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 417023483}
-  - {fileID: 671699977}
   m_Father: {fileID: 1731116836}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -3178,8 +3231,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -307, y: -0.09000015}
-  m_SizeDelta: {x: 28.95, y: -13.73}
+  m_AnchoredPosition: {x: 14.456688, y: -0.00042629242}
+  m_SizeDelta: {x: 28.95, y: 0.0048999786}
   m_Pivot: {x: 0.49981874, y: 0.5002208}
 --- !u!114 &885224003
 MonoBehaviour:
@@ -3380,8 +3433,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 301.5011, y: -0.49266052}
-  m_SizeDelta: {x: -20, y: 18.5}
+  m_AnchoredPosition: {x: -15.505, y: -0.58503}
+  m_SizeDelta: {x: -28.94, y: 4.7651}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &987213035
 GameObject:
@@ -3610,6 +3663,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1077112436}
   - component: {fileID: 1077112437}
+  - component: {fileID: 1077112438}
   m_Layer: 5
   m_Name: CampoSlider
   m_TagString: Untagged
@@ -3702,6 +3756,22 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!114 &1077112438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1077112435}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b51f2924e1a640a4b929fb7e859c63f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetSlider: {fileID: 1077112437}
+  percentageText: {fileID: 1205498252}
+  showAsPercentage: 1
+  decimals: 2
 --- !u!1 &1081797273
 GameObject:
   m_ObjectHideFlags: 0
@@ -3873,8 +3943,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.25}
   m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -1.2496948, y: -0.0025348663}
+  m_SizeDelta: {x: 2.4991, y: 11.07}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1090115908
 MonoBehaviour:
@@ -4178,7 +4248,7 @@ GameObject:
   - component: {fileID: 1205498253}
   - component: {fileID: 1205498252}
   m_Layer: 5
-  m_Name: T.#Voces (2)
+  m_Name: T.%FOV
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4337,8 +4407,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -305, y: 0}
-  m_SizeDelta: {x: 10, y: 0}
+  m_AnchoredPosition: {x: 4.4931, y: 0}
+  m_SizeDelta: {x: 9.0071, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1277365320
 MonoBehaviour:
@@ -4939,7 +5009,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 470249061}
-  - {fileID: 387171060}
   m_Father: {fileID: 1731116836}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -5895,7 +5964,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 299, y: 0}
+  m_AnchoredPosition: {x: -10, y: 0}
   m_SizeDelta: {x: -14.994, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1912080763
@@ -6050,7 +6119,6 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 335240255}
-  - {fileID: 152367237}
   m_Father: {fileID: 1731116836}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
