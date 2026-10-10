@@ -8126,9 +8126,9 @@ MonoBehaviour:
   feedback: {fileID: 1667482641}
   feedbackTitle: "Energ\xEDa fugaz y bajo rendimiento"
   feedbackBody: "Tu memoria fallar\xE1 tras 75 minutos por falta de calcio, prote\xEDna
-    e hierro. Este patr\xF3n de cafe\xEDna y carbohidratos refinados agota tu capacidad
-    cognitiva antes del mediod\xEDa. Elige alimentos nutritivos para evitar la ca\xEDda
-    de energ\xEDa y retener lo aprendido."
+    e hierro. Seg\xFAn NIH, este patr\xF3n de cafe\xEDna y carbohidratos refinados
+    agota tu capacidad cognitiva antes del mediod\xEDa. Elige alimentos nutritivos
+    para evitar la ca\xEDda de energ\xEDa y retener lo aprendido."
 --- !u!1 &1264342809
 GameObject:
   m_ObjectHideFlags: 0
@@ -11567,9 +11567,9 @@ MonoBehaviour:
   feedback: {fileID: 1667482641}
   feedbackTitle: Tu cerebro no puede grabar datos
   feedbackBody: "Un pico de az\xFAcar y falta de colina (nutriente para la memoria)
-    da\xF1an tu aprendizaje. Sin prote\xEDnas ni acetilcolina, tu \"disco duro\"
-    falla al procesar informaci\xF3n. Prioriza prote\xEDnas y evita bebidas azucaradas
-    para proteger tu memoria."
+    da\xF1an tu aprendizaje seg\xFAn el NIH reducen tu capacidad de aprendizaje.
+    Sin prote\xEDnas ni acetilcolina, tu \"disco duro\" falla al procesar informaci\xF3n.
+    Prioriza prote\xEDnas y evita bebidas azucaradas para proteger tu memoria."
 --- !u!1 &1659898312
 GameObject:
   m_ObjectHideFlags: 0
