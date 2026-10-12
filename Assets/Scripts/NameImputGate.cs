@@ -1,49 +1,63 @@
-﻿using TMPro;
+﻿
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-/// <summary>
-/// Vive en el panel de inicio. Bloquea el botón "Iniciar Experiencia"
-/// hasta que el TMP_InputField tenga un nombre válido.
-/// Al confirmar, añade una nueva sesión al histórico (JSON).
-///
-/// IMPORTANTE: NO restaura el nombre guardado al iniciar. Cada sesión
-/// empieza con el campo vacío para que se vea el placeholder "Tu nombre".
-/// </summary>
 public class NameInputGate : MonoBehaviour
 {
+    [Header("Modo de funcionamiento")]
+    [Tooltip("Actívalo si el nombre ya fue guardado en una escena anterior.")]
+    [SerializeField] private bool useSavedName = false;
+
     [Header("Referencias")]
     [SerializeField] private TMP_InputField nameInput;
     [SerializeField] private Button startButton;
 
     [Header("Reglas")]
-    [Tooltip("Longitud mínima del nombre para permitir continuar.")]
     [SerializeField] private int minLength = 2;
-    [Tooltip("Quitar espacios al inicio/final antes de validar.")]
     [SerializeField] private bool trim = true;
 
     [Header("Feedback (opcional)")]
     [SerializeField] private TMP_Text warningLabel;
     [SerializeField] private string warningText = "Escribe tu nombre para continuar";
-    [SerializeField] private Color disabledColor = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+    [SerializeField]
+    private Color disabledColor =
+        new Color(0.5f, 0.5f, 0.5f, 0.6f);
 
     [Header("Eventos")]
-    [Tooltip("Se dispara cuando el nombre es válido y se guardó. Conecta aquí Next/GoTo del VRPanelNavigator.")]
     public UnityEvent onConfirmed;
-
-    // ---------------------------------------------------------------- Ciclo de vida
 
     private void Awake()
     {
+        // MODO 1: El nombre ya se guardó en otra escena.
+        if (useSavedName)
+        {
+            if (startButton != null)
+            {
+                startButton.onClick.AddListener(OnStartClicked);
+                startButton.interactable = true;
+            }
+
+            if (warningLabel != null)
+                warningLabel.gameObject.SetActive(false);
+
+            // No necesitamos nameInput en este modo.
+            return;
+        }
+
+        // MODO 2: Funcionamiento original con campo de nombre.
         if (nameInput == null || startButton == null)
         {
-            Debug.LogError("[NameInputGate] Faltan referencias (nameInput / startButton).", this);
+            Debug.LogError(
+                "[NameInputGate] Faltan referencias (nameInput / startButton).",
+                this
+            );
+
             enabled = false;
             return;
         }
 
-        // Cada sesión empieza con el campo vacío (se ve el placeholder).
         nameInput.text = string.Empty;
 
         nameInput.onValueChanged.AddListener(OnNameChanged);
@@ -54,11 +68,12 @@ public class NameInputGate : MonoBehaviour
 
     private void OnDestroy()
     {
-        if (nameInput != null) nameInput.onValueChanged.RemoveListener(OnNameChanged);
-        if (startButton != null) startButton.onClick.RemoveListener(OnStartClicked);
-    }
+        if (nameInput != null)
+            nameInput.onValueChanged.RemoveListener(OnNameChanged);
 
-    // ---------------------------------------------------------------- Lógica
+        if (startButton != null)
+            startButton.onClick.RemoveListener(OnStartClicked);
+    }
 
     private void OnNameChanged(string _)
     {
@@ -67,6 +82,9 @@ public class NameInputGate : MonoBehaviour
 
     private void RefreshState()
     {
+        if (nameInput == null || startButton == null)
+            return;
+
         string value = trim ? nameInput.text.Trim() : nameInput.text;
         bool valid = value.Length >= minLength;
 
@@ -79,12 +97,24 @@ public class NameInputGate : MonoBehaviour
         }
 
         var img = startButton.targetGraphic as Image;
-        if (img != null && !valid)
-            img.color = disabledColor;
+
+        if (img != null)
+            img.color = valid ? Color.white : disabledColor;
     }
 
     private void OnStartClicked()
     {
+        // MODO 1: Ya existe un nombre guardado.
+        if (useSavedName)
+        {
+            onConfirmed?.Invoke();
+            return;
+        }
+
+        // MODO 2: Validar y guardar una nueva sesión.
+        if (nameInput == null)
+            return;
+
         string value = trim ? nameInput.text.Trim() : nameInput.text;
 
         if (value.Length < minLength)
@@ -93,11 +123,14 @@ public class NameInputGate : MonoBehaviour
             return;
         }
 
-        // 1) Añadir una nueva sesión al histórico con fecha de inicio.
         var session = PlayerDataStore.AddSession(value);
-        Debug.Log($"[NameInputGate] Nueva sesión: '{session.nombre}' ({session.fechaInicio}). Total: {PlayerDataStore.Current.sesiones.Count}");
 
-        // 2) Disparar la navegación (Next/GoTo del VRPanelNavigator).
+        Debug.Log(
+            $"[NameInputGate] Nueva sesión: '{session.nombre}' " +
+            $"({session.fechaInicio}). " +
+            $"Total: {PlayerDataStore.Current.sesiones.Count}"
+        );
+
         onConfirmed?.Invoke();
     }
 }

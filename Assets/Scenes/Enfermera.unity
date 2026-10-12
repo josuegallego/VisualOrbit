@@ -1665,6 +1665,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5c3fb9b6a7a4b604bba7755566785c50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  useSavedName: 1
   nameInput: {fileID: 0}
   startButton: {fileID: 813270040}
   minLength: 2
