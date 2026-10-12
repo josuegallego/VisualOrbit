@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -45,6 +46,12 @@ public class GlucoseFlowController : MonoBehaviour
 
     public bool IsFlowing { get; private set; }
 
+    /// <summary>Segundos que tarda una particula en ir de un extremo al otro (depende de la fluidez).</summary>
+    public float TravelTime { get; private set; }
+
+    /// <summary>Se dispara cuando el flujo se enciende (true) o se apaga (false).</summary>
+    public event Action<bool> FlowChanged;
+
     void Awake()
     {
         ps = GetComponent<ParticleSystem>();
@@ -59,6 +66,7 @@ public class GlucoseFlowController : MonoBehaviour
     /// <summary>Enciende o apaga el flujo. Al apagar, las particulas que ya salieron terminan su recorrido.</summary>
     public void SetFlow(bool on)
     {
+        bool changed = IsFlowing != on;
         IsFlowing = on;
 
         if (on)
@@ -69,6 +77,8 @@ public class GlucoseFlowController : MonoBehaviour
         {
             ps.Stop(true, ParticleSystemStopBehavior.StopEmitting);
         }
+
+        if (changed) FlowChanged?.Invoke(on);
     }
 
     /// <summary>Ajusta velocidad, vida y densidad segun el desempeno (0 a 1).</summary>
@@ -87,6 +97,8 @@ public class GlucoseFlowController : MonoBehaviour
 
         float lifetime = length / speed;                      // llegan justo al otro extremo
         float rate = Mathf.Max(minRate, speed / spacing);     // separacion = velocidad / tasa
+
+        TravelTime = lifetime;
 
         var main = ps.main;
         main.startSpeed = speed;
