@@ -10372,7 +10372,7 @@ MonoBehaviour:
   titleText: {fileID: 615787888}
   bodyText: {fileID: 213208500}
   openDelay: 0
-  decisionIndex: 0
+  decisionIndex: 1
   nextScene: 
   nextPanel: {fileID: 0}
 --- !u!225 &1667482642
