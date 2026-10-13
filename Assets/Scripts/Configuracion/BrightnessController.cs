@@ -26,11 +26,14 @@ public class BrightnessController : MonoBehaviour
             return;
         }
 
-        // Intentamos obtener el override de Color Adjustments del perfil
         if (globalVolume.profile.TryGet<ColorAdjustments>(out colorAdjustments))
         {
-            // Aplicamos el valor inicial
-            colorAdjustments.postExposure.value = defaultExposure;
+            // Si hay un SettingsManager, usamos su valor; si no, el default
+            float initialValue = SettingsManager.Instance != null
+                ? SettingsManager.Instance.CurrentBrightness
+                : defaultExposure;
+
+            SetBrightness(initialValue);
         }
         else
         {

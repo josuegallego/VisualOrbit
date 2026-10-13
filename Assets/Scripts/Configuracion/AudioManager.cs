@@ -6,6 +6,16 @@ public class AudioManager : MonoBehaviour
     public AudioSource voiceAudio;
     public AudioSource[] effectsAudio;
 
+    void Start()
+    {
+        if (SettingsManager.Instance != null)
+        {
+            SetVoiceVolume(SettingsManager.Instance.CurrentVoiceVolume);
+            SetEffectsVolume(SettingsManager.Instance.CurrentEffectsVolume);
+            SetSpatialMusic(SettingsManager.Instance.CurrentSpatialMusic);
+        }
+    }
+
     public void SetSpatialMusic(bool isOn)
     {
         if (isOn)

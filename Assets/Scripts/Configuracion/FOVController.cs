@@ -22,8 +22,11 @@ public class FOVController : MonoBehaviour
             return;
         }
 
-        // Aplicamos el valor inicial
-        targetCamera.fieldOfView = defaultFOV;
+        float initialValue = SettingsManager.Instance != null
+            ? SettingsManager.Instance.CurrentFOV
+            : defaultFOV;
+
+        SetFOV(initialValue);
     }
 
     /// <summary>
