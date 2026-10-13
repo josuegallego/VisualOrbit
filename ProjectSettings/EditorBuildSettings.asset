@@ -26,6 +26,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ArmaMolecula.unity
     guid: 974a5843f86ac7d419986cb9813dd006
+  - enabled: 1
+    path: Assets/Scenes/Enfermera.unity
+    guid: f7b57e2a6005796499c028eae48c19de
+  - enabled: 1
+    path: Assets/Scenes/Ranking.unity
+    guid: 04f992ca910be8d448fe2c5dee736c9c
   m_configObjects:
     Unity.XR.Oculus.Settings: {fileID: 11400000, guid: bfa1182bd221b4ca89619141f66f1260, type: 2}
     Unity.XR.WindowsMR.Settings: {fileID: 11400000, guid: dc5a169419fa04987b057f65238cf3ba, type: 2}
