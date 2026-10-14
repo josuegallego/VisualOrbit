@@ -7,7 +7,7 @@ public class SaveButton : MonoBehaviour
     [Tooltip("Arrastra aquí el BrilloSlider")]
     public Slider brightnessSlider;
 
-    [Tooltip("Arrastra aquí el FOVSlider")]
+    [Tooltip("Arrastra aquí el CampoSlider (FOV)")]
     public Slider fovSlider;
 
     [Tooltip("Arrastra aquí el VocesSlider")]
@@ -21,7 +21,6 @@ public class SaveButton : MonoBehaviour
 
     void Start()
     {
-        // Nos aseguramos de que el botón tenga el listener
         Button button = GetComponent<Button>();
         if (button != null)
         {
@@ -29,7 +28,7 @@ public class SaveButton : MonoBehaviour
         }
     }
 
-    private void OnSaveClicked()
+    public void OnSaveClicked()
     {
         if (SettingsManager.Instance == null)
         {
@@ -37,14 +36,12 @@ public class SaveButton : MonoBehaviour
             return;
         }
 
-        // Recogemos los valores actuales de los sliders
         float brightness = brightnessSlider != null ? brightnessSlider.value : 0.5f;
         float fov = fovSlider != null ? fovSlider.value : 0.4f;
         float voice = voiceSlider != null ? voiceSlider.value : 1f;
         float effects = effectsSlider != null ? effectsSlider.value : 1f;
         bool spatialMusic = spatialMusicToggle != null ? spatialMusicToggle.isOn : true;
 
-        // Guardamos los valores
         SettingsManager.Instance.SaveSettings(brightness, fov, voice, effects, spatialMusic);
 
         Debug.Log("Configuración guardada y sincronizada.");

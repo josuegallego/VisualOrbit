@@ -3910,6 +3910,78 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 550572324}
   m_CullTransparentMesh: 1
+--- !u!1 &560250932 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6320712444766225556, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+  m_PrefabInstance: {fileID: 1615119641}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &560250934 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6676404820425631481, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+  m_PrefabInstance: {fileID: 1615119641}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 560250932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a7d55d137539dc74ab735fd1471726e2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &560250936
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 560250932}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 0}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 560250934}
+        m_TargetAssemblyTypeName: CloseSettingsButton, Assembly-CSharp
+        m_MethodName: OnCloseClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &568850931
 GameObject:
   m_ObjectHideFlags: 0
@@ -8227,6 +8299,78 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &1196242154 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4051561459450533168, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+  m_PrefabInstance: {fileID: 1615119641}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1196242156 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 316862498895468863, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+  m_PrefabInstance: {fileID: 1615119641}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196242154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 717b203ab71dab445ad1c58de13ba996, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1196242158
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1196242154}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 0}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1196242156}
+        m_TargetAssemblyTypeName: SaveButton, Assembly-CSharp
+        m_MethodName: OnSaveClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1210628557
 GameObject:
   m_ObjectHideFlags: 0
@@ -11684,6 +11828,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 5799375714884373835, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1615119647}
+    - targetCorrespondingSourceObject: {fileID: 6320712444766225556, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 560250936}
+    - targetCorrespondingSourceObject: {fileID: 4051561459450533168, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1196242158}
   m_SourcePrefab: {fileID: 100100000, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
 --- !u!4 &1615119642 stripped
 Transform:

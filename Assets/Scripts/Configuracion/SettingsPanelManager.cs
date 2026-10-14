@@ -30,7 +30,6 @@ public class SettingsPanelManager : MonoBehaviour
 
     void Start()
     {
-        // Buscamos el ConfigObj si no está asignado
         if (settingsPanel == null)
         {
             settingsPanel = GameObject.Find("ConfigObj");
@@ -64,6 +63,11 @@ public class SettingsPanelManager : MonoBehaviour
 
         isPanelOpen = !isPanelOpen;
         settingsPanel.SetActive(isPanelOpen);
+
+        if (isPanelOpen)
+        {
+            RefreshSliders();
+        }
     }
 
     public void OpenPanel()
@@ -71,6 +75,47 @@ public class SettingsPanelManager : MonoBehaviour
         if (settingsPanel == null) return;
         isPanelOpen = true;
         settingsPanel.SetActive(true);
+        RefreshSliders();
+    }
+
+    public void RefreshSliders()
+    {
+        if (SettingsManager.Instance == null) return;
+
+        GameObject brilloSlider = GameObject.Find("BrilloSlider");
+        if (brilloSlider != null)
+        {
+            var slider = brilloSlider.GetComponent<UnityEngine.UI.Slider>();
+            if (slider != null) slider.value = SettingsManager.Instance.CurrentBrightness;
+        }
+
+        GameObject fovSlider = GameObject.Find("CampoSlider");
+        if (fovSlider != null)
+        {
+            var slider = fovSlider.GetComponent<UnityEngine.UI.Slider>();
+            if (slider != null) slider.value = SettingsManager.Instance.CurrentFOV;
+        }
+
+        GameObject vocesSlider = GameObject.Find("VocesSlider");
+        if (vocesSlider != null)
+        {
+            var slider = vocesSlider.GetComponent<UnityEngine.UI.Slider>();
+            if (slider != null) slider.value = SettingsManager.Instance.CurrentVoiceVolume;
+        }
+
+        GameObject efectosSlider = GameObject.Find("EfectosSlider");
+        if (efectosSlider != null)
+        {
+            var slider = efectosSlider.GetComponent<UnityEngine.UI.Slider>();
+            if (slider != null) slider.value = SettingsManager.Instance.CurrentEffectsVolume;
+        }
+
+        GameObject toggleMusic = GameObject.Find("ToggleMusic");
+        if (toggleMusic != null)
+        {
+            var toggle = toggleMusic.GetComponent<UnityEngine.UI.Toggle>();
+            if (toggle != null) toggle.isOn = SettingsManager.Instance.CurrentSpatialMusic;
+        }
     }
 
     public void ClosePanel()
