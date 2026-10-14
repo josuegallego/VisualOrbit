@@ -2,7 +2,7 @@
 using UnityEngine.SceneManagement;
 
 /// <summary>
-/// Carga una escena por nombre o por índice.
+/// Carga una escena por nombre o por índice, con transición fade (usa SceneTransition).
 /// 
 /// USO EN EL INSPECTOR:
 ///   1. Añade este componente al objeto que tenga el botón (o a cualquier objeto de la escena).
@@ -43,7 +43,7 @@ public class SceneLoader : MonoBehaviour
         if (debugLogs)
             Debug.Log($"[SceneLoader] Cargando escena por nombre: '{sceneName}'");
 
-        SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+        SceneTransition.LoadScene(sceneName);
     }
 
     /// <summary>Carga una escena por su índice en Build Settings.</summary>
@@ -59,7 +59,7 @@ public class SceneLoader : MonoBehaviour
         if (debugLogs)
             Debug.Log($"[SceneLoader] Cargando escena por índice: {sceneIndex}");
 
-        SceneManager.LoadScene(sceneIndex, LoadSceneMode.Single);
+        SceneTransition.LoadScene(sceneIndex);
     }
 
     /// <summary>Recarga la escena actual.</summary>
@@ -69,7 +69,7 @@ public class SceneLoader : MonoBehaviour
         if (debugLogs)
             Debug.Log($"[SceneLoader] Recargando escena: '{current.name}'");
 
-        SceneManager.LoadScene(current.buildIndex, LoadSceneMode.Single);
+        SceneTransition.LoadScene(current.buildIndex);
     }
 
     /// <summary>Carga la siguiente escena en el orden de Build Settings.</summary>
@@ -86,7 +86,7 @@ public class SceneLoader : MonoBehaviour
         if (debugLogs)
             Debug.Log($"[SceneLoader] Cargando siguiente escena (índice {next}).");
 
-        SceneManager.LoadScene(next, LoadSceneMode.Single);
+        SceneTransition.LoadScene(next);
     }
 
     /// <summary>Sale de la aplicación (útil para "Salir" en VR).</summary>

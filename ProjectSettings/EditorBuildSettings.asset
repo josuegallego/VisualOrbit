@@ -24,6 +24,9 @@ EditorBuildSettings:
     path: Assets/Scenes/particulas.unity
     guid: c6d1edd3a4e688941a9a15166e4ca4f6
   - enabled: 1
+    path: Assets/Scenes/memorama.unity
+    guid: 30df552eb3b24a04a8024922087bb847
+  - enabled: 1
     path: Assets/Scenes/ArmaMolecula.unity
     guid: 974a5843f86ac7d419986cb9813dd006
   - enabled: 1
