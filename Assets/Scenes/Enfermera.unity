@@ -1051,17 +1051,19 @@ MonoBehaviour:
     decisiones y tu desempe\xF1o durante la jornada."
   recomendacionBueno: "Tus elecciones fueron equilibradas. Tu energ\xEDa, memoria
     e interferencia cognitiva se mantuvieron estables. Sigue as\xED, tu cerebro te
-    lo agradece."
+    lo agradece. Hoy te elegiste a ti, ma\xF1ana puedes volver a elegirte."
   recomendacionRegular: "Tus elecciones afectaron parcialmente tu rendimiento. Te
     recomiendo incluir en tu desayuno huevos, un carbohidrato complejo como papa
     o pl\xE1tano cocido, agua y una fruta entera. En almuerzo y cena debes tener
-    obligatoriamente 4 elementos."
+    obligatoriamente 4 elementos. Cada comida es una nueva oportunidad para nutrir
+    tu mente."
   recomendacionMalo: "Tus decisiones afectaron seriamente tu rendimiento cognitivo.
     Tu memoria y energ\xEDa bajaron, y tu interferencia cognitiva subi\xF3. Necesitas
     incluir prote\xEDnas, carbohidratos complejos, vegetales y grasas saludables
-    en cada comida. Tu cerebro no puede funcionar \xF3ptimamente sin estos componentes."
+    en cada comida. Tu cerebro no puede funcionar \xF3ptimamente sin estos componentes.
+    Cada d\xEDa es una p\xE1gina nueva, ma\xF1ana puedes escribir otra."
   dejandoAlgoEnClaro: "Recuerda que esta experiencia es educativa y no reemplaza
-    un diagn\xF3stico m\xE9dico real."
+    un diagn\xF3stico m\xE9dico real.\n"
   despedida: "Cu\xEDdate y espero poder vernos en la pr\xF3xima jornada. Gracias
     por usar Inside Your Mind!"
   velocidadLetra: 0.03
@@ -8949,7 +8951,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1995265746
 RectTransform:
   m_ObjectHideFlags: 0
