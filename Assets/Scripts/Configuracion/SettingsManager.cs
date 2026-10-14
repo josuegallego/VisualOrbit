@@ -5,21 +5,18 @@ public class SettingsManager : MonoBehaviour
 {
     public static SettingsManager Instance { get; private set; }
 
-    // Claves de PlayerPrefs
     private const string KEY_BRIGHTNESS = "Settings_Brightness";
     private const string KEY_FOV = "Settings_FOV";
     private const string KEY_VOICE_VOLUME = "Settings_VoiceVolume";
     private const string KEY_EFFECTS_VOLUME = "Settings_EffectsVolume";
     private const string KEY_SPATIAL_MUSIC = "Settings_SpatialMusic";
 
-    // Valores por defecto
     public float DefaultBrightness = 0.5f;
     public float DefaultFOV = 0.4f;
     public float DefaultVoiceVolume = 1f;
     public float DefaultEffectsVolume = 1f;
     public bool DefaultSpatialMusic = true;
 
-    // Valores actuales (los que se aplicarán en cada escena)
     public float CurrentBrightness { get; private set; }
     public float CurrentFOV { get; private set; }
     public float CurrentVoiceVolume { get; private set; }
@@ -28,7 +25,6 @@ public class SettingsManager : MonoBehaviour
 
     void Awake()
     {
-        // Singleton: solo puede haber uno
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -38,10 +34,7 @@ public class SettingsManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        // Cargamos los valores guardados al inicio
         LoadSettings();
-
-        // Nos suscribimos al evento de carga de escena
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -55,7 +48,6 @@ public class SettingsManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // Cuando se carga una nueva escena, aplicamos los valores guardados
         ApplySettings();
     }
 
@@ -88,20 +80,19 @@ public class SettingsManager : MonoBehaviour
 
     public void ApplySettings()
     {
-        // Buscamos los controladores en la escena actual y aplicamos los valores
-        BrightnessController brightness = FindObjectOfType<BrightnessController>();
+        BrightnessController brightness = FindFirstObjectByType<BrightnessController>();
         if (brightness != null)
         {
             brightness.SetBrightness(CurrentBrightness);
         }
 
-        FOVController fov = FindObjectOfType<FOVController>();
+        FOVController fov = FindFirstObjectByType<FOVController>();
         if (fov != null)
         {
             fov.SetFOV(CurrentFOV);
         }
 
-        AudioManager audio = FindObjectOfType<AudioManager>();
+        AudioManager audio = FindFirstObjectByType<AudioManager>();
         if (audio != null)
         {
             audio.SetVoiceVolume(CurrentVoiceVolume);
@@ -109,13 +100,12 @@ public class SettingsManager : MonoBehaviour
             audio.SetSpatialMusic(CurrentSpatialMusic);
         }
 
-        // Actualizamos también los sliders visuales si existen
         UpdateSlidersVisuals();
     }
 
     private void UpdateSlidersVisuals()
     {
-        // Buscamos los sliders por nombre y actualizamos su valor visual
+        // Brillo
         GameObject brilloSlider = GameObject.Find("BrilloSlider");
         if (brilloSlider != null)
         {
@@ -123,13 +113,15 @@ public class SettingsManager : MonoBehaviour
             if (slider != null) slider.value = CurrentBrightness;
         }
 
-        GameObject fovSlider = GameObject.Find("FOVSlider");
+        // FOV (en tu jerarquía se llama CampoSlider)
+        GameObject fovSlider = GameObject.Find("CampoSlider");
         if (fovSlider != null)
         {
             var slider = fovSlider.GetComponent<UnityEngine.UI.Slider>();
             if (slider != null) slider.value = CurrentFOV;
         }
 
+        // Voces
         GameObject vocesSlider = GameObject.Find("VocesSlider");
         if (vocesSlider != null)
         {
@@ -137,6 +129,7 @@ public class SettingsManager : MonoBehaviour
             if (slider != null) slider.value = CurrentVoiceVolume;
         }
 
+        // Efectos
         GameObject efectosSlider = GameObject.Find("EfectosSlider");
         if (efectosSlider != null)
         {

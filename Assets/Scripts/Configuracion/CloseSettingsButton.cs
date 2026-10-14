@@ -1,0 +1,27 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+public class CloseSettingsButton : MonoBehaviour
+{
+    void Start()
+    {
+        Button button = GetComponent<Button>();
+        if (button != null)
+        {
+            button.onClick.AddListener(OnCloseClicked);
+        }
+    }
+
+    private void OnCloseClicked()
+    {
+        if (SettingsPanelManager.Instance != null)
+        {
+            SettingsPanelManager.Instance.ClosePanel();
+            Debug.Log("Panel de configuración cerrado.");
+        }
+        else
+        {
+            Debug.LogError("CloseSettingsButton: No hay SettingsPanelManager en la escena.");
+        }
+    }
+}
