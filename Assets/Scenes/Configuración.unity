@@ -247,8 +247,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 230f04386153a2246b125cf68804603f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settingsPanelPrefab: {fileID: 1051263775}
-  menuButtonAction: {fileID: 0}
+  settingsPanel: {fileID: 0}
   startHidden: 1
 --- !u!1 &171944568
 GameObject:
@@ -1104,11 +1103,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &1051263775 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5799375714884373835, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
-  m_PrefabInstance: {fileID: 8462685261156194667}
-  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1051263776 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 198571296785288184, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
@@ -3130,8 +3124,8 @@ SceneRoots:
   - {fileID: 1345044702}
   - {fileID: 542987428}
   - {fileID: 1831718752}
-  - {fileID: 171944571}
   - {fileID: 1458912083}
+  - {fileID: 171944571}
   - {fileID: 552077846}
   - {fileID: 1731449433}
   - {fileID: 159331824}
