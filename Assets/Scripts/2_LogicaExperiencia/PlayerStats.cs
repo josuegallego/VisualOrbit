@@ -23,7 +23,9 @@ public class PlayerStats : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            // Ya existe un PlayerStats (viene de otra escena): se elimina SOLO este componente,
+            // no el objeto entero, porque el objeto puede tener otros scripts (SceneLoader, DisclaimerController...)
+            Destroy(this);
             return;
         }
         Instance = this;

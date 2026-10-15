@@ -7617,6 +7617,10 @@ MonoBehaviour:
   slider: {fileID: 0}
   valueText: {fileID: 550572326}
   animSpeed: 0.6
+  colorByValue: 1
+  colorBad: {r: 0.9, g: 0.25, b: 0.22, a: 1}
+  colorMid: {r: 0.97, g: 0.78, b: 0.2, a: 1}
+  colorGood: {r: 0.25, g: 0.8, b: 0.4, a: 1}
 --- !u!114 &1117322386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8345,9 +8349,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1963212055}
-  energyChange: -12
+  energyChange: -20
   interferenceChange: 20
-  memoryChange: -10
+  memoryChange: -20
   feedback: {fileID: 1667482641}
   feedbackTitle: "Energ\xEDa fugaz y bajo rendimiento"
   feedbackBody: "Tu memoria fallar\xE1 tras 75 minutos por falta de calcio, prote\xEDna
@@ -10052,6 +10056,10 @@ MonoBehaviour:
   slider: {fileID: 0}
   valueText: {fileID: 1926215870}
   animSpeed: 0.6
+  colorByValue: 1
+  colorBad: {r: 0.9, g: 0.25, b: 0.22, a: 1}
+  colorMid: {r: 0.97, g: 0.78, b: 0.2, a: 1}
+  colorGood: {r: 0.25, g: 0.8, b: 0.4, a: 1}
 --- !u!114 &1429872884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10330,8 +10338,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 431443818}
   energyChange: 0
-  interferenceChange: 5
-  memoryChange: -3
+  interferenceChange: 20
+  memoryChange: -5
   feedback: {fileID: 1667482641}
   feedbackTitle: "M\xE1ximo impulso para tu aprendizaje"
   feedbackBody: "La colina del huevo crea acetilcolina, neurotransmisor clave para
@@ -12012,9 +12020,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 332977958}
-  energyChange: -30
+  energyChange: -38
   interferenceChange: 28
-  memoryChange: -20
+  memoryChange: -35
   feedback: {fileID: 1667482641}
   feedbackTitle: Tu cerebro no puede grabar datos
   feedbackBody: "Un pico de az\xFAcar y falta de colina (nutriente para la memoria)
@@ -13118,6 +13126,10 @@ MonoBehaviour:
   slider: {fileID: 0}
   valueText: {fileID: 1430339894}
   animSpeed: 0.6
+  colorByValue: 1
+  colorBad: {r: 0.9, g: 0.25, b: 0.22, a: 1}
+  colorMid: {r: 0.97, g: 0.78, b: 0.2, a: 1}
+  colorGood: {r: 0.25, g: 0.8, b: 0.4, a: 1}
 --- !u!114 &1911590346
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15191,6 +15203,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 526302343600768360, guid: fe35879f4ed1bda44b166bc953414830, type: 3}
+      propertyPath: m_Volume
+      value: 0.6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2981219734119034676, guid: fe35879f4ed1bda44b166bc953414830, type: 3}
+      propertyPath: m_Volume
+      value: 0.2
+      objectReference: {fileID: 0}
     - target: {fileID: 6347056062691293075, guid: fe35879f4ed1bda44b166bc953414830, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.82197905
@@ -15240,7 +15260,9 @@ PrefabInstance:
       value: ConfiguracionManager
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 6725344151411995698, guid: fe35879f4ed1bda44b166bc953414830, type: 3}
+    - {fileID: 3221015914495301407, guid: fe35879f4ed1bda44b166bc953414830, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fe35879f4ed1bda44b166bc953414830, type: 3}

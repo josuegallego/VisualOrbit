@@ -23,6 +23,13 @@ public class StatsBarUI : MonoBehaviour
     [Tooltip("Velocidad de la animacion (1 = tarda 1 segundo en recorrer toda la barra)")]
     public float animSpeed = 0.6f;
 
+    [Header("Color segun el porcentaje")]
+    [Tooltip("Si esta activo, la barra cambia de color: rojo (mal) -> amarillo -> verde (bien)")]
+    public bool colorByValue = true;
+    public Color colorBad  = new Color(0.90f, 0.25f, 0.22f); // rojo
+    public Color colorMid  = new Color(0.97f, 0.78f, 0.20f); // amarillo
+    public Color colorGood = new Color(0.25f, 0.80f, 0.40f); // verde
+
     // Ultimo valor mostrado por cada barra (compartido entre todos los paneles). -1 = ninguno.
     static readonly float[] lastShown = { -1f, -1f, -1f };
 
@@ -104,5 +111,23 @@ public class StatsBarUI : MonoBehaviour
         }
 
         if (valueText != null) valueText.text = Mathf.RoundToInt(v * 100f) + "%";
+
+        if (colorByValue) ApplyColor(v);
+    }
+
+    // Color segun "que tan bien esta": en Energia y Memoria alto = bien; en Interferencia alto = mal
+    void ApplyColor(float v)
+    {
+        float good = stat == StatType.Interference ? 1f - v : v;
+        Color c = good < 0.5f
+            ? Color.Lerp(colorBad, colorMid, good / 0.5f)
+            : Color.Lerp(colorMid, colorGood, (good - 0.5f) / 0.5f);
+
+        if (fillImage != null) fillImage.color = c;
+        if (slider != null && slider.fillRect != null)
+        {
+            var img = slider.fillRect.GetComponent<Image>();
+            if (img != null) img.color = c;
+        }
     }
 }

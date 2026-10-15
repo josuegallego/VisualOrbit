@@ -89,11 +89,14 @@ public class SceneLoader : MonoBehaviour
         SceneTransition.LoadScene(next);
     }
 
-    /// <summary>Sale de la aplicación (útil para "Salir" en VR).</summary>
+    /// <summary>Guarda la sesión y sale de la aplicación (útil para "Salir" en VR).</summary>
     public void QuitApplication()
     {
+        // Guardar la sesión antes de salir
+        SessionService.Finish(true);
+
         if (debugLogs)
-            Debug.Log("[SceneLoader] Saliendo de la aplicación...");
+            Debug.Log("[SceneLoader] Sesión guardada. Saliendo de la aplicación...");
 
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
@@ -101,4 +104,6 @@ public class SceneLoader : MonoBehaviour
         Application.Quit();
 #endif
     }
+
+
 }
