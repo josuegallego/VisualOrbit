@@ -12,7 +12,7 @@ public class CloseSettingsButton : MonoBehaviour
         }
     }
 
-    public void OnCloseClicked()
+    private void OnCloseClicked()
     {
         if (SettingsPanelManager.Instance != null)
         {

@@ -32,13 +32,16 @@ public class SliderPercentageDisplay : MonoBehaviour
             return;
         }
 
+        // Nos suscribimos al evento del slider para actualizar el texto
         targetSlider.onValueChanged.AddListener(UpdateText);
 
+        // Actualizamos el texto al inicio
         UpdateText(targetSlider.value);
     }
 
     void OnDestroy()
     {
+        // Nos desuscribimos para evitar errores
         if (targetSlider != null)
         {
             targetSlider.onValueChanged.RemoveListener(UpdateText);

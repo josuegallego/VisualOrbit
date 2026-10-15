@@ -28,6 +28,7 @@ public class BrightnessController : MonoBehaviour
 
         if (globalVolume.profile.TryGet<ColorAdjustments>(out colorAdjustments))
         {
+            // Si hay un SettingsManager, usamos su valor; si no, el default
             float initialValue = SettingsManager.Instance != null
                 ? SettingsManager.Instance.CurrentBrightness
                 : defaultExposure;
