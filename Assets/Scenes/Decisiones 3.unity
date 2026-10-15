@@ -4073,8 +4073,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1405398291}
-  energyChange: -10
-  interferenceChange: 15
+  energyChange: -30
+  interferenceChange: 30
   memoryChange: -30
   feedback: {fileID: 1667482641}
   feedbackTitle: 'Combo Ultraprocesado: Menos 40% de Memoria'
@@ -6355,8 +6355,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1135177392}
-  energyChange: 10
-  interferenceChange: -15
+  energyChange: -15
+  interferenceChange: 20
   memoryChange: -20
   feedback: {fileID: 1667482641}
   feedbackTitle: " Rendimiento en riesgo por bebidas energ\xE9ticas"
@@ -7760,9 +7760,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1417342292}
-  energyChange: -20
+  energyChange: -35
   interferenceChange: 30
-  memoryChange: -20
+  memoryChange: -25
   feedback: {fileID: 1667482641}
   feedbackTitle: 'Chocolate y pandebono: saboteadores del aprendizaje'
   feedbackBody: "Seg\xFAn las DGA (Gu\xEDas alimentarias), evitar estimulantes nocturnos
@@ -11358,11 +11358,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 674038291314027381, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 674038291314027381, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 955458457922162000, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -11374,31 +11374,31 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 958605659148592500, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 958605659148592500, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3495459915786468626, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3495459915786468626, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5382211844607207344, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5382211844607207344, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5382211844607207344, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5645284546238540163, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -11414,27 +11414,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5799375714884373835, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6415872092148506017, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+      propertyPath: m_AnchorMax.x
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6415872092148506017, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
-      propertyPath: m_AnchorMax.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6415872092148506017, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6415872092148506017, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7658183853514800507, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 7658183853514800507, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7717584443274148893, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_OnValueChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
@@ -11450,27 +11450,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7942599517620886424, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 7942599517620886424, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7942599517620886424, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 8808067660078927161, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8808067660078927161, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8808067660078927161, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9202247628847492222, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target

@@ -93,9 +93,7 @@ public class SceneLoader : MonoBehaviour
     public void QuitApplication()
     {
         // Guardar la sesión antes de salir
-        if (PlayerDataStore.ActiveSession != null)
-            PlayerDataStore.CloseActiveSession(true);
-        PlayerDataStore.Save();
+        SessionService.Finish(true);
 
         if (debugLogs)
             Debug.Log("[SceneLoader] Sesión guardada. Saliendo de la aplicación...");

@@ -123,12 +123,12 @@ public class NameInputGate : MonoBehaviour
             return;
         }
 
-        var session = PlayerDataStore.AddSession(value);
+        var session = SessionService.Start(value);
 
         Debug.Log(
             $"[NameInputGate] Nueva sesión: '{session.nombre}' " +
             $"({session.fechaInicio}). " +
-            $"Total: {PlayerDataStore.Current.sesiones.Count}"
+            $"Total: {SessionService.TotalSessions}"
         );
 
         onConfirmed?.Invoke();

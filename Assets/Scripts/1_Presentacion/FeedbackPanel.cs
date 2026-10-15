@@ -56,7 +56,7 @@ public class FeedbackPanel : MonoBehaviour
         if (titleText != null) titleText.text = title;
         if (bodyText != null) bodyText.text = body;
 
-        PlayerDataStore.SetDecision(decisionIndex, optionNumber);
+        SessionService.RecordDecision(decisionIndex, optionNumber);
     }
 
     // La tarjeta llama a esto despues de la pausa: oculta el panel de decisiones y muestra este

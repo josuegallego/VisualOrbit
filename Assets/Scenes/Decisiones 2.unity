@@ -4921,8 +4921,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 800430149}
   energyChange: 5
-  interferenceChange: 5
-  memoryChange: -15
+  interferenceChange: 20
+  memoryChange: -10
   feedback: {fileID: 1667482641}
   feedbackTitle: Combustible ideal para tu entrega
   feedbackBody: "Tendr\xE1s mayor profundidad anal\xEDtica y menos errores en tres
@@ -13449,9 +13449,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 444237261}
-  energyChange: -15
-  interferenceChange: 22
-  memoryChange: -20
+  energyChange: -35
+  interferenceChange: 30
+  memoryChange: -35
   feedback: {fileID: 1667482641}
   feedbackTitle: "Apag\xF3n cognitivo de mediod\xEDa"
   feedbackBody: "Alta carga gluc\xE9mica + grasas saturadas + cero vegetales = colapso

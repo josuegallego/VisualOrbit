@@ -34,6 +34,6 @@ public class ScenarioSwitcher : MonoBehaviour
         foreach (var s in scenarios)
             if (s.root != null) s.root.SetActive(s == best);
 
-        if (saveProgress) PlayerDataStore.SetActiveSessionPanel(panelIndex);
+        if (saveProgress) SessionService.SetPanel(panelIndex);
     }
 }
