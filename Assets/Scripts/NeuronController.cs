@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -45,6 +46,9 @@ public class NeuronController : MonoBehaviour
     public bool logEvents = true;
 
     public bool IsLit => target > 0.5f;
+
+    /// <summary>Se dispara cuando la neurona pasa a encendida (true) o a apagada (false).</summary>
+    public event Action<bool> LitChanged;
 
     Material mat;
     int colorId;
@@ -114,7 +118,9 @@ public class NeuronController : MonoBehaviour
 
         if (!on)
         {
+            bool wasLit = IsLit;
             target = 0f;
+            if (wasLit) LitChanged?.Invoke(false);
             return;
         }
 
@@ -132,13 +138,16 @@ public class NeuronController : MonoBehaviour
         target = 1f;
         delayRoutine = null;
         if (logEvents) Debug.Log("[Neuron] ENCENDIDA", this);
+        LitChanged?.Invoke(true);
     }
 
     /// <summary>Enciende o apaga la neurona a mano (pruebas, o la logica de progresion mas adelante).</summary>
     public void SetLit(bool on)
     {
         if (delayRoutine != null) { StopCoroutine(delayRoutine); delayRoutine = null; }
+        bool was = IsLit;
         target = on ? 1f : 0f;
+        if (was != on) LitChanged?.Invoke(on);
     }
 
     void Apply(float k)
