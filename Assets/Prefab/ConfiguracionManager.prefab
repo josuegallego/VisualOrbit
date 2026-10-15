@@ -527,7 +527,7 @@ AudioSource:
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: -6806405521515638539, guid: fc52fc54c6c6e0c4887a8f210d400d60, type: 2}
   m_audioClip: {fileID: 0}
-  m_Resource: {fileID: 8300000, guid: 2d2dd4b8f0c0bdf4f9eb4d3830fd3e83, type: 3}
+  m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -828,7 +828,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spatialMusic: {fileID: 2981219734119034676}
-  voiceAudio: {fileID: 6501428773591515223}
+  voiceAudio: {fileID: 0}
   effectsAudio:
   - {fileID: 4909973751660997738}
   - {fileID: 1619032852593009366}
