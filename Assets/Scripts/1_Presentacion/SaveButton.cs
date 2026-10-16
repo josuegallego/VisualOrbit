@@ -1,26 +1,25 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
+using System.Collections;
 
 public class SaveButton : MonoBehaviour
 {
     [Header("Referencias")]
-    [Tooltip("Arrastra aquí el BrilloSlider")]
     public Slider brightnessSlider;
-
-    [Tooltip("Arrastra aquí el CampoSlider (FOV)")]
     public Slider fovSlider;
-
-    [Tooltip("Arrastra aquí el VocesSlider")]
     public Slider voiceSlider;
-
-    [Tooltip("Arrastra aquí el EfectosSlider")]
     public Slider effectsSlider;
-
-    [Tooltip("Arrastra aquí el ToggleMusic")]
     public Toggle spatialMusicToggle;
 
-    // Ya NO añadimos el listener en Start().
-    // El evento se configura manualmente en el Inspector (On Click).
+    [Header("Aviso")]
+    [Tooltip("Arrastra aquí el texto AvisoGuardado")]
+    public GameObject avisoGuardado;
+
+    [Tooltip("Segundos que se muestra el aviso")]
+    public float duracionAviso = 2f;
+
+    private Coroutine avisoCoroutine;
 
     public void OnSaveClicked()
     {
@@ -39,5 +38,21 @@ public class SaveButton : MonoBehaviour
         SettingsManager.Instance.SaveSettings(brightness, fov, voice, effects, spatialMusic);
 
         Debug.Log("Configuración guardada y sincronizada.");
+
+        if (avisoGuardado != null)
+        {
+            if (avisoCoroutine != null)
+            {
+                StopCoroutine(avisoCoroutine);
+            }
+            avisoCoroutine = StartCoroutine(MostrarAviso());
+        }
+    }
+
+    private IEnumerator MostrarAviso()
+    {
+        avisoGuardado.SetActive(true);
+        yield return new WaitForSeconds(duracionAviso);
+        avisoGuardado.SetActive(false);
     }
 }

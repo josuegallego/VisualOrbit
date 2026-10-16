@@ -172,4 +172,10 @@ public class SettingsManager : MonoBehaviour
             if (slider != null) slider.value = CurrentEffectsVolume;
         }
     }
+
+    public void RevertToSaved()
+    {
+        Debug.Log("[SettingsManager] Revirtiendo a los valores guardados...");
+        ApplySettings();
+    }
 }

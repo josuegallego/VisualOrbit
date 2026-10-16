@@ -14,10 +14,15 @@ public class CloseSettingsButton : MonoBehaviour
 
     public void OnCloseClicked()
     {
+        if (SettingsManager.Instance != null)
+        {
+            SettingsManager.Instance.RevertToSaved();
+        }
+
         if (SettingsPanelManager.Instance != null)
         {
             SettingsPanelManager.Instance.ClosePanel();
-            Debug.Log("Panel de configuración cerrado.");
+            Debug.Log("Panel de configuración cerrado (cambios revertidos).");
         }
         else
         {
