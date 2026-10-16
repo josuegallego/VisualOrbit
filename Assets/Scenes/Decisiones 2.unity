@@ -1711,11 +1711,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 198571296785288184, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
   m_PrefabInstance: {fileID: 167084444}
   m_PrefabAsset: {fileID: 0}
---- !u!1 &167084446 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 5799375714884373835, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
-  m_PrefabInstance: {fileID: 167084444}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &172522305
 GameObject:
   m_ObjectHideFlags: 0
@@ -2228,7 +2223,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!328 &263068971
 VideoPlayer:
   m_ObjectHideFlags: 0
@@ -2377,70 +2372,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!1 &295696565
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 295696568}
-  - component: {fileID: 295696567}
-  - component: {fileID: 295696566}
-  m_Layer: 0
-  m_Name: DontDestroyOnLoad
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &295696566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 295696565}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 230f04386153a2246b125cf68804603f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  settingsPanel: {fileID: 167084446}
-  startHidden: 1
---- !u!114 &295696567
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 295696565}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe492a473c554ab4ca922adf028818bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DefaultBrightness: 0.5
-  DefaultFOV: 0.4
-  DefaultVoiceVolume: 1
-  DefaultEffectsVolume: 1
-  DefaultSpatialMusic: 1
---- !u!4 &295696568
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 295696565}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.69000244, y: 4.2559814, z: 4.216}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &332977954
 GameObject:
   m_ObjectHideFlags: 0
@@ -4930,6 +4861,7 @@ GameObject:
   - component: {fileID: 661850804}
   - component: {fileID: 661850803}
   - component: {fileID: 661850802}
+  - component: {fileID: 661850805}
   m_Layer: 5
   m_Name: B.Menu
   m_TagString: Untagged
@@ -4999,19 +4931,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 661850803}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 295696566}
-        m_TargetAssemblyTypeName: SettingsPanelManager, Assembly-CSharp
-        m_MethodName: TogglePanel
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &661850803
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5050,6 +4970,18 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 661850800}
   m_CullTransparentMesh: 1
+--- !u!114 &661850805
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 661850800}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ef92ee808a366745bf7a7ef1656fc66, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &720653074
 GameObject:
   m_ObjectHideFlags: 0
@@ -13941,4 +13873,3 @@ SceneRoots:
   - {fileID: 1676940139}
   - {fileID: 2064328774}
   - {fileID: 657181857}
-  - {fileID: 295696568}

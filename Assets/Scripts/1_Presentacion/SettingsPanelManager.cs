@@ -1,19 +1,16 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
 public class SettingsPanelManager : MonoBehaviour
 {
     public static SettingsPanelManager Instance { get; private set; }
 
-    [Header("Referencias")]
-    [Tooltip("Arrastra aquí el ConfigObj que ya está en la escena")]
-    public GameObject settingsPanel;
-
     [Header("Configuración")]
     [Tooltip("Si está marcado, el panel empieza oculto")]
     public bool startHidden = true;
 
+    private GameObject settingsPanel;
     private bool isPanelOpen = false;
 
     void Awake()
@@ -26,19 +23,45 @@ public class SettingsPanelManager : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
     }
 
     void Start()
     {
-        if (settingsPanel == null)
+        settingsPanel = FindConfigObjInScene();
+
+        if (settingsPanel != null && startHidden)
         {
-            settingsPanel = GameObject.Find("ConfigObj");
+            settingsPanel.SetActive(false);
+            isPanelOpen = false;
         }
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        StartCoroutine(FindPanelNextFrame());
+    }
+
+    private IEnumerator FindPanelNextFrame()
+    {
+        yield return null;
+        yield return null;
+
+        settingsPanel = FindConfigObjInScene();
 
         if (settingsPanel == null)
         {
-            Debug.LogError("SettingsPanelManager: No se encontró el ConfigObj en la escena.");
-            return;
+            Debug.LogWarning("SettingsPanelManager: No se encontró ConfigObj en la escena " + SceneManager.GetActiveScene().name);
+            yield break;
         }
 
         if (startHidden)
@@ -53,12 +76,32 @@ public class SettingsPanelManager : MonoBehaviour
         }
     }
 
+    private GameObject FindConfigObjInScene()
+    {
+        GameObject[] allObjects = Resources.FindObjectsOfTypeAll<GameObject>();
+        Scene activeScene = SceneManager.GetActiveScene();
+
+        foreach (GameObject obj in allObjects)
+        {
+            if (obj.name == "ConfigObj" && obj.scene == activeScene)
+            {
+                return obj;
+            }
+        }
+
+        return null;
+    }
+
     public void TogglePanel()
     {
         if (settingsPanel == null)
         {
-            settingsPanel = GameObject.Find("ConfigObj");
-            if (settingsPanel == null) return;
+            settingsPanel = FindConfigObjInScene();
+            if (settingsPanel == null)
+            {
+                Debug.LogWarning("SettingsPanelManager: TogglePanel no encontró ConfigObj.");
+                return;
+            }
         }
 
         isPanelOpen = !isPanelOpen;
@@ -72,10 +115,21 @@ public class SettingsPanelManager : MonoBehaviour
 
     public void OpenPanel()
     {
-        if (settingsPanel == null) return;
+        if (settingsPanel == null)
+        {
+            settingsPanel = FindConfigObjInScene();
+            if (settingsPanel == null) return;
+        }
         isPanelOpen = true;
         settingsPanel.SetActive(true);
         RefreshSliders();
+    }
+
+    public void ClosePanel()
+    {
+        if (settingsPanel == null) return;
+        isPanelOpen = false;
+        settingsPanel.SetActive(false);
     }
 
     public void RefreshSliders()
@@ -116,12 +170,5 @@ public class SettingsPanelManager : MonoBehaviour
             var toggle = toggleMusic.GetComponent<UnityEngine.UI.Toggle>();
             if (toggle != null) toggle.isOn = SettingsManager.Instance.CurrentSpatialMusic;
         }
-    }
-
-    public void ClosePanel()
-    {
-        if (settingsPanel == null) return;
-        isPanelOpen = false;
-        settingsPanel.SetActive(false);
     }
 }
