@@ -109,7 +109,14 @@ public class SettingsPanelManager : MonoBehaviour
 
         if (isPanelOpen)
         {
+            if (PanelHider.Instance != null)
+                PanelHider.Instance.HideActivePanels(settingsPanel);
             RefreshSliders();
+        }
+        else
+        {
+            if (PanelHider.Instance != null)
+                PanelHider.Instance.RestoreHiddenPanels();
         }
     }
 
@@ -122,6 +129,10 @@ public class SettingsPanelManager : MonoBehaviour
         }
         isPanelOpen = true;
         settingsPanel.SetActive(true);
+
+        if (PanelHider.Instance != null)
+            PanelHider.Instance.HideActivePanels(settingsPanel);
+
         RefreshSliders();
     }
 
@@ -130,6 +141,9 @@ public class SettingsPanelManager : MonoBehaviour
         if (settingsPanel == null) return;
         isPanelOpen = false;
         settingsPanel.SetActive(false);
+
+        if (PanelHider.Instance != null)
+            PanelHider.Instance.RestoreHiddenPanels();
     }
 
     public void RefreshSliders()
