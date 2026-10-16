@@ -27,12 +27,15 @@ public class SettingsManager : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
+            Debug.Log("[SettingsManager] Ya existe una instancia. Destruyendo duplicado.");
             Destroy(gameObject);
             return;
         }
 
         Instance = this;
         DontDestroyOnLoad(gameObject);
+
+        Debug.Log("[SettingsManager] Instancia creada y marcada como DontDestroyOnLoad.");
 
         LoadSettings();
         SceneManager.sceneLoaded += OnSceneLoaded;
@@ -48,6 +51,17 @@ public class SettingsManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        Debug.Log($"[SettingsManager] Escena cargada: {scene.name}. Aplicando settings en el próximo frame...");
+        StartCoroutine(ApplySettingsNextFrame());
+    }
+
+    private System.Collections.IEnumerator ApplySettingsNextFrame()
+    {
+        // Esperamos dos frames para asegurarnos de que todos los Start() ya se ejecutaron
+        yield return null;
+        yield return null;
+
+        Debug.Log($"[SettingsManager] Aplicando settings ahora.");
         ApplySettings();
     }
 
@@ -62,6 +76,8 @@ public class SettingsManager : MonoBehaviour
 
     public void SaveSettings(float brightness, float fov, float voiceVolume, float effectsVolume, bool spatialMusic)
     {
+        Debug.Log($"[SettingsManager] SaveSettings llamado. Brightness: {brightness}, FOV: {fov}, Voice: {voiceVolume}, Effects: {effectsVolume}, Music: {spatialMusic}");
+
         CurrentBrightness = brightness;
         CurrentFOV = fov;
         CurrentVoiceVolume = voiceVolume;
@@ -75,33 +91,52 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.SetInt(KEY_SPATIAL_MUSIC, spatialMusic ? 1 : 0);
         PlayerPrefs.Save();
 
-        Debug.Log("Configuración guardada correctamente.");
+        Debug.Log("[SettingsManager] Configuración guardada en PlayerPrefs.");
     }
 
     public void ApplySettings()
     {
+        Debug.Log($"[SettingsManager] ApplySettings llamado. Brightness: {CurrentBrightness}, FOV: {CurrentFOV}, Voice: {CurrentVoiceVolume}, Effects: {CurrentEffectsVolume}, Music: {CurrentSpatialMusic}");
+
         BrightnessController brightness = FindFirstObjectByType<BrightnessController>();
         if (brightness != null)
         {
+            Debug.Log("[SettingsManager] Aplicando brillo...");
             brightness.SetBrightness(CurrentBrightness);
+        }
+        else
+        {
+            Debug.LogWarning("[SettingsManager] No se encontró BrightnessController en la escena.");
         }
 
         FOVController fov = FindFirstObjectByType<FOVController>();
         if (fov != null)
         {
+            Debug.Log("[SettingsManager] Aplicando FOV...");
             fov.SetFOV(CurrentFOV);
+        }
+        else
+        {
+            Debug.LogWarning("[SettingsManager] No se encontró FOVController en la escena.");
         }
 
         AudioManager audio = FindFirstObjectByType<AudioManager>();
         if (audio != null)
         {
+            Debug.Log("[SettingsManager] Aplicando audio...");
             audio.SetVoiceVolume(CurrentVoiceVolume);
             audio.SetEffectsVolume(CurrentEffectsVolume);
             audio.SetSpatialMusic(CurrentSpatialMusic);
         }
+        else
+        {
+            Debug.LogWarning("[SettingsManager] No se encontró AudioManager en la escena.");
+        }
 
         UpdateSlidersVisuals();
     }
+
+
 
     private void UpdateSlidersVisuals()
     {

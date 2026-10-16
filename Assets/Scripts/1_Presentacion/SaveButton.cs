@@ -19,14 +19,8 @@ public class SaveButton : MonoBehaviour
     [Tooltip("Arrastra aquí el ToggleMusic")]
     public Toggle spatialMusicToggle;
 
-    void Start()
-    {
-        Button button = GetComponent<Button>();
-        if (button != null)
-        {
-            button.onClick.AddListener(OnSaveClicked);
-        }
-    }
+    // Ya NO añadimos el listener en Start().
+    // El evento se configura manualmente en el Inspector (On Click).
 
     public void OnSaveClicked()
     {

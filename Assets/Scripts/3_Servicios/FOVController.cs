@@ -1,43 +1,54 @@
 using UnityEngine;
+using System.Collections;
 
 public class FOVController : MonoBehaviour
 {
     [Header("Referencias")]
-    [Tooltip("Arrastra aquí la Main Camera (dentro de XR Origin > Camera Offset)")]
     public Camera targetCamera;
 
     [Header("Configuración")]
-    [Tooltip("Valor mínimo del Field of View")]
     public float minFOV = 40f;
-    [Tooltip("Valor máximo del Field of View")]
     public float maxFOV = 90f;
-    [Tooltip("Valor inicial del Field of View")]
     public float defaultFOV = 60f;
 
     void Start()
     {
+        StartCoroutine(InitializeNextFrame());
+    }
+
+    private IEnumerator InitializeNextFrame()
+    {
+        yield return null;
+
+        // Si la cámara no es válida, la buscamos
         if (targetCamera == null)
         {
-            Debug.LogError("FOVController: No se ha asignado la cámara objetivo.");
-            return;
+            targetCamera = Camera.main;
+            Debug.Log($"[FOVController] Cámara encontrada: {(targetCamera != null ? targetCamera.name : "NINGUNA")}");
+        }
+
+        if (targetCamera == null)
+        {
+            Debug.LogError("FOVController: No se encontró ninguna cámara.");
+            yield break;
         }
 
         float initialValue = SettingsManager.Instance != null
             ? SettingsManager.Instance.CurrentFOV
             : defaultFOV;
-
         SetFOV(initialValue);
+        Debug.Log($"[FOVController] Valor inicial aplicado: {initialValue}");
     }
 
-    /// <summary>
-    /// Método que se conecta al On Value Changed (Single) del Slider.
-    /// Recibe un valor entre 0 y 1 y lo convierte en FOV.
-    /// </summary>
     public void SetFOV(float value)
     {
-        if (targetCamera == null) return;
+        // Verificamos que la cámara siga siendo válida
+        if (targetCamera == null)
+        {
+            targetCamera = Camera.main;
+            if (targetCamera == null) return;
+        }
 
-        // Mapeamos 0-1 al rango de FOV
         float fov = Mathf.Lerp(minFOV, maxFOV, value);
         targetCamera.fieldOfView = fov;
     }

@@ -1,29 +1,40 @@
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using System.Collections;
 
 public class BrightnessController : MonoBehaviour
 {
     [Header("Referencias")]
-    [Tooltip("Arrastra aquí el Global Volume que contiene el Color Adjustments")]
     public Volume globalVolume;
 
     [Header("Configuración")]
-    [Tooltip("Valor mínimo de Post Exposure")]
     public float minExposure = -2f;
-    [Tooltip("Valor máximo de Post Exposure")]
     public float maxExposure = 2f;
-    [Tooltip("Valor inicial de Post Exposure")]
     public float defaultExposure = 0f;
 
     private ColorAdjustments colorAdjustments;
 
     void Start()
     {
+        StartCoroutine(InitializeNextFrame());
+    }
+
+    private IEnumerator InitializeNextFrame()
+    {
+        yield return null;
+
+        // Si el Volume no es válido, lo buscamos en la escena
         if (globalVolume == null)
         {
-            Debug.LogError("BrightnessController: No se ha asignado el Global Volume.");
-            return;
+            globalVolume = FindFirstObjectByType<Volume>();
+            Debug.Log($"[BrightnessController] Volume encontrado: {(globalVolume != null ? globalVolume.name : "NINGUNO")}");
+        }
+
+        if (globalVolume == null)
+        {
+            Debug.LogError("BrightnessController: No se encontró ningún Volume en la escena.");
+            yield break;
         }
 
         if (globalVolume.profile.TryGet<ColorAdjustments>(out colorAdjustments))
@@ -31,8 +42,8 @@ public class BrightnessController : MonoBehaviour
             float initialValue = SettingsManager.Instance != null
                 ? SettingsManager.Instance.CurrentBrightness
                 : defaultExposure;
-
             SetBrightness(initialValue);
+            Debug.Log($"[BrightnessController] Valor inicial aplicado: {initialValue}");
         }
         else
         {
@@ -40,15 +51,20 @@ public class BrightnessController : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Método que se conecta al On Value Changed (Single) del Slider.
-    /// </summary>
-    /// <param name="value">Valor del slider (0 a 1 normalmente)</param>
     public void SetBrightness(float value)
     {
+        // Verificamos que el Volume siga siendo válido
+        if (globalVolume == null)
+        {
+            globalVolume = FindFirstObjectByType<Volume>();
+            if (globalVolume == null || !globalVolume.profile.TryGet<ColorAdjustments>(out colorAdjustments))
+            {
+                return;
+            }
+        }
+
         if (colorAdjustments == null) return;
 
-        // Mapeamos el valor del slider (0-1) al rango de exposición (min-max)
         float exposure = Mathf.Lerp(minExposure, maxExposure, value);
         colorAdjustments.postExposure.value = exposure;
     }
