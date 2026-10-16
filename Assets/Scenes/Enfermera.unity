@@ -965,15 +965,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 297056962}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -13.4268875}
-  m_LocalScale: {x: 18.24868, y: 17.44286, z: 17.63116}
+  m_LocalPosition: {x: 0, y: 0, z: 292.00003}
+  m_LocalScale: {x: 18.65675, y: 22.645412, z: 17.63116}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 718415011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -5.239662, y: -37.8978}
+  m_AnchoredPosition: {x: 106.99994, y: 35.99999}
   m_SizeDelta: {x: 100, y: 64.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &297056964
@@ -1071,8 +1071,8 @@ MonoBehaviour:
   recomendacionMalo: "Tus decisiones afectaron seriamente tu rendimiento cognitivo.
     Tu memoria y energ\xEDa bajaron, y tu interferencia cognitiva subi\xF3. Necesitas
     incluir prote\xEDnas, carbohidratos complejos, vegetales y grasas saludables
-    en cada comida. Tu cerebro no puede funcionar \xF3ptimamente sin estos componentes.
-    Cada d\xEDa es una p\xE1gina nueva, ma\xF1ana puedes escribir otra."
+    en cada comida. Cada d\xEDa es una p\xE1gina nueva y ma\xF1ana puedes escribir
+    una p\xE1gina nueva."
   dejandoAlgoEnClaro: "Recuerda que esta experiencia es educativa y no reemplaza
     un diagn\xF3stico m\xE9dico real.\n"
   despedida: "Cu\xEDdate y espero poder vernos en la pr\xF3xima jornada. Gracias
@@ -1375,15 +1375,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 693690801}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -13.4268875}
-  m_LocalScale: {x: 18.24868, y: 17.44286, z: 17.63116}
+  m_LocalPosition: {x: 0, y: 0, z: 292.00003}
+  m_LocalScale: {x: 18.65675, y: 22.645412, z: 17.63116}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 718415011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -5.239662, y: -37.8978}
+  m_AnchoredPosition: {x: 106.99994, y: 35.99999}
   m_SizeDelta: {x: 100, y: 64.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &693690803
@@ -1462,16 +1462,16 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 693885880}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -12}
-  m_LocalScale: {x: 1.0631087, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 293.4269}
+  m_LocalScale: {x: 1.0631087, y: 1.1572, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 718415011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 2, y: 13.3}
-  m_SizeDelta: {x: 1350, y: 612.4}
+  m_AnchoredPosition: {x: 95, y: 94.23}
+  m_SizeDelta: {x: 1350, y: 738.18}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &693885882
 MonoBehaviour:
@@ -3363,15 +3363,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1117918608}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 8}
-  m_LocalScale: {x: 15.952858, y: 12.322955, z: 15.816994}
+  m_LocalPosition: {x: 0, y: 0, z: 313.4269}
+  m_LocalScale: {x: 16.30959, y: 15.998432, z: 15.816994}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 718415011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -15, y: 9}
+  m_AnchoredPosition: {x: 97.2396, y: 82.89779}
   m_SizeDelta: {x: 100, y: 64.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &1117918610
@@ -3593,15 +3593,15 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1219515184}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -13.4268875}
-  m_LocalScale: {x: 18.24868, y: 17.44286, z: 17.63116}
+  m_LocalPosition: {x: 0, y: 0, z: 292}
+  m_LocalScale: {x: 18.65675, y: 22.645412, z: 17.63116}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 718415011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -5.239662, y: -37.8978}
+  m_AnchoredPosition: {x: 107, y: 36}
   m_SizeDelta: {x: 100, y: 64.45}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1219515186
@@ -3970,7 +3970,7 @@ GameObject:
   - component: {fileID: 1339454480}
   - component: {fileID: 1339454484}
   m_Layer: 0
-  m_Name: EnfermeraManager
+  m_Name: Playerstats
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4003,9 +4003,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1af45784b126db4fabb79f075ea9167, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  energy: 100
-  interference: 0
-  memory: 100
+  energy: 0
+  interference: 100
+  memory: 0
   persistBetweenScenes: 1
 --- !u!4 &1378966195 stripped
 Transform:
