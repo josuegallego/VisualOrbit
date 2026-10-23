@@ -876,8 +876,10 @@ MonoBehaviour:
   - {fileID: -7465212275315739847}
   - {fileID: -6961110744200889312}
   - {fileID: 2588250352077951079}
+  - {fileID: -7174090736780062784}
   - {fileID: 6481653220666705815}
   - {fileID: 7393116930172532905}
+  - {fileID: -8624854320382309777}
   - {fileID: 744375598501864353}
   - {fileID: 7823178000869280136}
   - {fileID: 3344995148386438684}
@@ -900,6 +902,7 @@ MonoBehaviour:
   - {fileID: -8385369577385903398}
   - {fileID: -2778858118241658710}
   - {fileID: 430188747721659633}
+  - {fileID: -2768467611576704459}
   - {fileID: 750856212347791325}
   - {fileID: 2821238428615573753}
   - {fileID: -7677771197093365762}
@@ -909,9 +912,6 @@ MonoBehaviour:
   - {fileID: 6854443372140345734}
   - {fileID: 8347051584439025853}
   - {fileID: 2684350569200705238}
-  - {fileID: -7174090736780062784}
-  - {fileID: -8624854320382309777}
-  - {fileID: -2768467611576704459}
   customLoaderName: 
   m_renderMode: 0
   m_latencyOptimization: 0
@@ -3048,7 +3048,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0f6bfdbcb316ed242b30a8798c9eb853, type: 3}
   m_Name: KHRSimpleControllerProfile Android
   m_EditorClassIdentifier: 
-  m_enabled: 0
+  m_enabled: 1
   nameUi: Khronos Simple Controller Profile
   version: 0.0.1
   featureIdInternal: com.unity.openxr.feature.input.khrsimpleprofile
