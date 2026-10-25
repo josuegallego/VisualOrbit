@@ -11,6 +11,15 @@ public class EnfermeraManager : MonoBehaviour
     public Button botonContinuar;
     public GameObject panelBarras;
 
+    [Header("Audios (Voz de la enfermera)")]
+    public AudioSource vozAudioSource;
+    public AudioClip audioSaludo;
+    public AudioClip audioRecomendacionBueno;
+    public AudioClip audioRecomendacionRegular;
+    public AudioClip audioRecomendacionMalo;
+    public AudioClip audioDejandoAlgoEnClaro;
+    public AudioClip audioDespedida;
+
     [Header("Fondos de color (con CanvasGroup, hijos del PanelDialogo)")]
     public CanvasGroup fondoNormal;
     public CanvasGroup fondoVerde;
@@ -29,19 +38,24 @@ public class EnfermeraManager : MonoBehaviour
     [TextArea(2, 5)] public string dejandoAlgoEnClaro = "Recuerda que esta experiencia es educativa y no reemplaza un diagnóstico médico real.";
     [TextArea(2, 5)] public string despedida = "Cuídate y nos vemos en la próxima jornada.";
 
-    [Header("Velocidad")]
+    [Header("Velocidad y Tiempos")]
     public float velocidadLetra = 0.03f;
     public float pausaEntreBloques = 1.5f;
     public float duracionTransicionPanel = 0.5f;
     public float delayAntesDeTexto = 0.4f;
+    [Tooltip("Porcentaje de aceleración del texto. 1 = normal, 1.2 = 20% más rápido")]
+    public float multiplicadorVelocidad = 1.2f;
 
-    [Header("Nombres de los Bool en el Animator")]
-    public string boolSaludando = "EstaSaludando";
+    [Header("Nombres de los estados y Bools en el Animator")]
+    public string nombreIdle = "Idle";
+    public string nombreSaludo = "Saludando";
+    public string nombreDespedida = "Despidiendose";
+
+    // Bools para la recomendación y el disclaimer
     public string boolHablando = "EstaHablando";
     public string boolDecepcionada = "EstaDecepcionada";
     public string boolEnojada = "EstaEnojada";
     public string boolDejandoAlgoEnClaro = "EstaDejandoAlgoEnClaro";
-    public string boolDespidiendose = "EstaDespidiendose";
 
     [Header("Debug")]
     public bool mostrarLogs = true;
@@ -52,11 +66,7 @@ public class EnfermeraManager : MonoBehaviour
 
     public void IniciarSecuencia()
     {
-        if (yaIniciado)
-        {
-            Debug.LogWarning("[EnfermeraManager] La secuencia ya se inició.");
-            return;
-        }
+        if (yaIniciado) return;
         yaIniciado = true;
 
         if (panelBarras != null) panelBarras.SetActive(false);
@@ -67,17 +77,8 @@ public class EnfermeraManager : MonoBehaviour
         SetAlpha(fondoNaranja, 0f);
         SetAlpha(fondoRojo, 0f);
 
-        if (particulasSatisfaccion1 != null)
-        {
-            particulasSatisfaccion1.Stop();
-            particulasSatisfaccion1.Clear();
-        }
-
-        if (particulasSatisfaccion2 != null)
-        {
-            particulasSatisfaccion2.Stop();
-            particulasSatisfaccion2.Clear();
-        }
+        if (particulasSatisfaccion1 != null) { particulasSatisfaccion1.Stop(); particulasSatisfaccion1.Clear(); }
+        if (particulasSatisfaccion2 != null) { particulasSatisfaccion2.Stop(); particulasSatisfaccion2.Clear(); }
 
         StartCoroutine(SecuenciaDialogo());
     }
@@ -86,12 +87,12 @@ public class EnfermeraManager : MonoBehaviour
 
     IEnumerator SecuenciaDialogo()
     {
-        // 1) Saludo
-        Log("1. Activando Bool Saludando");
-        ActivarBool(boolSaludando);
+        // 1) Saludo (Usando Play directo)
+        Log("1. Reproduciendo Saludo");
+        animatorEnfermera.Play(nombreSaludo);
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTexto(saludoBase);
-        DesactivarBool(boolSaludando);
+        yield return EscribirTexto(saludoBase, audioSaludo);
+        animatorEnfermera.Play(nombreIdle);
         yield return new WaitForSeconds(pausaEntreBloques);
 
         // 2) Barras
@@ -99,16 +100,15 @@ public class EnfermeraManager : MonoBehaviour
         if (panelBarras != null) panelBarras.SetActive(true);
         yield return new WaitForSeconds(pausaEntreBloques);
 
-        // 3) Recomendación según desempeño
+        // 3) Recomendación según desempeño (Usando Bools)
         string recomendacion = ElegirRecomendacion();
         string boolRec = ElegirBoolRecomendacion();
+        AudioClip audioRec = ElegirAudioRecomendacion(boolRec);
+
         Log($"3. Activando Bool Recomendación: {boolRec}");
         ActivarBool(boolRec);
-
-        // Cambiar el fondo con transición según el desempeño
         yield return CambiarFondoSegunDesempeno(boolRec);
 
-        // Activar partículas si el desempeño es bueno
         if (boolRec == boolHablando)
         {
             if (particulasSatisfaccion1 != null) particulasSatisfaccion1.Play();
@@ -116,32 +116,39 @@ public class EnfermeraManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTexto(recomendacion);
+        yield return EscribirTexto(recomendacion, audioRec);
+
+        // --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
+        // Apagamos el Bool de recomendación
         DesactivarBool(boolRec);
 
-        // Detener las partículas al terminar el bloque
         if (particulasSatisfaccion1 != null) particulasSatisfaccion1.Stop();
         if (particulasSatisfaccion2 != null) particulasSatisfaccion2.Stop();
 
+        // NO forzamos Play(Idle). Dejamos que el Animator maneje la transición al siguiente estado.
         yield return new WaitForSeconds(pausaEntreBloques);
 
-        // 4) Dejando algo en claro (volver al fondo normal)
-        Log($"4. Volviendo al fondo normal");
+        // 4) Dejando algo en claro
+        Log($"4. Activando Bool Dejando Algo En Claro");
         yield return VolverAlFondoNormal();
 
+        // Prendemos el Bool de "Dejando algo en claro" DIRECTAMENTE
         ActivarBool(boolDejandoAlgoEnClaro);
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTexto(dejandoAlgoEnClaro);
+        yield return EscribirTexto(dejandoAlgoEnClaro, audioDejandoAlgoEnClaro);
+
+        // Apagamos el Bool
         DesactivarBool(boolDejandoAlgoEnClaro);
+
+        // NO forzamos Play(Idle).
         yield return new WaitForSeconds(pausaEntreBloques);
 
-        // 5) Despedida
-        Log($"5. Activando Bool Despidiendose: {boolDespidiendose}");
-        ActivarBool(boolDespidiendose);
+        // 5) Despedida (Usando Play directo)
+        Log($"5. Reproduciendo Despedida");
+        animatorEnfermera.Play(nombreDespedida);
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTexto(despedida);
-        yield return new WaitForSeconds(delayAntesDeTexto);
-        DesactivarBool(boolDespidiendose);
+        yield return EscribirTexto(despedida, audioDespedida);
+        animatorEnfermera.Play(nombreIdle);
 
         // 6) Botón Continuar
         Log("6. Mostrando botón Continuar");
@@ -149,12 +156,14 @@ public class EnfermeraManager : MonoBehaviour
             botonContinuar.gameObject.SetActive(true);
     }
 
-    // ---------------------------------------------------------------- Cambio de fondo
+    // ---------------------------------------------------------------- Resto del código (igual que antes)
+
+    // ... (los métodos de Fondos, SetAlpha, ActivarBool, DesactivarBool, Lógica de decisión, Escritura y Log se mantienen igual)
+    // Te los dejo abajo completos para que solo copies y pegues.
 
     IEnumerator CambiarFondoSegunDesempeno(string boolRec)
     {
         CanvasGroup objetivo = fondoNormal;
-
         if (boolRec == boolHablando) objetivo = fondoVerde;
         else if (boolRec == boolEnojada) objetivo = fondoRojo;
         else objetivo = fondoNaranja;
@@ -172,14 +181,10 @@ public class EnfermeraManager : MonoBehaviour
             t += Time.unscaledDeltaTime;
             float k = t / duracionTransicionPanel;
 
-            if (fondoNormal != null)
-                fondoNormal.alpha = Mathf.Lerp(aNormal, objetivo == fondoNormal ? 1f : 0f, k);
-            if (fondoVerde != null)
-                fondoVerde.alpha = Mathf.Lerp(aVerde, objetivo == fondoVerde ? 1f : 0f, k);
-            if (fondoNaranja != null)
-                fondoNaranja.alpha = Mathf.Lerp(aNaranja, objetivo == fondoNaranja ? 1f : 0f, k);
-            if (fondoRojo != null)
-                fondoRojo.alpha = Mathf.Lerp(aRojo, objetivo == fondoRojo ? 1f : 0f, k);
+            if (fondoNormal != null) fondoNormal.alpha = Mathf.Lerp(aNormal, objetivo == fondoNormal ? 1f : 0f, k);
+            if (fondoVerde != null) fondoVerde.alpha = Mathf.Lerp(aVerde, objetivo == fondoVerde ? 1f : 0f, k);
+            if (fondoNaranja != null) fondoNaranja.alpha = Mathf.Lerp(aNaranja, objetivo == fondoNaranja ? 1f : 0f, k);
+            if (fondoRojo != null) fondoRojo.alpha = Mathf.Lerp(aRojo, objetivo == fondoRojo ? 1f : 0f, k);
 
             yield return null;
         }
@@ -205,14 +210,10 @@ public class EnfermeraManager : MonoBehaviour
             t += Time.unscaledDeltaTime;
             float k = t / duracionTransicionPanel;
 
-            if (fondoNormal != null)
-                fondoNormal.alpha = Mathf.Lerp(aNormal, 1f, k);
-            if (fondoVerde != null)
-                fondoVerde.alpha = Mathf.Lerp(aVerde, 0f, k);
-            if (fondoNaranja != null)
-                fondoNaranja.alpha = Mathf.Lerp(aNaranja, 0f, k);
-            if (fondoRojo != null)
-                fondoRojo.alpha = Mathf.Lerp(aRojo, 0f, k);
+            if (fondoNormal != null) fondoNormal.alpha = Mathf.Lerp(aNormal, 1f, k);
+            if (fondoVerde != null) fondoVerde.alpha = Mathf.Lerp(aVerde, 0f, k);
+            if (fondoNaranja != null) fondoNaranja.alpha = Mathf.Lerp(aNaranja, 0f, k);
+            if (fondoRojo != null) fondoRojo.alpha = Mathf.Lerp(aRojo, 0f, k);
 
             yield return null;
         }
@@ -228,32 +229,24 @@ public class EnfermeraManager : MonoBehaviour
         if (cg != null) cg.alpha = alpha;
     }
 
-    // ---------------------------------------------------------------- Control de Bool
-
     void ActivarBool(string nombre)
     {
         animatorEnfermera.SetBool(nombre, true);
-        if (mostrarLogs)
-            Debug.Log($"[Enfermera] SetBool({nombre}, true) → valor actual: {animatorEnfermera.GetBool(nombre)}");
+        if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, true)");
     }
 
     void DesactivarBool(string nombre)
     {
         animatorEnfermera.SetBool(nombre, false);
-        if (mostrarLogs)
-            Debug.Log($"[Enfermera] SetBool({nombre}, false)");
+        if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, false)");
     }
-
-    // ---------------------------------------------------------------- Lógica de decisión
 
     string ElegirRecomendacion()
     {
         var s = PlayerStats.Instance;
         if (s == null) return recomendacionRegular;
-
         bool bueno = s.energy > 70f && s.interference < 30f && s.memory > 70f;
         bool malo = s.energy < 40f || s.interference > 60f || s.memory < 40f;
-
         if (bueno) return recomendacionBueno;
         if (malo) return recomendacionMalo;
         return recomendacionRegular;
@@ -263,32 +256,53 @@ public class EnfermeraManager : MonoBehaviour
     {
         var s = PlayerStats.Instance;
         if (s == null) return boolHablando;
-
         bool bueno = s.energy > 70f && s.interference < 30f && s.memory > 70f;
         bool malo = s.energy < 40f || s.interference > 60f || s.memory < 40f;
-
         if (bueno) return boolHablando;
         if (malo) return boolEnojada;
         return boolDecepcionada;
     }
 
-    // ---------------------------------------------------------------- Escritura letra por letra
+    AudioClip ElegirAudioRecomendacion(string boolRec)
+    {
+        if (boolRec == boolHablando) return audioRecomendacionBueno;
+        if (boolRec == boolEnojada) return audioRecomendacionMalo;
+        return audioRecomendacionRegular;
+    }
 
-    IEnumerator EscribirTexto(string texto)
+    IEnumerator EscribirTexto(string texto, AudioClip audio)
     {
         textoDialogo.text = "";
+
+        if (vozAudioSource != null && audio != null)
+        {
+            vozAudioSource.clip = audio;
+            vozAudioSource.Play();
+        }
+
+        float velocidadReal = velocidadLetra;
+
+        if (audio != null && texto.Length > 0)
+        {
+            float velocidadBase = audio.length / texto.Length;
+            velocidadReal = velocidadBase / multiplicadorVelocidad;
+            if (velocidadReal < 0.01f) velocidadReal = 0.01f;
+        }
+
         foreach (char c in texto)
         {
             textoDialogo.text += c;
-            yield return new WaitForSeconds(velocidadLetra);
+            yield return new WaitForSeconds(velocidadReal);
+        }
+
+        if (vozAudioSource != null && vozAudioSource.isPlaying)
+        {
+            yield return new WaitWhile(() => vozAudioSource.isPlaying);
         }
     }
 
-    // ---------------------------------------------------------------- Debug
-
     void Log(string mensaje)
     {
-        if (mostrarLogs)
-            Debug.Log($"[Enfermera] {mensaje}");
+        if (mostrarLogs) Debug.Log($"[Enfermera] {mensaje}");
     }
 }

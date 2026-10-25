@@ -3,24 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using TMPro; // NUEVO: Necesario para usar TextMeshPro
 
-/// <summary>
-/// Logica del memorama: cuando se voltean dos cartas
-///   - si son pareja    -> se resaltan en VERDE y quedan descubiertas (bloqueadas);
-///   - si NO son pareja -> se resaltan en ROJO y, tras una espera, el JUEGO se reinicia:
-///                         todas las cartas vuelven boca abajo y se puede jugar de nuevo.
-///
-/// Solo reinicia el memorama: NO recarga escenas ni toca las barras (PlayerStats).
-///
-/// USO:
-///   1. Crea un objeto vacio "MemoramaManager" y agrega este script.
-///   2. En "Cartas" arrastra todas las Carta_XX (o dejalo vacio: las busca solas en la escena).
-///   3. Define las parejas, con UNA de estas dos formas:
-///        - Dos cartas con el MISMO sprite en el Frente son pareja (no hay que configurar nada), o
-///        - Ponles el mismo "Id Pareja" en CartaVoltear (0, 0, 1, 1, 2, 2...).
-///
-/// Requiere CartaVoltear (eventos InicioGiro / Volteada, Resaltar, SetInteractuable).
-/// </summary>
 public class MemoramaManager : MonoBehaviour
 {
     [Header("Cartas")]
@@ -33,30 +17,28 @@ public class MemoramaManager : MonoBehaviour
     [Range(0f, 1f)] public float intensidadResalte = 0.65f;
 
     [Header("Tiempos (segundos)")]
-    [Tooltip("Pausa corta antes de mostrar verde/rojo, para que se vea la segunda carta ya volteada.")]
     [Min(0f)] public float esperaAntesDeResaltar = 0.15f;
-    [Tooltip("Cuanto tiempo se ve el rojo antes de reiniciar el juego.")]
     [Min(0f)] public float esperaAntesDeReiniciar = 1.8f;
 
     [Header("Reinicio del juego")]
-    [Tooltip("Al reiniciar, cambia de lugar los simbolos entre las cartas (mientras estan boca abajo) " +
-             "para que no sea siempre el mismo orden.")]
     public bool barajarAlReiniciar = false;
+
+    [Header("UI del Porcentaje (NUEVO)")]
+    [Tooltip("Arrastra aquí el TextMeshPro donde se mostrará el porcentaje")]
+    public TMP_Text textoPorcentaje;
+    [Tooltip("Arrastra aquí la barra de llenado (Image tipo Filled) si quieres una barra visual")]
+    public Image barraLlenadoPorcentaje;
 
     [Header("Eventos (sonidos, efectos, etc.)")]
     public UnityEvent alAcertar;
     public UnityEvent alFallar;
-    [Tooltip("Se dispara cuando el juego ya se reinicio y las cartas vuelven a ser jugables.")]
     public UnityEvent alReiniciar;
-    [Tooltip("Se dispara cuando se encuentran todas las parejas.")]
     public UnityEvent alGanar;
 
-    readonly List<CartaVoltear> abiertas = new List<CartaVoltear>();      // volteadas y ya terminadas, aun sin evaluar
+    readonly List<CartaVoltear> abiertas = new List<CartaVoltear>();
     readonly HashSet<CartaVoltear> encontradas = new HashSet<CartaVoltear>();
-    int seleccionadas;      // cartas que el jugador ya eligio en este intento (incluye las que aun giran)
-    bool bloqueado;         // true mientras se evalua, se reinicia o se gano: no se acepta nada
-
-    // ------------------------------------------------------------------ ciclo de vida
+    int seleccionadas;
+    bool bloqueado;
 
     void Awake()
     {
@@ -68,12 +50,12 @@ public class MemoramaManager : MonoBehaviour
     void OnEnable()
     {
         ReiniciarEstado();
-
         foreach (var c in cartas)
         {
             c.InicioGiro += AlIniciarGiro;
             c.Volteada += AlTerminarGiro;
         }
+        ActualizarUI(); // NUEVO: Inicializar el texto en 0%
     }
 
     void OnDisable()
@@ -93,31 +75,25 @@ public class MemoramaManager : MonoBehaviour
         encontradas.Clear();
         seleccionadas = 0;
         bloqueado = false;
+
+        // NUEVO: Si se reinicia (porque perdiste o se ganó), actualizamos la UI
+        ActualizarUI();
     }
 
-    // ------------------------------------------------------------------ eventos de las cartas
-
-    // Una carta EMPIEZA a voltearse. Si ya van dos, se bloquea todo de inmediato
-    // (asi nadie puede tocar una tercera mientras la segunda aun esta girando).
     void AlIniciarGiro(CartaVoltear carta, bool haciaFrente)
     {
         if (bloqueado || !haciaFrente) return;
-
         seleccionadas++;
         if (seleccionadas >= 2) BloquearTodas();
     }
 
-    // Una carta TERMINO de voltearse. Con dos abiertas se evalua la pareja.
     void AlTerminarGiro(CartaVoltear carta, bool deFrente)
     {
         if (bloqueado || !deFrente) return;
-
         abiertas.Add(carta);
         if (abiertas.Count == 2)
             StartCoroutine(Evaluar(abiertas[0], abiertas[1]));
     }
-
-    // ------------------------------------------------------------------ logica
 
     IEnumerator Evaluar(CartaVoltear a, CartaVoltear b)
     {
@@ -137,9 +113,13 @@ public class MemoramaManager : MonoBehaviour
             encontradas.Add(b);
             alAcertar?.Invoke();
 
+            // NUEVO: Actualizar UI y enviar el impacto a las barras
+            ActualizarUI();
+            AplicarImpactoBarras();
+
             if (encontradas.Count >= cartas.Count)
             {
-                alGanar?.Invoke();              // queda bloqueado: el juego termino
+                alGanar?.Invoke();
                 yield break;
             }
 
@@ -157,10 +137,6 @@ public class MemoramaManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Reinicia SOLO el memorama: quita los resaltados, voltea todas las cartas boca abajo,
-    /// (opcional) baraja los simbolos y vuelve a permitir jugar. Se puede llamar desde un boton.
-    /// </summary>
     public void Reiniciar()
     {
         StopAllCoroutines();
@@ -174,16 +150,15 @@ public class MemoramaManager : MonoBehaviour
         bloqueado = true;
         BloquearTodas();
 
-        // Todas boca abajo (esto tambien les quita el verde / rojo)
         foreach (var c in cartas)
             if (c != null) c.MostrarDorso();
 
         yield return null;
         while (HayCartasGirando()) yield return null;
 
-        if (barajarAlReiniciar) BarajarSimbolos();      // se hace con todas ocultas: no se ve el cambio
+        if (barajarAlReiniciar) BarajarSimbolos();
 
-        ReiniciarEstado();
+        ReiniciarEstado(); // Aquí se actualiza la UI a 0% si perdiste
         bloqueado = false;
         foreach (var c in cartas)
             if (c != null) c.SetInteractuable(true);
@@ -198,15 +173,10 @@ public class MemoramaManager : MonoBehaviour
         return false;
     }
 
-    // ------------------------------------------------------------------ parejas
-
     bool SonPareja(CartaVoltear a, CartaVoltear b)
     {
-        // 1) Por Id Pareja, si las dos lo tienen
         if (a.idPareja >= 0 && b.idPareja >= 0)
             return a.idPareja == b.idPareja;
-
-        // 2) Si no, por el mismo sprite en el Frente
         Sprite sa = SimboloDe(a);
         Sprite sb = SimboloDe(b);
         return sa != null && sa == sb;
@@ -215,35 +185,29 @@ public class MemoramaManager : MonoBehaviour
     static Sprite SimboloDe(CartaVoltear carta)
     {
         if (carta.frente == null) return null;
-
         var sr = carta.frente.GetComponentInChildren<SpriteRenderer>(true);
         if (sr != null) return sr.sprite;
-
         var img = carta.frente.GetComponentInChildren<Image>(true);
         if (img != null) return img.sprite;
-
         return null;
     }
 
     static void PonerSimbolo(CartaVoltear carta, Sprite sprite)
     {
         if (carta.frente == null) return;
-
         var sr = carta.frente.GetComponentInChildren<SpriteRenderer>(true);
         if (sr != null) { sr.sprite = sprite; return; }
-
         var img = carta.frente.GetComponentInChildren<Image>(true);
         if (img != null) img.sprite = sprite;
     }
 
-    /// <summary>Mezcla los simbolos (sprite + Id Pareja) entre las cartas. Las cartas no se mueven.</summary>
     void BarajarSimbolos()
     {
         var simbolos = new List<(Sprite sprite, int id)>();
         foreach (var c in cartas)
             simbolos.Add((SimboloDe(c), c.idPareja));
 
-        for (int i = simbolos.Count - 1; i > 0; i--)    // Fisher-Yates
+        for (int i = simbolos.Count - 1; i > 0; i--)
         {
             int j = Random.Range(0, i + 1);
             (simbolos[i], simbolos[j]) = (simbolos[j], simbolos[i]);
@@ -256,8 +220,6 @@ public class MemoramaManager : MonoBehaviour
         }
     }
 
-    // ------------------------------------------------------------------ bloqueo
-
     void BloquearTodas()
     {
         foreach (var c in cartas)
@@ -269,5 +231,79 @@ public class MemoramaManager : MonoBehaviour
         foreach (var c in cartas)
             if (c != null && !encontradas.Contains(c) && !c.EstaDeFrente)
                 c.SetInteractuable(true);
+    }
+
+    // ====================================================================
+    // NUEVOS MÉTODOS PARA LA HU
+    // ====================================================================
+
+    /// <summary>
+    /// Calcula el porcentaje de parejas encontradas y actualiza la UI.
+    /// </summary>
+        // Reemplaza tu ActualizarUI() actual por este:
+    void ActualizarUI()
+    {
+        if (cartas.Count == 0) return;
+
+        // Cada pareja son 2 cartas. Ejemplo: 8 cartas = 4 parejas.
+        float totalParejas = cartas.Count / 2f;
+        float parejasEncontradas = encontradas.Count / 2f;
+
+        // Calculamos el porcentaje objetivo (de 0 a 100)
+        float porcentajeObjetivo = (parejasEncontradas / totalParejas) * 100f;
+
+        // Si el texto existe, lo actualizamos directo (el texto no necesita animación)
+        if (textoPorcentaje != null)
+        {
+            textoPorcentaje.text = $"Parejas: {porcentajeObjetivo:F0}%";
+        }
+
+        // Si la barra visual existe, lanzamos la animación suave
+        if (barraLlenadoPorcentaje != null)
+        {
+            // Detenemos cualquier animación anterior para evitar conflictos si se voltean cartas rápido
+            StopCoroutine(nameof(AnimarBarra));
+            StartCoroutine(AnimarBarra(porcentajeObjetivo / 100f));
+        }
+    }
+
+    // NUEVO: Corrutina para llenar la barra suavemente
+    private System.Collections.IEnumerator AnimarBarra(float objetivoNormalizado)
+    {
+        float valorInicial = barraLlenadoPorcentaje.fillAmount;
+        float tiempoTranscurrido = 0f;
+        float duracion = 0.5f; // Puedes cambiar esto si la quieres más rápida o lenta
+
+        while (tiempoTranscurrido < duracion)
+        {
+            tiempoTranscurrido += Time.deltaTime;
+            // Mathf.Lerp interpola suavemente entre el valor inicial y el objetivo
+            barraLlenadoPorcentaje.fillAmount = Mathf.Lerp(valorInicial, objetivoNormalizado, tiempoTranscurrido / duracion);
+            yield return null;
+        }
+
+        // Nos aseguramos de que quede exacto en el objetivo al terminar
+        barraLlenadoPorcentaje.fillAmount = objetivoNormalizado;
+    }
+
+    /// <summary>
+    /// Envía una recompensa al sistema de barras (PlayerStats) cada vez que se encuentra una pareja.
+    /// Esto cumple el requisito de conectar el minijuego con las decisiones alimenticias.
+    /// </summary>
+    void AplicarImpactoBarras()
+    {
+        if (PlayerStats.Instance == null) return;
+
+        // Calculamos cuánto sube la energía y la memoria por cada pareja encontrada.
+        // Ajusta estos valores según el balance que quieras en tu juego.
+        float subidaEnergia = 5f;
+        float bajadaInterferencia = 5f; // Bajar la interferencia es bueno
+        float subidaMemoria = 10f;
+
+        // Aplicamos los cambios a PlayerStats
+        PlayerStats.Instance.ApplyEffects(subidaEnergia, -bajadaInterferencia, subidaMemoria);
+
+        // Forzamos a que las barras visuales en la pantalla (StatsBarUI) se actualicen
+        PlayerStats.Instance.ForzarActualizacion();
     }
 }

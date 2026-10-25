@@ -23,15 +23,12 @@ public class PlayerStats : MonoBehaviour
     {
         if (Instance != null && Instance != this)
         {
-            // Ya existe un PlayerStats (viene de otra escena): se elimina SOLO este componente,
-            // no el objeto entero, porque el objeto puede tener otros scripts (SceneLoader, DisclaimerController...)
             Destroy(this);
             return;
         }
         Instance = this;
         if (persistBetweenScenes)
         {
-            // DontDestroyOnLoad exige que el objeto este en la raiz de la jerarquia
             transform.SetParent(null);
             DontDestroyOnLoad(gameObject);
         }
@@ -47,12 +44,27 @@ public class PlayerStats : MonoBehaviour
 
     public void ResetStats()
     {
-        energy = 100f; interference = 0f; memory = 100f;
+        energy = 100f;
+        interference = 0f;
+        memory = 100f;
+
         StatsBarUI.ForgetLastValues();
         OnStatsChanged?.Invoke();
     }
 
-    // ---------- Ayudas para los minijuegos (ej. memorama) ----------
+    // ---------- NUEVO MÉTODO PARA LA HU DEL MEMORAMA ----------
+
+    /// <summary>
+    /// Fuerza a que todos los scripts que escuchan los cambios de las barras
+    /// se actualicen inmediatamente. Se usa cuando el memorama termina
+    /// y queremos que el jugador vea el impacto en las barras.
+    /// </summary>
+    public void ForzarActualizacion()
+    {
+        OnStatsChanged?.Invoke();
+    }
+
+    // -----------------------------------------------------------
 
     /// <summary>0 = vision nitida, 1 = muy borrosa. Usalo para el efecto de blur.</summary>
     public float BlurLevel01()

@@ -136,7 +136,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!328 &8733549
 VideoPlayer:
   m_ObjectHideFlags: 0
@@ -690,11 +690,11 @@ RectTransform:
   m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
   m_ConstrainProportionsScale: 1
   m_Children:
+  - {fileID: 1700599654}
   - {fileID: 1995265746}
   - {fileID: 1097631544}
   - {fileID: 1614370088}
   - {fileID: 741805829}
-  - {fileID: 1700599654}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -856,7 +856,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2218496723442559053, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 1.506
       objectReference: {fileID: 0}
     - target: {fileID: 2218496723442559053, guid: d6878e1999eb4b44a9f5a263af86c185, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1052,14 +1052,21 @@ MonoBehaviour:
   textoDialogo: {fileID: 693885882}
   botonContinuar: {fileID: 1625740907}
   panelBarras: {fileID: 1509218120}
+  vozAudioSource: {fileID: 307844268}
+  audioSaludo: {fileID: 8300000, guid: df63f5ef669647a4b9d3c31ea506ac06, type: 3}
+  audioRecomendacionBueno: {fileID: 8300000, guid: 66b3f26dd63bcd24a86e0ccbebd39229, type: 3}
+  audioRecomendacionRegular: {fileID: 8300000, guid: 18fda1578df82d5408a2df0bbd510263, type: 3}
+  audioRecomendacionMalo: {fileID: 8300000, guid: cc51cbc62188ebd4a9a3d5273193a430, type: 3}
+  audioDejandoAlgoEnClaro: {fileID: 8300000, guid: 84782c28e59ba6644a4f6bcf0eef144e, type: 3}
+  audioDespedida: {fileID: 8300000, guid: f9041d3577e7d3840902ef1d7d1f94fd, type: 3}
   fondoNormal: {fileID: 1117918610}
   fondoVerde: {fileID: 1219515188}
   fondoNaranja: {fileID: 297056964}
   fondoRojo: {fileID: 693690803}
   particulasSatisfaccion1: {fileID: 1634373148}
   particulasSatisfaccion2: {fileID: 2071919054}
-  saludoBase: "Hola, soy Marcela Ram\xEDrez, enfermera de la UAO. He revisado tus
-    decisiones y tu desempe\xF1o durante la jornada."
+  saludoBase: "Hola, soy Marcela Ram\xEDrez, enfermera de la UAO y espero te encuentres
+    bien. \nHe revisado tus decisiones y tu desempe\xF1o durante la jornada."
   recomendacionBueno: "Tus elecciones fueron equilibradas. Tu energ\xEDa, memoria
     e interferencia cognitiva se mantuvieron estables. Sigue as\xED, tu cerebro te
     lo agradece. Hoy te elegiste a ti, ma\xF1ana puedes volver a elegirte."
@@ -1071,28 +1078,127 @@ MonoBehaviour:
   recomendacionMalo: "Tus decisiones afectaron seriamente tu rendimiento cognitivo.
     Tu memoria y energ\xEDa bajaron, y tu interferencia cognitiva subi\xF3. Necesitas
     incluir prote\xEDnas, carbohidratos complejos, vegetales y grasas saludables
-    en cada comida. Cada d\xEDa es una p\xE1gina nueva y ma\xF1ana puedes escribir
-    una p\xE1gina nueva."
+    en cada comida. Cada d\xEDa es una p\xE1gina y ma\xF1ana puedes escribir una
+    nueva."
   dejandoAlgoEnClaro: "Recuerda que esta experiencia es educativa y no reemplaza
     un diagn\xF3stico m\xE9dico real.\n"
-  despedida: "Cu\xEDdate y espero poder vernos en la pr\xF3xima jornada. Gracias
+  despedida: "Cu\xEDdate, y espero poder vernos en la pr\xF3xima jornada. Gracias
     por usar Inside Your Mind!"
   velocidadLetra: 0.03
   pausaEntreBloques: 1.5
   duracionTransicionPanel: 0.5
   delayAntesDeTexto: 0.4
-  boolSaludando: EstaSaludando
+  multiplicadorVelocidad: 1.2
+  nombreIdle: Idle
+  nombreSaludo: Saludando
+  nombreDespedida: Despidiendose
   boolHablando: EstaHablando
   boolDecepcionada: EstaDecepcionada
   boolEnojada: EstaEnojada
   boolDejandoAlgoEnClaro: EstaDejandoAlgoEnClaro
-  boolDespidiendose: EstaDespidiendose
   mostrarLogs: 1
 --- !u!4 &307844267 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 2efecddcc82585f49981e92625d61516, type: 3}
   m_PrefabInstance: {fileID: 737176440}
   m_PrefabAsset: {fileID: 0}
+--- !u!82 &307844268
+AudioSource:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 307844263}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_Resource: {fileID: 0}
+  m_PlayOnAwake: 0
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
 --- !u!4 &334473899 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 366175167995203695, guid: 2efecddcc82585f49981e92625d61516, type: 3}
@@ -2178,6 +2284,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2efecddcc82585f49981e92625d61516, type: 3}
       insertIndex: -1
       addedObject: {fileID: 307844266}
+    - targetCorrespondingSourceObject: {fileID: 919132149155446097, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 307844268}
   m_SourcePrefab: {fileID: 100100000, guid: 2efecddcc82585f49981e92625d61516, type: 3}
 --- !u!1001 &741805828
 PrefabInstance:
@@ -9526,7 +9635,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1700599653}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 49.02}
+  m_LocalPosition: {x: 0, y: 0, z: 127.9}
   m_LocalScale: {x: 0.0588, y: 0.0588, z: 0.0588}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -9534,7 +9643,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 69.7, y: -43.3}
+  m_AnchoredPosition: {x: 71.3, y: -26.68}
   m_SizeDelta: {x: 77.02, y: 71.17}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1700599655
