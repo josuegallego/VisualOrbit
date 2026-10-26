@@ -41,9 +41,9 @@ public class EnfermeraManager : MonoBehaviour
     [Header("Velocidad y Tiempos")]
     public float velocidadLetra = 0.03f;
     public float pausaEntreBloques = 1.5f;
+    public float pausaAntesDeRecomendacion = 2.0f;
     public float duracionTransicionPanel = 0.5f;
     public float delayAntesDeTexto = 0.4f;
-    [Tooltip("Porcentaje de aceleración del texto. 1 = normal, 1.2 = 20% más rápido")]
     public float multiplicadorVelocidad = 1.2f;
 
     [Header("Nombres de los estados y Bools en el Animator")]
@@ -51,7 +51,6 @@ public class EnfermeraManager : MonoBehaviour
     public string nombreSaludo = "Saludando";
     public string nombreDespedida = "Despidiendose";
 
-    // Bools para la recomendación y el disclaimer
     public string boolHablando = "EstaHablando";
     public string boolDecepcionada = "EstaDecepcionada";
     public string boolEnojada = "EstaEnojada";
@@ -61,8 +60,6 @@ public class EnfermeraManager : MonoBehaviour
     public bool mostrarLogs = true;
 
     private bool yaIniciado = false;
-
-    // ---------------------------------------------------------------- API pública
 
     public void IniciarSecuencia()
     {
@@ -83,24 +80,20 @@ public class EnfermeraManager : MonoBehaviour
         StartCoroutine(SecuenciaDialogo());
     }
 
-    // ---------------------------------------------------------------- Secuencia
-
     IEnumerator SecuenciaDialogo()
     {
-        // 1) Saludo (Usando Play directo)
         Log("1. Reproduciendo Saludo");
         animatorEnfermera.Play(nombreSaludo);
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTexto(saludoBase, audioSaludo);
+        yield return EscribirTextoNormal(saludoBase, audioSaludo);
         animatorEnfermera.Play(nombreIdle);
         yield return new WaitForSeconds(pausaEntreBloques);
 
-        // 2) Barras
         Log("2. Mostrando panel de barras");
         if (panelBarras != null) panelBarras.SetActive(true);
         yield return new WaitForSeconds(pausaEntreBloques);
 
-        // 3) Recomendación según desempeño (Usando Bools)
+        string diagnostico = ObtenerDiagnostico();
         string recomendacion = ElegirRecomendacion();
         string boolRec = ElegirBoolRecomendacion();
         AudioClip audioRec = ElegirAudioRecomendacion(boolRec);
@@ -116,50 +109,83 @@ public class EnfermeraManager : MonoBehaviour
         }
 
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTexto(recomendacion, audioRec);
 
-        // --- AQUÍ ESTÁ EL CAMBIO CLAVE ---
-        // Apagamos el Bool de recomendación
+        textoDialogo.text = "";
+        if (vozAudioSource != null && audioRec != null)
+        {
+            vozAudioSource.clip = audioRec;
+            vozAudioSource.Play();
+        }
+
+        yield return EscribirParteTexto(diagnostico);
+
+        textoDialogo.text = "";
+        yield return new WaitForSeconds(pausaAntesDeRecomendacion);
+
+        yield return EscribirParteTexto(recomendacion);
+
+        if (vozAudioSource != null && vozAudioSource.isPlaying)
+        {
+            yield return new WaitWhile(() => vozAudioSource.isPlaying);
+        }
+
         DesactivarBool(boolRec);
 
         if (particulasSatisfaccion1 != null) particulasSatisfaccion1.Stop();
         if (particulasSatisfaccion2 != null) particulasSatisfaccion2.Stop();
 
-        // NO forzamos Play(Idle). Dejamos que el Animator maneje la transición al siguiente estado.
         yield return new WaitForSeconds(pausaEntreBloques);
 
-        // 4) Dejando algo en claro
         Log($"4. Activando Bool Dejando Algo En Claro");
         yield return VolverAlFondoNormal();
 
-        // Prendemos el Bool de "Dejando algo en claro" DIRECTAMENTE
         ActivarBool(boolDejandoAlgoEnClaro);
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTexto(dejandoAlgoEnClaro, audioDejandoAlgoEnClaro);
+        yield return EscribirTextoNormal(dejandoAlgoEnClaro, audioDejandoAlgoEnClaro);
 
-        // Apagamos el Bool
         DesactivarBool(boolDejandoAlgoEnClaro);
-
-        // NO forzamos Play(Idle).
         yield return new WaitForSeconds(pausaEntreBloques);
 
-        // 5) Despedida (Usando Play directo)
         Log($"5. Reproduciendo Despedida");
         animatorEnfermera.Play(nombreDespedida);
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTexto(despedida, audioDespedida);
+        yield return EscribirTextoNormal(despedida, audioDespedida);
         animatorEnfermera.Play(nombreIdle);
 
-        // 6) Botón Continuar
         Log("6. Mostrando botón Continuar");
         if (botonContinuar != null)
             botonContinuar.gameObject.SetActive(true);
     }
 
-    // ---------------------------------------------------------------- Resto del código (igual que antes)
+    string ObtenerDiagnostico()
+    {
+        var s = PlayerStats.Instance;
+        if (s == null) return "No hay datos de tu desempeño.";
 
-    // ... (los métodos de Fondos, SetAlpha, ActivarBool, DesactivarBool, Lógica de decisión, Escritura y Log se mantienen igual)
-    // Te los dejo abajo completos para que solo copies y pegues.
+        bool bueno = s.energy > 70f && s.interference < 30f && s.memory > 70f;
+        bool malo = s.energy < 40f || s.interference > 60f || s.memory < 40f;
+
+        string decisiones = "elegiste opciones con exceso de azúcares";
+        if (bueno) decisiones = "elegiste opciones balanceadas";
+        else if (!malo) decisiones = "elegiste opciones variadas";
+
+        string barras = $"tu energía quedó en {s.energy:F0}%, tu memoria en {s.memory:F0}% y tu interferencia en {s.interference:F0}%";
+
+        return $"Mis registros indican que {decisiones}, lo que dejó {barras}.";
+    }
+
+    string ElegirRecomendacion()
+    {
+        var s = PlayerStats.Instance;
+        if (s == null) return recomendacionRegular;
+
+        bool bueno = s.energy > 70f && s.interference < 30f && s.memory > 70f;
+        bool malo = s.energy < 40f || s.interference > 60f || s.memory < 40f;
+
+        if (bueno) return recomendacionBueno;
+        if (malo) return recomendacionMalo;
+        return recomendacionRegular;
+    }
 
     IEnumerator CambiarFondoSegunDesempeno(string boolRec)
     {
@@ -224,33 +250,9 @@ public class EnfermeraManager : MonoBehaviour
         if (fondoRojo != null) fondoRojo.alpha = 0f;
     }
 
-    void SetAlpha(CanvasGroup cg, float alpha)
-    {
-        if (cg != null) cg.alpha = alpha;
-    }
-
-    void ActivarBool(string nombre)
-    {
-        animatorEnfermera.SetBool(nombre, true);
-        if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, true)");
-    }
-
-    void DesactivarBool(string nombre)
-    {
-        animatorEnfermera.SetBool(nombre, false);
-        if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, false)");
-    }
-
-    string ElegirRecomendacion()
-    {
-        var s = PlayerStats.Instance;
-        if (s == null) return recomendacionRegular;
-        bool bueno = s.energy > 70f && s.interference < 30f && s.memory > 70f;
-        bool malo = s.energy < 40f || s.interference > 60f || s.memory < 40f;
-        if (bueno) return recomendacionBueno;
-        if (malo) return recomendacionMalo;
-        return recomendacionRegular;
-    }
+    void SetAlpha(CanvasGroup cg, float alpha) { if (cg != null) cg.alpha = alpha; }
+    void ActivarBool(string nombre) { animatorEnfermera.SetBool(nombre, true); if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, true)"); }
+    void DesactivarBool(string nombre) { animatorEnfermera.SetBool(nombre, false); if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, false)"); }
 
     string ElegirBoolRecomendacion()
     {
@@ -270,7 +272,7 @@ public class EnfermeraManager : MonoBehaviour
         return audioRecomendacionRegular;
     }
 
-    IEnumerator EscribirTexto(string texto, AudioClip audio)
+    IEnumerator EscribirTextoNormal(string texto, AudioClip audio)
     {
         textoDialogo.text = "";
 
@@ -301,8 +303,16 @@ public class EnfermeraManager : MonoBehaviour
         }
     }
 
-    void Log(string mensaje)
+    IEnumerator EscribirParteTexto(string texto)
     {
-        if (mostrarLogs) Debug.Log($"[Enfermera] {mensaje}");
+        float velocidadReal = 0.03f;
+
+        foreach (char c in texto)
+        {
+            textoDialogo.text += c;
+            yield return new WaitForSeconds(velocidadReal);
+        }
     }
+
+    void Log(string mensaje) { if (mostrarLogs) Debug.Log($"[Enfermera] {mensaje}"); }
 }
