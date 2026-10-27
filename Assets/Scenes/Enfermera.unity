@@ -195,7 +195,7 @@ AudioSource:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8733548}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 0}
@@ -1086,7 +1086,6 @@ MonoBehaviour:
     por usar Inside Your Mind!"
   velocidadLetra: 0.03
   pausaEntreBloques: 1.5
-  pausaAntesDeRecomendacion: 2
   duracionTransicionPanel: 0.5
   delayAntesDeTexto: 0.4
   multiplicadorVelocidad: 1.2
