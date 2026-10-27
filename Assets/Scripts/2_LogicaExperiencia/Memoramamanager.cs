@@ -7,8 +7,21 @@ using TMPro;
 
 public class MemoramaManager : MonoBehaviour
 {
-    [Header("Cartas")]
-    public List<CartaVoltear> cartas = new List<CartaVoltear>();
+    public enum RutaDificultad { Buena, Intermedia, Mala }
+
+    [Header("Cartas (Asígnalas en orden de pareja: 0 y 1, 2 y 3, 4 y 5...)")]
+    public List<CartaVoltear> todasLasCartas = new List<CartaVoltear>();
+
+    // Esta lista guardará SOLO las cartas que se van a usar en esta partida
+    private List<CartaVoltear> cartas = new List<CartaVoltear>();
+
+    [Header("Indicadores Visuales de Ruta")]
+    [Tooltip("Imagen que se activa si el jugador está en la ruta buena (8 cartas)")]
+    public GameObject indicadorRutaBuena;
+    [Tooltip("Imagen que se activa si el jugador está en la ruta intermedia (10 cartas)")]
+    public GameObject indicadorRutaIntermedia;
+    [Tooltip("Imagen que se activa si el jugador está en la ruta mala (12 cartas)")]
+    public GameObject indicadorRutaMala;
 
     [Header("Resaltado")]
     public Color colorAcierto = new Color(0.20f, 0.85f, 0.30f);
@@ -48,9 +61,81 @@ public class MemoramaManager : MonoBehaviour
 
     void Awake()
     {
-        cartas.RemoveAll(c => c == null);
-        if (cartas.Count == 0)
-            cartas.AddRange(FindObjectsByType<CartaVoltear>(FindObjectsSortMode.None));
+        if (todasLasCartas == null || todasLasCartas.Count == 0)
+        {
+            todasLasCartas = new List<CartaVoltear>();
+            todasLasCartas.AddRange(FindObjectsByType<CartaVoltear>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+        }
+
+        ConfigurarCartasPorRuta();
+    }
+
+    void ConfigurarCartasPorRuta()
+    {
+        RutaDificultad ruta = DeterminarRuta();
+
+        int cartasAUsar = 12;
+
+        // Apagar TODOS los indicadores primero
+        if (indicadorRutaBuena != null) indicadorRutaBuena.SetActive(false);
+        if (indicadorRutaIntermedia != null) indicadorRutaIntermedia.SetActive(false);
+        if (indicadorRutaMala != null) indicadorRutaMala.SetActive(false);
+
+        switch (ruta)
+        {
+            case RutaDificultad.Buena:
+                cartasAUsar = 8;
+                if (indicadorRutaBuena != null) indicadorRutaBuena.SetActive(true);
+                Debug.Log("<color=green>[Memorama] Ruta BUENA detectada. Se usarán 8 cartas (4 parejas).</color>");
+                break;
+            case RutaDificultad.Intermedia:
+                cartasAUsar = 10;
+                if (indicadorRutaIntermedia != null) indicadorRutaIntermedia.SetActive(true);
+                Debug.Log("<color=yellow>[Memorama] Ruta INTERMEDIA detectada. Se usarán 10 cartas (5 parejas).</color>");
+                break;
+            case RutaDificultad.Mala:
+                cartasAUsar = 12;
+                if (indicadorRutaMala != null) indicadorRutaMala.SetActive(true);
+                Debug.Log("<color=red>[Memorama] Ruta MALA detectada. Se usarán 12 cartas (6 parejas).</color>");
+                break;
+        }
+
+        // ====================================================================
+        // ACTIVACIÓN SECUENCIAL POR PAREJAS
+        // ====================================================================
+        cartas.Clear();
+
+        for (int i = 0; i < todasLasCartas.Count; i++)
+        {
+            if (todasLasCartas[i] == null) continue;
+
+            // Como están en orden, las primeras 'cartasAUsar' son las que van
+            if (i < cartasAUsar)
+            {
+                todasLasCartas[i].gameObject.SetActive(true);
+                cartas.Add(todasLasCartas[i]);
+            }
+            else
+            {
+                todasLasCartas[i].gameObject.SetActive(false);
+            }
+        }
+
+        Debug.Log($"[Memorama] Total cartas activas para esta ruta: {cartas.Count}");
+    }
+
+    RutaDificultad DeterminarRuta()
+    {
+        var s = PlayerStats.Instance;
+        if (s == null) return RutaDificultad.Intermedia;
+
+        bool buena = s.energy > 70f && s.interference < 30f && s.memory > 70f;
+        if (buena) return RutaDificultad.Buena;
+
+        bool mala = s.energy < 40f || s.interference > 60f || s.memory < 40f;
+        if (mala) return RutaDificultad.Mala;
+
+        return RutaDificultad.Intermedia;
     }
 
     void OnEnable()
@@ -97,7 +182,6 @@ public class MemoramaManager : MonoBehaviour
 
     void Update()
     {
-        // EL TIEMPO YA NO SE PAUSA CON BLOQUEADO
         if (!temporizadorActivo) return;
 
         tiempoRestante -= Time.deltaTime;
@@ -121,7 +205,6 @@ public class MemoramaManager : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(1f);
 
-        // Reiniciar todo: voltear cartas, tiempo a 50s, porcentaje a 0%
         yield return ReiniciarJuegoCompleto();
     }
 
@@ -152,7 +235,7 @@ public class MemoramaManager : MonoBehaviour
 
         if (pareja)
         {
-            contadorFallos = 0; // Si aciertan, resetea los fallos
+            contadorFallos = 0;
 
             a.Resaltar(colorAcierto, intensidadResalte);
             b.Resaltar(colorAcierto, intensidadResalte);
@@ -165,7 +248,7 @@ public class MemoramaManager : MonoBehaviour
 
             if (encontradas.Count >= cartas.Count)
             {
-                temporizadorActivo = false; // SE DETIENE AL GANAR
+                temporizadorActivo = false;
                 alGanar?.Invoke();
                 yield break;
             }
@@ -184,7 +267,6 @@ public class MemoramaManager : MonoBehaviour
 
             yield return new WaitForSecondsRealtime(esperaAntesDeReiniciar);
 
-            // Si llegamos al límite de fallos, volteamos las cartas PERO NO RESETEAMOS EL TIEMPO
             if (contadorFallos >= fallosParaReiniciar)
             {
                 Debug.Log("[Memorama] Límite de fallos alcanzado. Volteando todas las cartas (el tiempo sigue).");
@@ -195,14 +277,13 @@ public class MemoramaManager : MonoBehaviour
                 yield return null;
                 while (HayCartasGirando()) yield return null;
 
-                ReiniciarEstado(); // Resetea fallos, porcentaje y bloqueos
+                ReiniciarEstado();
                 bloqueado = false;
                 DesbloquearRestantes();
                 alReiniciar?.Invoke();
             }
             else
             {
-                // Solo volteamos las dos cartas que fallamos
                 a.MostrarDorso();
                 b.MostrarDorso();
                 bloqueado = false;
@@ -212,7 +293,6 @@ public class MemoramaManager : MonoBehaviour
         }
     }
 
-    // Este método SOLO se llama al perder por tiempo. Reinicia el tiempo.
     IEnumerator ReiniciarJuegoCompleto()
     {
         bloqueado = true;
@@ -225,7 +305,7 @@ public class MemoramaManager : MonoBehaviour
         while (HayCartasGirando()) yield return null;
 
         ReiniciarEstado();
-        IniciarTemporizador(); // Aquí SÍ se resetea el tiempo
+        IniciarTemporizador();
 
         bloqueado = false;
         DesbloquearRestantes();
