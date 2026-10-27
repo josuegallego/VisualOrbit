@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using TMPro; // NUEVO: Necesario para usar TextMeshPro
+using TMPro;
 
 public class MemoramaManager : MonoBehaviour
 {
     [Header("Cartas")]
-    [Tooltip("Vacio = se buscan todas las CartaVoltear de la escena al iniciar.")]
     public List<CartaVoltear> cartas = new List<CartaVoltear>();
 
     [Header("Resaltado")]
@@ -17,23 +16,30 @@ public class MemoramaManager : MonoBehaviour
     [Range(0f, 1f)] public float intensidadResalte = 0.65f;
 
     [Header("Tiempos (segundos)")]
-    [Min(0f)] public float esperaAntesDeResaltar = 0.15f;
-    [Min(0f)] public float esperaAntesDeReiniciar = 1.8f;
+    public float esperaAntesDeResaltar = 0.15f;
+    public float esperaAntesDeReiniciar = 1.8f;
 
-    [Header("Reinicio del juego")]
-    public bool barajarAlReiniciar = false;
-
-    [Header("UI del Porcentaje (NUEVO)")]
-    [Tooltip("Arrastra aquí el TextMeshPro donde se mostrará el porcentaje")]
+    [Header("UI del Porcentaje")]
     public TMP_Text textoPorcentaje;
-    [Tooltip("Arrastra aquí la barra de llenado (Image tipo Filled) si quieres una barra visual")]
     public Image barraLlenadoPorcentaje;
 
-    [Header("Eventos (sonidos, efectos, etc.)")]
+    [Header("Temporizador")]
+    public float tiempoTotal = 50f;
+    private float tiempoRestante;
+    private bool temporizadorActivo = false;
+    public TMP_Text textoTiempo;
+    public Image barraTiempo;
+
+    [Header("Mecánica de Fallos")]
+    public int fallosParaReiniciar = 2;
+    private int contadorFallos = 0;
+
+    [Header("Eventos")]
     public UnityEvent alAcertar;
     public UnityEvent alFallar;
     public UnityEvent alReiniciar;
     public UnityEvent alGanar;
+    public UnityEvent alPerderPorTiempo;
 
     readonly List<CartaVoltear> abiertas = new List<CartaVoltear>();
     readonly HashSet<CartaVoltear> encontradas = new HashSet<CartaVoltear>();
@@ -55,12 +61,14 @@ public class MemoramaManager : MonoBehaviour
             c.InicioGiro += AlIniciarGiro;
             c.Volteada += AlTerminarGiro;
         }
-        ActualizarUI(); // NUEVO: Inicializar el texto en 0%
+        ActualizarUI();
+        IniciarTemporizador();
     }
 
     void OnDisable()
     {
         StopAllCoroutines();
+        temporizadorActivo = false;
         foreach (var c in cartas)
         {
             if (c == null) continue;
@@ -75,9 +83,46 @@ public class MemoramaManager : MonoBehaviour
         encontradas.Clear();
         seleccionadas = 0;
         bloqueado = false;
-
-        // NUEVO: Si se reinicia (porque perdiste o se ganó), actualizamos la UI
+        contadorFallos = 0;
         ActualizarUI();
+    }
+
+    void IniciarTemporizador()
+    {
+        tiempoRestante = tiempoTotal;
+        temporizadorActivo = true;
+        if (barraTiempo != null) barraTiempo.fillAmount = 1f;
+        if (textoTiempo != null) textoTiempo.text = $"{tiempoTotal:F0}s";
+    }
+
+    void Update()
+    {
+        // EL TIEMPO YA NO SE PAUSA CON BLOQUEADO
+        if (!temporizadorActivo) return;
+
+        tiempoRestante -= Time.deltaTime;
+        if (tiempoRestante < 0) tiempoRestante = 0;
+
+        if (textoTiempo != null) textoTiempo.text = $"{tiempoRestante:F0}s";
+        if (barraTiempo != null) barraTiempo.fillAmount = tiempoRestante / tiempoTotal;
+
+        if (tiempoRestante <= 0)
+        {
+            temporizadorActivo = false;
+            StartCoroutine(PerderPorTiempo());
+        }
+    }
+
+    IEnumerator PerderPorTiempo()
+    {
+        bloqueado = true;
+        BloquearTodas();
+        alPerderPorTiempo?.Invoke();
+
+        yield return new WaitForSecondsRealtime(1f);
+
+        // Reiniciar todo: voltear cartas, tiempo a 50s, porcentaje a 0%
+        yield return ReiniciarJuegoCompleto();
     }
 
     void AlIniciarGiro(CartaVoltear carta, bool haciaFrente)
@@ -107,18 +152,20 @@ public class MemoramaManager : MonoBehaviour
 
         if (pareja)
         {
+            contadorFallos = 0; // Si aciertan, resetea los fallos
+
             a.Resaltar(colorAcierto, intensidadResalte);
             b.Resaltar(colorAcierto, intensidadResalte);
             encontradas.Add(a);
             encontradas.Add(b);
             alAcertar?.Invoke();
 
-            // NUEVO: Actualizar UI y enviar el impacto a las barras
             ActualizarUI();
             AplicarImpactoBarras();
 
             if (encontradas.Count >= cartas.Count)
             {
+                temporizadorActivo = false; // SE DETIENE AL GANAR
                 alGanar?.Invoke();
                 yield break;
             }
@@ -132,20 +179,41 @@ public class MemoramaManager : MonoBehaviour
             b.Resaltar(colorError, intensidadResalte);
             alFallar?.Invoke();
 
+            contadorFallos++;
+            Debug.Log($"[Memorama] Fallos: {contadorFallos} / {fallosParaReiniciar}");
+
             yield return new WaitForSecondsRealtime(esperaAntesDeReiniciar);
-            yield return ReiniciarJuego();
+
+            // Si llegamos al límite de fallos, volteamos las cartas PERO NO RESETEAMOS EL TIEMPO
+            if (contadorFallos >= fallosParaReiniciar)
+            {
+                Debug.Log("[Memorama] Límite de fallos alcanzado. Volteando todas las cartas (el tiempo sigue).");
+
+                foreach (var c in cartas)
+                    if (c != null) c.MostrarDorso();
+
+                yield return null;
+                while (HayCartasGirando()) yield return null;
+
+                ReiniciarEstado(); // Resetea fallos, porcentaje y bloqueos
+                bloqueado = false;
+                DesbloquearRestantes();
+                alReiniciar?.Invoke();
+            }
+            else
+            {
+                // Solo volteamos las dos cartas que fallamos
+                a.MostrarDorso();
+                b.MostrarDorso();
+                bloqueado = false;
+                DesbloquearRestantes();
+                alReiniciar?.Invoke();
+            }
         }
     }
 
-    public void Reiniciar()
-    {
-        StopAllCoroutines();
-        bloqueado = true;
-        BloquearTodas();
-        StartCoroutine(ReiniciarJuego());
-    }
-
-    IEnumerator ReiniciarJuego()
+    // Este método SOLO se llama al perder por tiempo. Reinicia el tiempo.
+    IEnumerator ReiniciarJuegoCompleto()
     {
         bloqueado = true;
         BloquearTodas();
@@ -156,14 +224,21 @@ public class MemoramaManager : MonoBehaviour
         yield return null;
         while (HayCartasGirando()) yield return null;
 
-        if (barajarAlReiniciar) BarajarSimbolos();
+        ReiniciarEstado();
+        IniciarTemporizador(); // Aquí SÍ se resetea el tiempo
 
-        ReiniciarEstado(); // Aquí se actualiza la UI a 0% si perdiste
         bloqueado = false;
-        foreach (var c in cartas)
-            if (c != null) c.SetInteractuable(true);
+        DesbloquearRestantes();
 
         alReiniciar?.Invoke();
+    }
+
+    public void Reiniciar()
+    {
+        StopAllCoroutines();
+        bloqueado = true;
+        BloquearTodas();
+        StartCoroutine(ReiniciarJuegoCompleto());
     }
 
     bool HayCartasGirando()
@@ -177,12 +252,13 @@ public class MemoramaManager : MonoBehaviour
     {
         if (a.idPareja >= 0 && b.idPareja >= 0)
             return a.idPareja == b.idPareja;
-        Sprite sa = SimboloDe(a);
-        Sprite sb = SimboloDe(b);
+
+        Sprite sa = ObtenerSprite(a);
+        Sprite sb = ObtenerSprite(b);
         return sa != null && sa == sb;
     }
 
-    static Sprite SimboloDe(CartaVoltear carta)
+    Sprite ObtenerSprite(CartaVoltear carta)
     {
         if (carta.frente == null) return null;
         var sr = carta.frente.GetComponentInChildren<SpriteRenderer>(true);
@@ -190,34 +266,6 @@ public class MemoramaManager : MonoBehaviour
         var img = carta.frente.GetComponentInChildren<Image>(true);
         if (img != null) return img.sprite;
         return null;
-    }
-
-    static void PonerSimbolo(CartaVoltear carta, Sprite sprite)
-    {
-        if (carta.frente == null) return;
-        var sr = carta.frente.GetComponentInChildren<SpriteRenderer>(true);
-        if (sr != null) { sr.sprite = sprite; return; }
-        var img = carta.frente.GetComponentInChildren<Image>(true);
-        if (img != null) img.sprite = sprite;
-    }
-
-    void BarajarSimbolos()
-    {
-        var simbolos = new List<(Sprite sprite, int id)>();
-        foreach (var c in cartas)
-            simbolos.Add((SimboloDe(c), c.idPareja));
-
-        for (int i = simbolos.Count - 1; i > 0; i--)
-        {
-            int j = Random.Range(0, i + 1);
-            (simbolos[i], simbolos[j]) = (simbolos[j], simbolos[i]);
-        }
-
-        for (int i = 0; i < cartas.Count; i++)
-        {
-            PonerSimbolo(cartas[i], simbolos[i].sprite);
-            cartas[i].idPareja = simbolos[i].id;
-        }
     }
 
     void BloquearTodas()
@@ -233,77 +281,42 @@ public class MemoramaManager : MonoBehaviour
                 c.SetInteractuable(true);
     }
 
-    // ====================================================================
-    // NUEVOS MÉTODOS PARA LA HU
-    // ====================================================================
-
-    /// <summary>
-    /// Calcula el porcentaje de parejas encontradas y actualiza la UI.
-    /// </summary>
-        // Reemplaza tu ActualizarUI() actual por este:
     void ActualizarUI()
     {
         if (cartas.Count == 0) return;
-
-        // Cada pareja son 2 cartas. Ejemplo: 8 cartas = 4 parejas.
         float totalParejas = cartas.Count / 2f;
         float parejasEncontradas = encontradas.Count / 2f;
-
-        // Calculamos el porcentaje objetivo (de 0 a 100)
         float porcentajeObjetivo = (parejasEncontradas / totalParejas) * 100f;
 
-        // Si el texto existe, lo actualizamos directo (el texto no necesita animación)
         if (textoPorcentaje != null)
-        {
             textoPorcentaje.text = $"Parejas: {porcentajeObjetivo:F0}%";
-        }
 
-        // Si la barra visual existe, lanzamos la animación suave
         if (barraLlenadoPorcentaje != null)
         {
-            // Detenemos cualquier animación anterior para evitar conflictos si se voltean cartas rápido
             StopCoroutine(nameof(AnimarBarra));
             StartCoroutine(AnimarBarra(porcentajeObjetivo / 100f));
         }
     }
 
-    // NUEVO: Corrutina para llenar la barra suavemente
-    private System.Collections.IEnumerator AnimarBarra(float objetivoNormalizado)
+    private IEnumerator AnimarBarra(float objetivoNormalizado)
     {
         float valorInicial = barraLlenadoPorcentaje.fillAmount;
         float tiempoTranscurrido = 0f;
-        float duracion = 0.5f; // Puedes cambiar esto si la quieres más rápida o lenta
+        float duracion = 0.5f;
 
         while (tiempoTranscurrido < duracion)
         {
             tiempoTranscurrido += Time.deltaTime;
-            // Mathf.Lerp interpola suavemente entre el valor inicial y el objetivo
             barraLlenadoPorcentaje.fillAmount = Mathf.Lerp(valorInicial, objetivoNormalizado, tiempoTranscurrido / duracion);
             yield return null;
         }
-
-        // Nos aseguramos de que quede exacto en el objetivo al terminar
         barraLlenadoPorcentaje.fillAmount = objetivoNormalizado;
     }
 
-    /// <summary>
-    /// Envía una recompensa al sistema de barras (PlayerStats) cada vez que se encuentra una pareja.
-    /// Esto cumple el requisito de conectar el minijuego con las decisiones alimenticias.
-    /// </summary>
     void AplicarImpactoBarras()
     {
         if (PlayerStats.Instance == null) return;
-
-        // Calculamos cuánto sube la energía y la memoria por cada pareja encontrada.
-        // Ajusta estos valores según el balance que quieras en tu juego.
-        float subidaEnergia = 5f;
-        float bajadaInterferencia = 5f; // Bajar la interferencia es bueno
-        float subidaMemoria = 10f;
-
-        // Aplicamos los cambios a PlayerStats
-        PlayerStats.Instance.ApplyEffects(subidaEnergia, -bajadaInterferencia, subidaMemoria);
-
-        // Forzamos a que las barras visuales en la pantalla (StatsBarUI) se actualicen
+        PlayerStats.Instance.ApplyEffects(5f, -5f, 10f);
         PlayerStats.Instance.ForzarActualizacion();
     }
 }
