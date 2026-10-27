@@ -6493,7 +6493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   amplitud: 1
-  velocidad: 1
+  velocidad: 1.5
 --- !u!1001 &2004536827
 PrefabInstance:
   m_ObjectHideFlags: 0
