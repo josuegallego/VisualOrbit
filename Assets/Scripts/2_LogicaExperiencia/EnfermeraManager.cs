@@ -41,10 +41,10 @@ public class EnfermeraManager : MonoBehaviour
     [Header("Velocidad y Tiempos")]
     public float velocidadLetra = 0.03f;
     public float pausaEntreBloques = 1.5f;
-    public float pausaAntesDeRecomendacion = 2.0f;
+    public float pausaAntesDeRecomendacion = 0.05f;
     public float duracionTransicionPanel = 0.5f;
     public float delayAntesDeTexto = 0.4f;
-    public float multiplicadorVelocidad = 1.2f;
+    public float multiplicadorVelocidad = 1.0f;
 
     [Header("Nombres de los estados y Bools en el Animator")]
     public string nombreIdle = "Idle";
@@ -117,12 +117,12 @@ public class EnfermeraManager : MonoBehaviour
             vozAudioSource.Play();
         }
 
-        yield return EscribirParteTexto(diagnostico);
+        yield return EscribirParteTexto(diagnostico, audioRec);
 
         textoDialogo.text = "";
         yield return new WaitForSeconds(pausaAntesDeRecomendacion);
 
-        yield return EscribirParteTexto(recomendacion);
+        yield return EscribirParteTexto(recomendacion, audioRec);
 
         if (vozAudioSource != null && vozAudioSource.isPlaying)
         {
@@ -169,7 +169,7 @@ public class EnfermeraManager : MonoBehaviour
         if (bueno) decisiones = "elegiste opciones balanceadas";
         else if (!malo) decisiones = "elegiste opciones variadas";
 
-        string barras = $"tu energía quedó en {s.energy:F0}%, tu memoria en {s.memory:F0}% y tu interferencia en {s.interference:F0}%";
+        string barras = $"tu energía en {s.energy:F0}%, tu memoria en {s.memory:F0}% y tu interferencia en {s.interference:F0}%";
 
         return $"Mis registros indican que {decisiones}, lo que dejó {barras}.";
     }
@@ -303,9 +303,17 @@ public class EnfermeraManager : MonoBehaviour
         }
     }
 
-    IEnumerator EscribirParteTexto(string texto)
+    IEnumerator EscribirParteTexto(string texto, AudioClip audio)
     {
-        float velocidadReal = 0.03f;
+
+        float velocidadReal = 0.07f;
+
+        if (audio != null && texto.Length > 150)
+        {
+            float velocidadBase = audio.length / texto.Length;
+            velocidadReal = velocidadBase / multiplicadorVelocidad;
+            if (velocidadReal < 0.05f) velocidadReal = 0.035f;
+        }
 
         foreach (char c in texto)
         {

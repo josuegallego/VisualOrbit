@@ -208,12 +208,28 @@ public class MemoramaManager : MonoBehaviour
         ActualizarUI();
     }
 
+    float CalcularTiempoPorEstado()
+    {
+        var s = PlayerStats.Instance;
+        if (s == null) return 90f;
+
+        if (s.memory >= 70f) return 120f; // óptimo
+        if (s.memory <= 39f) return 60f;  // deficiente
+        return 90f; // medio
+    }
+
     void IniciarTemporizador()
     {
+        tiempoTotal = CalcularTiempoPorEstado();
         tiempoRestante = tiempoTotal;
         temporizadorActivo = true;
+
         if (barraTiempo != null) barraTiempo.fillAmount = 1f;
-        if (textoTiempo != null) textoTiempo.text = $"{tiempoTotal:F0}s";
+        if (textoTiempo != null)
+        {
+            textoTiempo.color = new Color(1f, 1f, 1f, 0.9f); // blanco, alpha 0.9
+            textoTiempo.text = $"{tiempoTotal:F0}s";
+        }
     }
 
     void Update()
@@ -259,7 +275,7 @@ public class MemoramaManager : MonoBehaviour
             StartCoroutine(Evaluar(abiertas[0], abiertas[1]));
     }
 
-    IEnumerator Evaluar(CartaVoltear a, CartaVoltear b)
+        IEnumerator Evaluar(CartaVoltear a, CartaVoltear b)
     {
         bloqueado = true;
         BloquearTodas();
@@ -280,6 +296,7 @@ public class MemoramaManager : MonoBehaviour
             alAcertar?.Invoke();
             MostrarImagenAcierto();
             ReproducirSonido(sonidoAcierto);
+            Vibrar(1);
 
             ActualizarUI();
             AplicarImpactoBarras();
@@ -301,6 +318,7 @@ public class MemoramaManager : MonoBehaviour
             alFallar?.Invoke();
             MostrarImagenIncorrecta();
             ReproducirSonido(sonidoError);
+            Vibrar(2);
 
             contadorFallos++;
             Debug.Log($"[Memorama] Fallos: {contadorFallos} / {fallosParaReiniciar}");
@@ -400,11 +418,39 @@ public class MemoramaManager : MonoBehaviour
         rutinaImagenError = null;
     }
 
-    // Aparece con fundido, se queda 'visible' segundos y desaparece con fundido.
+  
     void ReproducirSonido(AudioClip clip)
     {
         if (clip == null || fuenteAudio == null) return;
         fuenteAudio.PlayOneShot(clip, volumenSonidos);
+    }
+
+    [Header("Vibración")]
+    [Range(0f, 1f)] public float intensidadVibracion = 0.6f;
+    public float duracionPulso = 0.2f;
+    public float pausaEntrePulsos = 0.15f;
+
+    void Vibrar(int veces) => StartCoroutine(VibrarRutina(veces));
+
+    IEnumerator VibrarRutina(int veces)
+    {
+        for (int i = 0; i < veces; i++)
+        {
+            EnviarPulso();
+            Debug.Log($"[Memorama] Vibración {i + 1}/{veces}");
+            yield return new WaitForSecondsRealtime(duracionPulso + pausaEntrePulsos);
+        }
+    }
+
+    void EnviarPulso()
+    {
+        var dispositivos = new List<UnityEngine.XR.InputDevice>();
+        UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(
+            UnityEngine.XR.InputDeviceCharacteristics.Controller, dispositivos);
+
+        foreach (var d in dispositivos)
+            if (d.TryGetHapticCapabilities(out var cap) && cap.supportsImpulse)
+                d.SendHapticImpulse(0, intensidadVibracion, duracionPulso);
     }
 
     // Opacidad original de cada SpriteRenderer (se guarda la primera vez, para no ir perdiendo alpha)

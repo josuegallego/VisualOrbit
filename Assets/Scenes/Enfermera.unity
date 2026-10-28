@@ -1054,9 +1054,9 @@ MonoBehaviour:
   panelBarras: {fileID: 1509218120}
   vozAudioSource: {fileID: 307844268}
   audioSaludo: {fileID: 8300000, guid: df63f5ef669647a4b9d3c31ea506ac06, type: 3}
-  audioRecomendacionBueno: {fileID: 8300000, guid: 66b3f26dd63bcd24a86e0ccbebd39229, type: 3}
-  audioRecomendacionRegular: {fileID: 8300000, guid: 18fda1578df82d5408a2df0bbd510263, type: 3}
-  audioRecomendacionMalo: {fileID: 8300000, guid: cc51cbc62188ebd4a9a3d5273193a430, type: 3}
+  audioRecomendacionBueno: {fileID: 8300000, guid: 6a9e5d4d1425de94fb51591f8949f2ff, type: 3}
+  audioRecomendacionRegular: {fileID: 8300000, guid: a1ca220622297c4489aa0dec372fe384, type: 3}
+  audioRecomendacionMalo: {fileID: 8300000, guid: 40782e9e39731124b9c52e19cb7d479a, type: 3}
   audioDejandoAlgoEnClaro: {fileID: 8300000, guid: 84782c28e59ba6644a4f6bcf0eef144e, type: 3}
   audioDespedida: {fileID: 8300000, guid: f9041d3577e7d3840902ef1d7d1f94fd, type: 3}
   fondoNormal: {fileID: 1117918610}
@@ -1089,7 +1089,7 @@ MonoBehaviour:
   pausaAntesDeRecomendacion: 2
   duracionTransicionPanel: 0.5
   delayAntesDeTexto: 0.4
-  multiplicadorVelocidad: 1.2
+  multiplicadorVelocidad: 1.8
   nombreIdle: Idle
   nombreSaludo: Saludando
   nombreDespedida: Despidiendose
