@@ -199,18 +199,36 @@ public class CartaVoltear : MonoBehaviour, IPointerClickHandler
     public void Resaltar(Color color, float intensidad = 0.65f)
     {
         QuitarResalte();
-        if (frente == null) return;
+        if (frente == null)
+        {
+            Debug.LogWarning($"[CartaVoltear] {name}: no hay Frente asignado.", this);
+            return;
+        }
+
+        int tintados = 0;
 
         foreach (var sr in frente.GetComponentsInChildren<SpriteRenderer>(true))
         {
             coloresOriginales.Add((sr, sr.color));
-            sr.color = Color.Lerp(sr.color, color, intensidad);
+            sr.color = Mezclar(sr.color, color, intensidad);
+            tintados++;
         }
         foreach (var g in frente.GetComponentsInChildren<Graphic>(true))
         {
             coloresOriginales.Add((g, g.color));
-            g.color = Color.Lerp(g.color, color, intensidad);
+            g.color = Mezclar(g.color, color, intensidad);
+            tintados++;
         }
+
+        if (tintados == 0)
+            Debug.LogWarning($"[CartaVoltear] {name}: el Frente no tiene SpriteRenderer ni Image, no hay nada que tinte.", this);
+    }
+
+    static Color Mezclar(Color original, Color tinte, float k)
+    {
+        var c = Color.Lerp(original, tinte, k);
+        c.a = original.a;      // conserva la transparencia original
+        return c;
     }
 
     /// <summary>Devuelve los colores originales de la cara.</summary>
