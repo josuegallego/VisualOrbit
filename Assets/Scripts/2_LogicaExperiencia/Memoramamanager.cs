@@ -28,6 +28,33 @@ public class MemoramaManager : MonoBehaviour
     public Color colorError = new Color(0.90f, 0.20f, 0.20f);
     [Range(0f, 1f)] public float intensidadResalte = 0.65f;
 
+    [Header("Imagen de Acierto")]
+    [Tooltip("Imagen (objeto de la escena) que se activa cuando el jugador acierta una pareja. Déjala desactivada al inicio.")]
+    public GameObject imagenAcierto;
+    [Tooltip("Segundos que permanece visible la imagen de acierto.")]
+    public float duracionImagenAcierto = 5f;
+    private Coroutine rutinaImagenAcierto;
+
+    [Header("Imagen de Error")]
+    [Tooltip("Imagen (objeto de la escena) que se activa cuando el jugador falla una pareja. Déjala desactivada al inicio.")]
+    public GameObject imagenIncorrecta;
+    [Tooltip("Segundos que permanece visible la imagen de error.")]
+    public float duracionImagenIncorrecta = 3f;
+    private Coroutine rutinaImagenError;
+
+    [Header("Transición de las imágenes")]
+    [Tooltip("Segundos que tarda en aparecer y desaparecer (fundido de opacidad). 0 = sin transición.")]
+    [Min(0f)] public float duracionFundido = 0.3f;
+
+    [Header("Sonidos")]
+    [Tooltip("AudioSource que reproduce los sonidos. Vacío = se crea uno automáticamente en este objeto.")]
+    public AudioSource fuenteAudio;
+    [Tooltip("Sonido al acertar una pareja.")]
+    public AudioClip sonidoAcierto;
+    [Tooltip("Sonido al fallar una pareja.")]
+    public AudioClip sonidoError;
+    [Range(0f, 1f)] public float volumenSonidos = 1f;
+
     [Header("Tiempos (segundos)")]
     public float esperaAntesDeResaltar = 0.15f;
     public float esperaAntesDeReiniciar = 1.8f;
@@ -65,6 +92,13 @@ public class MemoramaManager : MonoBehaviour
         {
             todasLasCartas = new List<CartaVoltear>();
             todasLasCartas.AddRange(FindObjectsByType<CartaVoltear>(FindObjectsInactive.Include, FindObjectsSortMode.None));
+        }
+
+        if (fuenteAudio == null)
+        {
+            fuenteAudio = gameObject.AddComponent<AudioSource>();
+            fuenteAudio.playOnAwake = false;
+            fuenteAudio.spatialBlend = 0f;   // 2D: se oye igual desde cualquier posición
         }
 
         ConfigurarCartasPorRuta();
@@ -153,6 +187,7 @@ public class MemoramaManager : MonoBehaviour
     void OnDisable()
     {
         StopAllCoroutines();
+        OcultarImagenes();
         temporizadorActivo = false;
         foreach (var c in cartas)
         {
@@ -169,6 +204,7 @@ public class MemoramaManager : MonoBehaviour
         seleccionadas = 0;
         bloqueado = false;
         contadorFallos = 0;
+        OcultarImagenes();
         ActualizarUI();
     }
 
@@ -242,6 +278,8 @@ public class MemoramaManager : MonoBehaviour
             encontradas.Add(a);
             encontradas.Add(b);
             alAcertar?.Invoke();
+            MostrarImagenAcierto();
+            ReproducirSonido(sonidoAcierto);
 
             ActualizarUI();
             AplicarImpactoBarras();
@@ -261,6 +299,8 @@ public class MemoramaManager : MonoBehaviour
             a.Resaltar(colorError, intensidadResalte);
             b.Resaltar(colorError, intensidadResalte);
             alFallar?.Invoke();
+            MostrarImagenIncorrecta();
+            ReproducirSonido(sonidoError);
 
             contadorFallos++;
             Debug.Log($"[Memorama] Fallos: {contadorFallos} / {fallosParaReiniciar}");
@@ -316,10 +356,122 @@ public class MemoramaManager : MonoBehaviour
     public void Reiniciar()
     {
         StopAllCoroutines();
+        OcultarImagenes();
         bloqueado = true;
         BloquearTodas();
         StartCoroutine(ReiniciarJuegoCompleto());
     }
+
+    // ------------------------------------------------------------------ imágenes de acierto / error
+
+    void MostrarImagenAcierto()
+    {
+        if (imagenAcierto == null)
+        {
+            Debug.LogWarning("[Memorama] 'Imagen Acierto' no está asignada en el Inspector del MemoramaManager.", this);
+            return;
+        }
+        Debug.Log($"[Memorama] Mostrando imagen de acierto: {imagenAcierto.name}", imagenAcierto);
+        if (rutinaImagenAcierto != null) StopCoroutine(rutinaImagenAcierto);
+        rutinaImagenAcierto = StartCoroutine(ImagenAciertoRutina());
+    }
+
+    IEnumerator ImagenAciertoRutina()
+    {
+        yield return MostrarConFundido(imagenAcierto, duracionImagenAcierto);
+        rutinaImagenAcierto = null;
+    }
+
+    void MostrarImagenIncorrecta()
+    {
+        if (imagenIncorrecta == null)
+        {
+            Debug.LogWarning("[Memorama] 'Imagen Incorrecta' no está asignada en el Inspector del MemoramaManager.", this);
+            return;
+        }
+        Debug.Log($"[Memorama] Mostrando imagen de error: {imagenIncorrecta.name}", imagenIncorrecta);
+        if (rutinaImagenError != null) StopCoroutine(rutinaImagenError);
+        rutinaImagenError = StartCoroutine(ImagenIncorrectaRutina());
+    }
+
+    IEnumerator ImagenIncorrectaRutina()
+    {
+        yield return MostrarConFundido(imagenIncorrecta, duracionImagenIncorrecta);
+        rutinaImagenError = null;
+    }
+
+    // Aparece con fundido, se queda 'visible' segundos y desaparece con fundido.
+    void ReproducirSonido(AudioClip clip)
+    {
+        if (clip == null || fuenteAudio == null) return;
+        fuenteAudio.PlayOneShot(clip, volumenSonidos);
+    }
+
+    // Opacidad original de cada SpriteRenderer (se guarda la primera vez, para no ir perdiendo alpha)
+    readonly Dictionary<SpriteRenderer, float> alfaBase = new Dictionary<SpriteRenderer, float>();
+
+    IEnumerator MostrarConFundido(GameObject objeto, float visible)
+    {
+        // CanvasGroup: controla la opacidad de imágenes de UI (Image, TMP) y de todo lo que tengan dentro
+        var grupo = objeto.GetComponent<CanvasGroup>();
+        if (grupo == null) grupo = objeto.AddComponent<CanvasGroup>();
+
+        // SpriteRenderer: el CanvasGroup NO los afecta, así que se funde su color directamente
+        var sprites = objeto.GetComponentsInChildren<SpriteRenderer>(true);
+        foreach (var sr in sprites)
+            if (!alfaBase.ContainsKey(sr)) alfaBase[sr] = sr.color.a;
+
+        Debug.Log($"[Memorama] Fundido de '{objeto.name}': {duracionFundido}s, SpriteRenderers: {sprites.Length}");
+
+        AplicarAlfa(grupo, sprites, 0f);
+        objeto.SetActive(true);
+
+        yield return Fundir(grupo, sprites, 0f, 1f);
+        yield return new WaitForSecondsRealtime(visible);
+        yield return Fundir(grupo, sprites, 1f, 0f);
+
+        objeto.SetActive(false);
+    }
+
+    void AplicarAlfa(CanvasGroup grupo, SpriteRenderer[] sprites, float a)
+    {
+        grupo.alpha = a;
+        foreach (var sr in sprites)
+        {
+            if (sr == null) continue;
+            var c = sr.color;
+            c.a = alfaBase[sr] * a;
+            sr.color = c;
+        }
+    }
+
+    IEnumerator Fundir(CanvasGroup grupo, SpriteRenderer[] sprites, float desde, float hasta)
+    {
+        if (duracionFundido <= 0f)
+        {
+            AplicarAlfa(grupo, sprites, hasta);
+            yield break;
+        }
+
+        float t = 0f;
+        while (t < duracionFundido)
+        {
+            t += Time.unscaledDeltaTime;
+            AplicarAlfa(grupo, sprites, Mathf.Lerp(desde, hasta, t / duracionFundido));
+            yield return null;
+        }
+        AplicarAlfa(grupo, sprites, hasta);
+    }
+
+    void OcultarImagenes()
+    {
+        if (rutinaImagenAcierto != null) { StopCoroutine(rutinaImagenAcierto); rutinaImagenAcierto = null; }
+        if (rutinaImagenError != null) { StopCoroutine(rutinaImagenError); rutinaImagenError = null; }
+        if (imagenAcierto != null) imagenAcierto.SetActive(false);
+        if (imagenIncorrecta != null) imagenIncorrecta.SetActive(false);
+    }
+
+    // ------------------------------------------------------------------ utilidades
 
     bool HayCartasGirando()
     {

@@ -12,7 +12,10 @@ using UnityEngine.UI;
 /// </summary>
 public class ContinueOnNeuronLit : MonoBehaviour
 {
-    [Header("Neurona")]
+    [Header("Origen (usa UNO de los dos)")]
+    [Tooltip("Preferido: el boton aparece cuando TODAS las neuronas estan encendidas.")]
+    public NeuronProgress progress;
+    [Tooltip("Alternativa: el boton aparece cuando esta neurona se enciende.")]
     public NeuronController neuron;
     [Tooltip("Espera tras encenderse la neurona, para que termine la transicion a verde.")]
     public float showDelay = 1.2f;
@@ -44,9 +47,16 @@ public class ContinueOnNeuronLit : MonoBehaviour
 
     void OnEnable()
     {
+        if (progress != null)
+        {
+            progress.ProgressChanged += OnProgressChanged;
+            OnProgressChanged(progress.Progress01);   // evalua el estado actual
+            return;
+        }
+
         if (neuron == null)
         {
-            Debug.LogError("[ContinueOnNeuronLit] Falta 'Neuron'.", this);
+            Debug.LogError("[ContinueOnNeuronLit] Falta 'Progress' o 'Neuron'.", this);
             return;
         }
 
@@ -56,6 +66,7 @@ public class ContinueOnNeuronLit : MonoBehaviour
 
     void OnDisable()
     {
+        if (progress != null) progress.ProgressChanged -= OnProgressChanged;
         if (neuron != null) neuron.LitChanged -= OnLitChanged;
         if (showRoutine != null) { StopCoroutine(showRoutine); showRoutine = null; }
     }
@@ -63,6 +74,11 @@ public class ContinueOnNeuronLit : MonoBehaviour
     void OnDestroy()
     {
         if (continueButton != null) continueButton.onClick.RemoveListener(OnContinueClicked);
+    }
+
+    void OnProgressChanged(float value)
+    {
+        OnLitChanged(progress != null && progress.IsComplete);
     }
 
     void OnLitChanged(bool lit)

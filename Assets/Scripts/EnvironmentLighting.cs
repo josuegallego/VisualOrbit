@@ -50,6 +50,9 @@ public class EnvironmentLighting : MonoBehaviour
     [Range(0f, 1f)] public float testPerformance01 = 1f;
     public bool logValues = true;
 
+    /// <summary>Multiplicador externo (1 = normal). Util si otro script quiere atenuar el entorno.</summary>
+    [HideInInspector] public float brightnessMultiplier = 1f;
+
     enum Mode { None, CameraAlpha, TintMaterial }
 
     Mode mode = Mode.None;
@@ -61,6 +64,16 @@ public class EnvironmentLighting : MonoBehaviour
 
     void Awake()
     {
+        if (progress == null)
+        {
+            progress = FindFirstObjectByType<NeuronProgress>();
+            if (progress == null && !useManualProgress)
+                Debug.LogWarning("[EnvironmentLighting] No hay NeuronProgress en la escena: el progreso valdra siempre 0.", this);
+        }
+
+        if (useManualProgress)
+            Debug.LogWarning("[EnvironmentLighting] 'Use Manual Progress' esta ACTIVO: se ignoran las neuronas.", this);
+
         if (video != null)
         {
             if (videoSurface != null)
@@ -100,6 +113,26 @@ public class EnvironmentLighting : MonoBehaviour
 
         current = baseBrightness;
         Apply(current);
+
+        if (logValues)
+            Debug.Log($"[EnvironmentLighting] modo={mode} | progress={(progress != null ? progress.name : "NINGUNO")} | " +
+                      $"base={baseBrightness:F2} | max malo={maxBrightnessBadPerformance:F2} | max bueno={maxBrightnessGoodPerformance:F2}", this);
+    }
+
+    void OnEnable()
+    {
+        if (progress != null) progress.ProgressChanged += OnProgressChanged;
+    }
+
+    void OnDisable()
+    {
+        if (progress != null) progress.ProgressChanged -= OnProgressChanged;
+    }
+
+    void OnProgressChanged(float value)
+    {
+        if (logValues)
+            Debug.Log($"[EnvironmentLighting] recibi progreso={value:F2} | brillo objetivo={TargetBrightness():F2} | brillo actual={current:F2}", this);
     }
 
     void Update()
@@ -137,7 +170,7 @@ public class EnvironmentLighting : MonoBehaviour
 
     void Apply(float brightness)
     {
-        float b = Mathf.Clamp01(brightness);
+        float b = Mathf.Clamp01(brightness * brightnessMultiplier);
 
         switch (mode)
         {
