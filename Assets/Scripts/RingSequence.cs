@@ -80,6 +80,8 @@ public class RingSequence : MonoBehaviour
     public event Action<Route> RouteCompleted;
     /// <summary>Se dispara cuando todas las rutas estan completas.</summary>
     public event Action AllRoutesCompleted;
+    /// <summary>Se dispara cuando el jugador intenta agarrar un anillo fuera de orden.</summary>
+    public event Action<TubeRingManipulator> OutOfOrderAttempt;
 
     readonly List<TubeRingManipulator> allRings = new List<TubeRingManipulator>();
     float lastErrorTime = -999f;
@@ -163,6 +165,7 @@ public class RingSequence : MonoBehaviour
     {
         if (Time.time - lastErrorTime < errorCooldown) return;
         lastErrorTime = Time.time;
+        OutOfOrderAttempt?.Invoke(ring);
 
         if (logValues)
         {

@@ -208,14 +208,52 @@ public class MemoramaManager : MonoBehaviour
         ActualizarUI();
     }
 
-    float CalcularTiempoPorEstado()
+    // HU: el tiempo depende del estado cognitivo acumulado (energia + memoria + interferencia)
+    [Header("Tiempo segun estado cognitivo")]
+    [Tooltip("Estado optimo: a partir de este porcentaje.")]
+    public float umbralOptimo = 70f;
+    [Tooltip("Estado deficiente: hasta este porcentaje.")]
+    public float umbralDeficiente = 39f;
+    public float tiempoOptimo = 120f;
+    public float tiempoMedio = 90f;
+    public float tiempoDeficiente = 60f;
+    [Tooltip("Color de la cuenta regresiva (RGB 255,255,255).")]
+    public Color colorTiempo = Color.white;
+    [Tooltip("Brillo del texto (0.9 = 90 %).")]
+    [Range(0f, 1f)] public float brilloTiempo = 0.9f;
+
+    [Tooltip("Apaga el brillo cian (TextGlowPulse / Glow del material) del texto del timer para que se vea blanco.")]
+    public bool forzarTimerBlanco = true;
+
+    // Algo mas (TextGlowPulse, glow o color de cara del material) puede pintar el texto de cian
+    void QuitarEfectosDeColorAlTimer()
+    {
+        var pulse = textoTiempo.GetComponent<TextGlowPulse>();
+        if (pulse != null) pulse.enabled = false;
+
+        Material m = textoTiempo.fontMaterial;   // copia propia: no toca el Font Asset
+        m.DisableKeyword("GLOW_ON");
+        if (m.HasProperty("_FaceColor")) m.SetColor("_FaceColor", Color.white);
+    }
+
+    /// <summary>Estado cognitivo 0-100: promedio de energia, memoria e interferencia invertida.</summary>
+    float EstadoCognitivoPorcentaje()
     {
         var s = PlayerStats.Instance;
-        if (s == null) return 90f;
+        if (s == null) return 55f;   // sin datos: estado medio
+        return (s.energy + s.memory + (100f - s.interference)) / 3f;
+    }
 
-        if (s.memory >= 70f) return 120f; // óptimo
-        if (s.memory <= 39f) return 60f;  // deficiente
-        return 90f; // medio
+    float CalcularTiempoPorEstado()
+    {
+        float estado = EstadoCognitivoPorcentaje();
+        float t;
+        if (estado >= umbralOptimo) t = tiempoOptimo;            // optimo
+        else if (estado <= umbralDeficiente) t = tiempoDeficiente; // deficiente
+        else t = tiempoMedio;                                      // medio
+
+        Debug.Log($"[Memorama] Estado cognitivo {estado:F0}% -> {t:F0} s");
+        return t;
     }
 
     void IniciarTemporizador()
@@ -227,7 +265,8 @@ public class MemoramaManager : MonoBehaviour
         if (barraTiempo != null) barraTiempo.fillAmount = 1f;
         if (textoTiempo != null)
         {
-            textoTiempo.color = new Color(1f, 1f, 1f, 0.9f); // blanco, alpha 0.9
+            if (forzarTimerBlanco) QuitarEfectosDeColorAlTimer();
+            textoTiempo.color = new Color(colorTiempo.r * brilloTiempo, colorTiempo.g * brilloTiempo, colorTiempo.b * brilloTiempo, 1f); // blanco al 90 % de brillo
             textoTiempo.text = $"{tiempoTotal:F0}s";
         }
     }
@@ -296,7 +335,7 @@ public class MemoramaManager : MonoBehaviour
             alAcertar?.Invoke();
             MostrarImagenAcierto();
             ReproducirSonido(sonidoAcierto);
-            Vibrar(1);
+            HapticService.Success();   // HU 3.3.3: vibracion de acierto
 
             ActualizarUI();
             AplicarImpactoBarras();
@@ -318,7 +357,7 @@ public class MemoramaManager : MonoBehaviour
             alFallar?.Invoke();
             MostrarImagenIncorrecta();
             ReproducirSonido(sonidoError);
-            Vibrar(2);
+            HapticService.Error();   // HU 3.3.3: vibracion de error
 
             contadorFallos++;
             Debug.Log($"[Memorama] Fallos: {contadorFallos} / {fallosParaReiniciar}");

@@ -62,6 +62,8 @@ public class TubeRingManipulator : MonoBehaviour
     public bool logValues = true;
 
     public event Action<TubeRingManipulator> Solved;
+    /// <summary>Se dispara al soltar el anillo girado pero lejos de la posicion correcta. Parametro: error en grados.</summary>
+    public event Action<TubeRingManipulator, float> ReleasedWrong;
 
     public bool IsSolved { get; private set; }
     public float ErrorDegrees { get; private set; }
@@ -80,6 +82,7 @@ public class TubeRingManipulator : MonoBehaviour
     float snapTarget;
     float alignedTime;
     float grabStartTime;
+    float grabStartOffset;
     bool axisFixed;
 
     // Padre original y pose local, para recuperarlos si XRI desparenta el anillo
@@ -154,6 +157,7 @@ public class TubeRingManipulator : MonoBehaviour
                           $"rotacion local = {transform.localEulerAngles} | posicion local = {transform.localPosition}", this);
             }
 
+            if (!wasSelecting) grabStartOffset = offset;
             blockedGrab = false;
             RotateWithHand(selecting);
         }
@@ -355,6 +359,11 @@ public class TubeRingManipulator : MonoBehaviour
         {
             snapTarget = offset - SignedDelta(offset);
             snapping = true;
+        }
+        else if (Mathf.Abs(Mathf.DeltaAngle(grabStartOffset, offset)) > 5f)
+        {
+            // Lo giro de verdad y lo solto lejos de la posicion correcta: retroalimentacion de error
+            ReleasedWrong?.Invoke(this, error);
         }
     }
 

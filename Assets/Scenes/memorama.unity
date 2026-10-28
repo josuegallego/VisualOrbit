@@ -3364,6 +3364,58 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: 036e37d1b4814974b80b08420bc75f97, type: 3}
   m_PrefabInstance: {fileID: 1947116437}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &867354808
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 867354809}
+  - component: {fileID: 867354810}
+  m_Layer: 0
+  m_Name: start positicion
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &867354809
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 867354808}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.202783, y: -0.07051815, z: 14.097209}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &867354810
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 867354808}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7dac296fea9a43d49a3d20fd69df4bd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  target: {fileID: 0}
+  headPosition: {x: -0.49189878, y: 1.7124237, z: 1.0542316}
+  configured: 1
+  headYaw: 0.60000366
+  useHeadHeight: 1
+  delaySeconds: 0
+  holdSeconds: 1.5
+  logEvents: 1
 --- !u!1 &917897496
 GameObject:
   m_ObjectHideFlags: 0
@@ -3533,6 +3585,9 @@ MonoBehaviour:
   alPerderPorTiempo:
     m_PersistentCalls:
       m_Calls: []
+  intensidadVibracion: 0.6
+  duracionPulso: 0.2
+  pausaEntrePulsos: 0.15
 --- !u!4 &922500970
 Transform:
   m_ObjectHideFlags: 0
@@ -3683,6 +3738,82 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &926634697
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 926634699}
+  - component: {fileID: 926634698}
+  m_Layer: 0
+  m_Name: vistaBorrosa
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &926634698
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926634697}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26705c0696a6dd04898a1c7c71276cf3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minSeverity: 0.2
+  severitySmoothing: 1.5
+  forceSeverity: 0
+  mediumHold: {x: 1.5, y: 3}
+  strongHold: {x: 1, y: 4}
+  clearHold: {x: 10, y: 3}
+  transitionSeconds: 1.5
+  mediumLevel: 0.5
+  useVeil: 1
+  veilColor: {r: 0.85, g: 0.88, b: 0.95, a: 1}
+  maxVeilAlpha: 0.75
+  centerAlpha: 0.35
+  veilInner: 0.2
+  swayDegrees: 3
+  swaySpeed: 0.9
+  breathe: 0.04
+  copyFromRingFeedback: 1
+  canvasDistance: 0.47
+  veilZ: 147
+  autoFitFov: 0
+  overlaySize: 1.6
+  fitMargin: 1.15
+  veilSizeScale: 1.4
+  veilWidthScale: 1.5
+  useBlurVolume: 1
+  blurVolume: {fileID: 0}
+  maxVolumeWeight: 1
+  blurStart: 0.1
+  blurEnd: 0.6
+  blurMaxRadius: 1.5
+  chromatic: 0.5
+  logEvents: 1
+--- !u!4 &926634699
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 926634697}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 3.0935624, y: 0.08722438, z: 12.49498}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1037962221
 GameObject:
   m_ObjectHideFlags: 0
@@ -7001,3 +7132,5 @@ SceneRoots:
   - {fileID: 1339454480}
   - {fileID: 8733550}
   - {fileID: 922500970}
+  - {fileID: 926634699}
+  - {fileID: 867354809}

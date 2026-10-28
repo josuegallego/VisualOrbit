@@ -36,11 +36,14 @@ public class InteractionDiagnostic : MonoBehaviour
     bool[] pressed;
     int hoverCount;
     bool selected;
+    TubeRingManipulator ring;
+    bool lastAllowed = true;
     float nextLog;
 
     void Awake()
     {
         interactable = GetComponent<XRBaseInteractable>();
+        ring = GetComponent<TubeRingManipulator>();
 
         if (targetRenderer == null) targetRenderer = GetComponentInChildren<Renderer>();
         if (targetRenderer != null)
@@ -119,7 +122,7 @@ public class InteractionDiagnostic : MonoBehaviour
         {
             Material[] mats = originalMaterials;
             if (selected && selectArray != null && selectMaterial != null) mats = selectArray;
-            else if (hoverCount > 0 && hoverArray != null && hoverMaterial != null) mats = hoverArray;
+            else if (hoverCount > 0 && HoverAllowed() && hoverArray != null && hoverMaterial != null) mats = hoverArray;
             targetRenderer.sharedMaterials = mats;
         }
 
@@ -186,8 +189,23 @@ public class InteractionDiagnostic : MonoBehaviour
         }
     }
 
+    // El resaltado de hover solo se muestra si es el turno de ese anillo
+    bool HoverAllowed()
+    {
+        if (ring == null) return true;
+        if (ring.IsSolved) return false;
+        return ring.sequence == null || ring.sequence.CanSolve(ring);
+    }
+
     void Update()
     {
+        bool allowed = HoverAllowed();
+        if (allowed != lastAllowed)
+        {
+            lastAllowed = allowed;
+            Refresh();
+        }
+
         if (interactors == null) return;
 
         // Avisa cuando el input de seleccion (pellizco o gatillo) se activa o se suelta
