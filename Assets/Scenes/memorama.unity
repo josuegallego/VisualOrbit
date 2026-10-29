@@ -637,7 +637,7 @@ MonoBehaviour:
   dorso: {fileID: 1395502324}
   frente: {fileID: 564945855}
   pivote: {fileID: 0}
-  idPareja: 1
+  idPareja: 3
   duracion: 0.45
   curva:
     serializedVersion: 2
@@ -1787,7 +1787,7 @@ MonoBehaviour:
   dorso: {fileID: 357172126}
   frente: {fileID: 1701998807}
   pivote: {fileID: 0}
-  idPareja: 3
+  idPareja: 5
   duracion: 0.45
   curva:
     serializedVersion: 2
@@ -2477,7 +2477,7 @@ MonoBehaviour:
   dorso: {fileID: 1037962221}
   frente: {fileID: 273649966}
   pivote: {fileID: 0}
-  idPareja: 0
+  idPareja: 6
   duracion: 0.45
   curva:
     serializedVersion: 2
@@ -2839,7 +2839,7 @@ MonoBehaviour:
   dorso: {fileID: 1933065345}
   frente: {fileID: 1486286988}
   pivote: {fileID: 0}
-  idPareja: 2
+  idPareja: 4
   duracion: 0.45
   curva:
     serializedVersion: 2
@@ -2928,7 +2928,7 @@ MonoBehaviour:
   dorso: {fileID: 361869466}
   frente: {fileID: 517244251}
   pivote: {fileID: 0}
-  idPareja: 1
+  idPareja: 2
   duracion: 0.45
   curva:
     serializedVersion: 2
@@ -3320,7 +3320,7 @@ MonoBehaviour:
   dorso: {fileID: 1279351819}
   frente: {fileID: 1850836318}
   pivote: {fileID: 0}
-  idPareja: 2
+  idPareja: 4
   duracion: 0.45
   curva:
     serializedVersion: 2
@@ -3585,6 +3585,14 @@ MonoBehaviour:
   alPerderPorTiempo:
     m_PersistentCalls:
       m_Calls: []
+  umbralOptimo: 70
+  umbralDeficiente: 39
+  tiempoOptimo: 120
+  tiempoMedio: 90
+  tiempoDeficiente: 60
+  colorTiempo: {r: 1, g: 1, b: 1, a: 1}
+  brilloTiempo: 0.9
+  forzarTimerBlanco: 1
   intensidadVibracion: 0.6
   duracionPulso: 0.2
   pausaEntrePulsos: 0.15
@@ -4465,7 +4473,7 @@ MonoBehaviour:
   dorso: {fileID: 430975631}
   frente: {fileID: 186411413}
   pivote: {fileID: 0}
-  idPareja: 0
+  idPareja: 6
   duracion: 0.45
   curva:
     serializedVersion: 2
@@ -4554,7 +4562,7 @@ MonoBehaviour:
   dorso: {fileID: 1865318635}
   frente: {fileID: 1738733043}
   pivote: {fileID: 0}
-  idPareja: 1
+  idPareja: 3
   duracion: 0.45
   curva:
     serializedVersion: 2
@@ -5029,7 +5037,7 @@ MonoBehaviour:
   dorso: {fileID: 314203232}
   frente: {fileID: 1261233074}
   pivote: {fileID: 0}
-  idPareja: 1
+  idPareja: 2
   duracion: 0.45
   curva:
     serializedVersion: 2
@@ -6408,7 +6416,7 @@ MonoBehaviour:
   dorso: {fileID: 1269066171}
   frente: {fileID: 1104012239}
   pivote: {fileID: 0}
-  idPareja: 3
+  idPareja: 5
   duracion: 0.45
   curva:
     serializedVersion: 2
@@ -7018,6 +7026,93 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!1 &2021491560
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2021491562}
+  - component: {fileID: 2021491561}
+  m_Layer: 0
+  m_Name: 3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &2021491561
+SpriteRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2021491560}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Sprite: {fileID: 21300000, guid: d684275fe52ebe844aefb05722f0daa6, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 32.64, y: 43.690666}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
+  m_MaskInteraction: 0
+  m_SpriteSortPoint: 0
+--- !u!4 &2021491562
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2021491560}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!23 &5066047197959438247
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -7134,3 +7229,4 @@ SceneRoots:
   - {fileID: 922500970}
   - {fileID: 926634699}
   - {fileID: 867354809}
+  - {fileID: 2021491562}
