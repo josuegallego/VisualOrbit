@@ -2323,6 +2323,10 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: db969903185f07e47ac281820744d6af, type: 2}
+    - target: {fileID: 5866666021909216657, guid: 2efecddcc82585f49981e92625d61516, type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7300419628527280454, guid: 2efecddcc82585f49981e92625d61516, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
@@ -3342,7 +3346,7 @@ MonoBehaviour:
   panelDisclaimer: {fileID: 1614370087}
   panelEnfermera: {fileID: 1995265745}
   enfermeraManager: {fileID: 307844266}
-  delayAntesDeIniciar: 0
+  delayAntesDeIniciar: -0.8
 --- !u!4 &1105284082
 Transform:
   m_ObjectHideFlags: 0
@@ -4589,7 +4593,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1625740905}
   m_LocalRotation: {x: -0, y: -0.024152428, z: -0, w: 0.9997083}
-  m_LocalPosition: {x: 0, y: 0, z: -886}
+  m_LocalPosition: {x: 0, y: 0, z: -361}
   m_LocalScale: {x: 6.1940475, y: 10.500782, z: 3.5014}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4598,7 +4602,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: -2.768, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1448, y: 287}
+  m_AnchoredPosition: {x: -2133, y: -1152}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1625740907
@@ -9976,7 +9980,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0, y: 0.000011444092}
+  m_AnchoredPosition: {x: 5.4, y: 0.000011444092}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &1995265747

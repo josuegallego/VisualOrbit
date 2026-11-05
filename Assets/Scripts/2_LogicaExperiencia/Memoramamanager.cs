@@ -12,15 +12,11 @@ public class MemoramaManager : MonoBehaviour
     [Header("Cartas (Asígnalas en orden de pareja: 0 y 1, 2 y 3, 4 y 5...)")]
     public List<CartaVoltear> todasLasCartas = new List<CartaVoltear>();
 
-    // Esta lista guardará SOLO las cartas que se van a usar en esta partida
     private List<CartaVoltear> cartas = new List<CartaVoltear>();
 
     [Header("Indicadores Visuales de Ruta")]
-    [Tooltip("Imagen que se activa si el jugador está en la ruta buena (8 cartas)")]
     public GameObject indicadorRutaBuena;
-    [Tooltip("Imagen que se activa si el jugador está en la ruta intermedia (10 cartas)")]
     public GameObject indicadorRutaIntermedia;
-    [Tooltip("Imagen que se activa si el jugador está en la ruta mala (12 cartas)")]
     public GameObject indicadorRutaMala;
 
     [Header("Resaltado")]
@@ -29,29 +25,21 @@ public class MemoramaManager : MonoBehaviour
     [Range(0f, 1f)] public float intensidadResalte = 0.65f;
 
     [Header("Imagen de Acierto")]
-    [Tooltip("Imagen (objeto de la escena) que se activa cuando el jugador acierta una pareja. Déjala desactivada al inicio.")]
     public GameObject imagenAcierto;
-    [Tooltip("Segundos que permanece visible la imagen de acierto.")]
     public float duracionImagenAcierto = 5f;
     private Coroutine rutinaImagenAcierto;
 
     [Header("Imagen de Error")]
-    [Tooltip("Imagen (objeto de la escena) que se activa cuando el jugador falla una pareja. Déjala desactivada al inicio.")]
     public GameObject imagenIncorrecta;
-    [Tooltip("Segundos que permanece visible la imagen de error.")]
     public float duracionImagenIncorrecta = 3f;
     private Coroutine rutinaImagenError;
 
     [Header("Transición de las imágenes")]
-    [Tooltip("Segundos que tarda en aparecer y desaparecer (fundido de opacidad). 0 = sin transición.")]
     [Min(0f)] public float duracionFundido = 0.3f;
 
     [Header("Sonidos")]
-    [Tooltip("AudioSource que reproduce los sonidos. Vacío = se crea uno automáticamente en este objeto.")]
     public AudioSource fuenteAudio;
-    [Tooltip("Sonido al acertar una pareja.")]
     public AudioClip sonidoAcierto;
-    [Tooltip("Sonido al fallar una pareja.")]
     public AudioClip sonidoError;
     [Range(0f, 1f)] public float volumenSonidos = 1f;
 
@@ -98,7 +86,7 @@ public class MemoramaManager : MonoBehaviour
         {
             fuenteAudio = gameObject.AddComponent<AudioSource>();
             fuenteAudio.playOnAwake = false;
-            fuenteAudio.spatialBlend = 0f;   // 2D: se oye igual desde cualquier posición
+            fuenteAudio.spatialBlend = 0f;
         }
 
         ConfigurarCartasPorRuta();
@@ -107,10 +95,8 @@ public class MemoramaManager : MonoBehaviour
     void ConfigurarCartasPorRuta()
     {
         RutaDificultad ruta = DeterminarRuta();
-
         int cartasAUsar = 12;
 
-        // Apagar TODOS los indicadores primero
         if (indicadorRutaBuena != null) indicadorRutaBuena.SetActive(false);
         if (indicadorRutaIntermedia != null) indicadorRutaIntermedia.SetActive(false);
         if (indicadorRutaMala != null) indicadorRutaMala.SetActive(false);
@@ -120,30 +106,22 @@ public class MemoramaManager : MonoBehaviour
             case RutaDificultad.Buena:
                 cartasAUsar = 8;
                 if (indicadorRutaBuena != null) indicadorRutaBuena.SetActive(true);
-                Debug.Log("<color=green>[Memorama] Ruta BUENA detectada. Se usarán 8 cartas (4 parejas).</color>");
                 break;
             case RutaDificultad.Intermedia:
                 cartasAUsar = 10;
                 if (indicadorRutaIntermedia != null) indicadorRutaIntermedia.SetActive(true);
-                Debug.Log("<color=yellow>[Memorama] Ruta INTERMEDIA detectada. Se usarán 10 cartas (5 parejas).</color>");
                 break;
             case RutaDificultad.Mala:
                 cartasAUsar = 12;
                 if (indicadorRutaMala != null) indicadorRutaMala.SetActive(true);
-                Debug.Log("<color=red>[Memorama] Ruta MALA detectada. Se usarán 12 cartas (6 parejas).</color>");
                 break;
         }
 
-        // ====================================================================
-        // ACTIVACIÓN SECUENCIAL POR PAREJAS
-        // ====================================================================
         cartas.Clear();
-
         for (int i = 0; i < todasLasCartas.Count; i++)
         {
             if (todasLasCartas[i] == null) continue;
 
-            // Como están en orden, las primeras 'cartasAUsar' son las que van
             if (i < cartasAUsar)
             {
                 todasLasCartas[i].gameObject.SetActive(true);
@@ -154,8 +132,6 @@ public class MemoramaManager : MonoBehaviour
                 todasLasCartas[i].gameObject.SetActive(false);
             }
         }
-
-        Debug.Log($"[Memorama] Total cartas activas para esta ruta: {cartas.Count}");
     }
 
     RutaDificultad DeterminarRuta()
@@ -208,39 +184,30 @@ public class MemoramaManager : MonoBehaviour
         ActualizarUI();
     }
 
-    // HU: el tiempo depende del estado cognitivo acumulado (energia + memoria + interferencia)
     [Header("Tiempo segun estado cognitivo")]
-    [Tooltip("Estado optimo: a partir de este porcentaje.")]
     public float umbralOptimo = 70f;
-    [Tooltip("Estado deficiente: hasta este porcentaje.")]
     public float umbralDeficiente = 39f;
     public float tiempoOptimo = 120f;
     public float tiempoMedio = 90f;
     public float tiempoDeficiente = 60f;
-    [Tooltip("Color de la cuenta regresiva (RGB 255,255,255).")]
     public Color colorTiempo = Color.white;
-    [Tooltip("Brillo del texto (0.9 = 90 %).")]
     [Range(0f, 1f)] public float brilloTiempo = 0.9f;
-
-    [Tooltip("Apaga el brillo cian (TextGlowPulse / Glow del material) del texto del timer para que se vea blanco.")]
     public bool forzarTimerBlanco = true;
 
-    // Algo mas (TextGlowPulse, glow o color de cara del material) puede pintar el texto de cian
     void QuitarEfectosDeColorAlTimer()
     {
         var pulse = textoTiempo.GetComponent<TextGlowPulse>();
         if (pulse != null) pulse.enabled = false;
 
-        Material m = textoTiempo.fontMaterial;   // copia propia: no toca el Font Asset
+        Material m = textoTiempo.fontMaterial;
         m.DisableKeyword("GLOW_ON");
         if (m.HasProperty("_FaceColor")) m.SetColor("_FaceColor", Color.white);
     }
 
-    /// <summary>Estado cognitivo 0-100: promedio de energia, memoria e interferencia invertida.</summary>
     float EstadoCognitivoPorcentaje()
     {
         var s = PlayerStats.Instance;
-        if (s == null) return 55f;   // sin datos: estado medio
+        if (s == null) return 55f;
         return (s.energy + s.memory + (100f - s.interference)) / 3f;
     }
 
@@ -248,11 +215,9 @@ public class MemoramaManager : MonoBehaviour
     {
         float estado = EstadoCognitivoPorcentaje();
         float t;
-        if (estado >= umbralOptimo) t = tiempoOptimo;            // optimo
-        else if (estado <= umbralDeficiente) t = tiempoDeficiente; // deficiente
-        else t = tiempoMedio;                                      // medio
-
-        Debug.Log($"[Memorama] Estado cognitivo {estado:F0}% -> {t:F0} s");
+        if (estado >= umbralOptimo) t = tiempoOptimo;
+        else if (estado <= umbralDeficiente) t = tiempoDeficiente;
+        else t = tiempoMedio;
         return t;
     }
 
@@ -266,7 +231,7 @@ public class MemoramaManager : MonoBehaviour
         if (textoTiempo != null)
         {
             if (forzarTimerBlanco) QuitarEfectosDeColorAlTimer();
-            textoTiempo.color = new Color(colorTiempo.r * brilloTiempo, colorTiempo.g * brilloTiempo, colorTiempo.b * brilloTiempo, 1f); // blanco al 90 % de brillo
+            textoTiempo.color = new Color(colorTiempo.r * brilloTiempo, colorTiempo.g * brilloTiempo, colorTiempo.b * brilloTiempo, 1f);
             textoTiempo.text = $"{tiempoTotal:F0}s";
         }
     }
@@ -294,8 +259,11 @@ public class MemoramaManager : MonoBehaviour
         BloquearTodas();
         alPerderPorTiempo?.Invoke();
 
-        yield return new WaitForSecondsRealtime(1f);
+        // GUARDAR TIEMPO Y ESTADO (FALLIDO) EN EL JSON
+        if (PlayerDataStore.ActiveSession != null)
+            PlayerDataStore.SetTiempoMemorama(tiempoTotal, false);
 
+        yield return new WaitForSecondsRealtime(1f);
         yield return ReiniciarJuegoCompleto();
     }
 
@@ -314,7 +282,7 @@ public class MemoramaManager : MonoBehaviour
             StartCoroutine(Evaluar(abiertas[0], abiertas[1]));
     }
 
-        IEnumerator Evaluar(CartaVoltear a, CartaVoltear b)
+    IEnumerator Evaluar(CartaVoltear a, CartaVoltear b)
     {
         bloqueado = true;
         BloquearTodas();
@@ -335,7 +303,6 @@ public class MemoramaManager : MonoBehaviour
             alAcertar?.Invoke();
             MostrarImagenAcierto();
             ReproducirSonido(sonidoAcierto);
-            HapticService.Success();   // HU 3.3.3: vibracion de acierto
 
             ActualizarUI();
             AplicarImpactoBarras();
@@ -344,6 +311,14 @@ public class MemoramaManager : MonoBehaviour
             {
                 temporizadorActivo = false;
                 alGanar?.Invoke();
+
+                // GUARDAR TIEMPO Y ESTADO (GANADO) EN EL JSON
+                if (PlayerDataStore.ActiveSession != null)
+                {
+                    float tiempoJugado = tiempoTotal - tiempoRestante;
+                    PlayerDataStore.SetTiempoMemorama(tiempoJugado, true);
+                }
+
                 yield break;
             }
 
@@ -357,17 +332,13 @@ public class MemoramaManager : MonoBehaviour
             alFallar?.Invoke();
             MostrarImagenIncorrecta();
             ReproducirSonido(sonidoError);
-            HapticService.Error();   // HU 3.3.3: vibracion de error
 
             contadorFallos++;
-            Debug.Log($"[Memorama] Fallos: {contadorFallos} / {fallosParaReiniciar}");
 
             yield return new WaitForSecondsRealtime(esperaAntesDeReiniciar);
 
             if (contadorFallos >= fallosParaReiniciar)
             {
-                Debug.Log("[Memorama] Límite de fallos alcanzado. Volteando todas las cartas (el tiempo sigue).");
-
                 foreach (var c in cartas)
                     if (c != null) c.MostrarDorso();
 
@@ -406,7 +377,6 @@ public class MemoramaManager : MonoBehaviour
 
         bloqueado = false;
         DesbloquearRestantes();
-
         alReiniciar?.Invoke();
     }
 
@@ -419,16 +389,9 @@ public class MemoramaManager : MonoBehaviour
         StartCoroutine(ReiniciarJuegoCompleto());
     }
 
-    // ------------------------------------------------------------------ imágenes de acierto / error
-
     void MostrarImagenAcierto()
     {
-        if (imagenAcierto == null)
-        {
-            Debug.LogWarning("[Memorama] 'Imagen Acierto' no está asignada en el Inspector del MemoramaManager.", this);
-            return;
-        }
-        Debug.Log($"[Memorama] Mostrando imagen de acierto: {imagenAcierto.name}", imagenAcierto);
+        if (imagenAcierto == null) return;
         if (rutinaImagenAcierto != null) StopCoroutine(rutinaImagenAcierto);
         rutinaImagenAcierto = StartCoroutine(ImagenAciertoRutina());
     }
@@ -441,12 +404,7 @@ public class MemoramaManager : MonoBehaviour
 
     void MostrarImagenIncorrecta()
     {
-        if (imagenIncorrecta == null)
-        {
-            Debug.LogWarning("[Memorama] 'Imagen Incorrecta' no está asignada en el Inspector del MemoramaManager.", this);
-            return;
-        }
-        Debug.Log($"[Memorama] Mostrando imagen de error: {imagenIncorrecta.name}", imagenIncorrecta);
+        if (imagenIncorrecta == null) return;
         if (rutinaImagenError != null) StopCoroutine(rutinaImagenError);
         rutinaImagenError = StartCoroutine(ImagenIncorrectaRutina());
     }
@@ -457,56 +415,22 @@ public class MemoramaManager : MonoBehaviour
         rutinaImagenError = null;
     }
 
-  
     void ReproducirSonido(AudioClip clip)
     {
         if (clip == null || fuenteAudio == null) return;
         fuenteAudio.PlayOneShot(clip, volumenSonidos);
     }
 
-    [Header("Vibración")]
-    [Range(0f, 1f)] public float intensidadVibracion = 0.6f;
-    public float duracionPulso = 0.2f;
-    public float pausaEntrePulsos = 0.15f;
-
-    void Vibrar(int veces) => StartCoroutine(VibrarRutina(veces));
-
-    IEnumerator VibrarRutina(int veces)
-    {
-        for (int i = 0; i < veces; i++)
-        {
-            EnviarPulso();
-            Debug.Log($"[Memorama] Vibración {i + 1}/{veces}");
-            yield return new WaitForSecondsRealtime(duracionPulso + pausaEntrePulsos);
-        }
-    }
-
-    void EnviarPulso()
-    {
-        var dispositivos = new List<UnityEngine.XR.InputDevice>();
-        UnityEngine.XR.InputDevices.GetDevicesWithCharacteristics(
-            UnityEngine.XR.InputDeviceCharacteristics.Controller, dispositivos);
-
-        foreach (var d in dispositivos)
-            if (d.TryGetHapticCapabilities(out var cap) && cap.supportsImpulse)
-                d.SendHapticImpulse(0, intensidadVibracion, duracionPulso);
-    }
-
-    // Opacidad original de cada SpriteRenderer (se guarda la primera vez, para no ir perdiendo alpha)
     readonly Dictionary<SpriteRenderer, float> alfaBase = new Dictionary<SpriteRenderer, float>();
 
     IEnumerator MostrarConFundido(GameObject objeto, float visible)
     {
-        // CanvasGroup: controla la opacidad de imágenes de UI (Image, TMP) y de todo lo que tengan dentro
         var grupo = objeto.GetComponent<CanvasGroup>();
         if (grupo == null) grupo = objeto.AddComponent<CanvasGroup>();
 
-        // SpriteRenderer: el CanvasGroup NO los afecta, así que se funde su color directamente
         var sprites = objeto.GetComponentsInChildren<SpriteRenderer>(true);
         foreach (var sr in sprites)
             if (!alfaBase.ContainsKey(sr)) alfaBase[sr] = sr.color.a;
-
-        Debug.Log($"[Memorama] Fundido de '{objeto.name}': {duracionFundido}s, SpriteRenderers: {sprites.Length}");
 
         AplicarAlfa(grupo, sprites, 0f);
         objeto.SetActive(true);
@@ -555,8 +479,6 @@ public class MemoramaManager : MonoBehaviour
         if (imagenAcierto != null) imagenAcierto.SetActive(false);
         if (imagenIncorrecta != null) imagenIncorrecta.SetActive(false);
     }
-
-    // ------------------------------------------------------------------ utilidades
 
     bool HayCartasGirando()
     {

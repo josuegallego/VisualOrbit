@@ -21,18 +21,17 @@ public class PlayerSession
     public bool experienciaCompletada = false;
 
     // --- Decisiones alimentarias ---
-    // Ejemplo: 0 = no respondido, 1..5 = opción elegida.
     public List<int> decisiones = new List<int>();
 
-    // --- Minijuegos ---
-    public float puntajeMinijuego1 = 0f;
-    public float puntajeMinijuego2 = 0f;
+    // --- Minijuegos (Tiempos y si se completaron) ---
+    public float tiempoMemorama = 0f;
+    public bool memoramaCompletado = false;
+
+    public float tiempoMolecula = 0f;
+    public bool moleculaCompletado = false;
 
     // --- Puntaje final (para el ranking) ---
     public float puntajeTotal = 0f;
-
-    // Si necesitas más campos, agrégalos aquí y los nuevos JSON
-    // seguirán siendo compatibles (JsonUtility los rellena por defecto).
 }
 
 /// <summary>
@@ -45,16 +44,64 @@ public class PlayerData
 }
 
 /// <summary>
-/// Maneja la carga y guardado de PlayerData en Application.persistentDataPath.
+/// Maneja la carga y guardado de PlayerData.
 /// Es estático, por lo que sobrevive a los cambios de escena mientras la app esté abierta.
 /// </summary>
 public static class PlayerDataStore
 {
     private const string FileName = "player_data.json";
 
-    private static string FilePath =>
-        Path.Combine(Application.persistentDataPath, FileName);
+    // ------------------------------------------------------------ Configuración del puntaje
+    // Ajusta estos valores a tu gusto.
+    private const float PuntosBaseMinijuego = 50f;   // Por completar un minijuego
+    private const float BonoMaxRapidez = 50f;        // Extra máximo por terminar rápido
+    private const float SegundosParaBonoCero = 100f; // Si tarda esto o más, no hay bono de rapidez
+    private const float BonoExperienciaCompleta = 50f;
 
+    // ------------------------------------------------------------ Ruta del archivo
+    private static string cachedPath;
+
+    private static string FilePath
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(cachedPath)) return cachedPath;
+            cachedPath = ResolvePath();
+            return cachedPath;
+        }
+    }
+
+    private static string ResolvePath()
+    {
+        // 1) Escritorio
+        try
+        {
+            string desktop = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+            if (!string.IsNullOrEmpty(desktop))
+            {
+                string path = Path.Combine(desktop, FileName);
+                string tmp = path + ".tmp";
+                File.WriteAllText(tmp, "test");
+                File.Delete(tmp);
+                return path;
+            }
+        }
+        catch { /* pasa al siguiente */ }
+
+        // 2) Documentos
+        try
+        {
+            string docs = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            if (!string.IsNullOrEmpty(docs))
+                return Path.Combine(docs, FileName);
+        }
+        catch { /* pasa al siguiente */ }
+
+        // 3) Carpeta de Unity
+        return Path.Combine(Application.persistentDataPath, FileName);
+    }
+
+    // ------------------------------------------------------------ Estado en memoria
     private static PlayerData cached;
 
     /// <summary>Datos actuales (los carga de disco si aún no están en memoria).</summary>
@@ -88,7 +135,7 @@ public static class PlayerDataStore
 
         try
         {
-            string json = JsonUtility.ToJson(cached, prettyPrint: true);
+            string json = JsonUtility.ToJson(cached, true);
             File.WriteAllText(FilePath, json);
             Debug.Log($"[PlayerDataStore] Guardado: {cached.sesiones.Count} sesiones en {FilePath}");
         }
@@ -151,8 +198,10 @@ public static class PlayerDataStore
             ultimoPanel = 0,
             experienciaCompletada = false,
             decisiones = new List<int>(),
-            puntajeMinijuego1 = 0f,
-            puntajeMinijuego2 = 0f,
+            tiempoMemorama = 0f,
+            memoramaCompletado = false,
+            tiempoMolecula = 0f,
+            moleculaCompletado = false,
             puntajeTotal = 0f
         };
 
@@ -162,7 +211,10 @@ public static class PlayerDataStore
         return session;
     }
 
-    /// <summary>Cierra la sesión activa, calcula duración y guarda.</summary>
+    /// <summary>
+    /// Cierra la sesión activa: calcula duración y puntaje total, y guarda.
+    /// Llamar al terminar la experiencia (botón Continuar) antes de ir al Ranking.
+    /// </summary>
     public static void CloseActiveSession(bool completada = true)
     {
         var s = ActiveSession;
@@ -185,18 +237,27 @@ public static class PlayerDataStore
         if (DateTime.TryParse(s.fechaInicio, out var ini) &&
             DateTime.TryParse(s.fechaFin, out var fin))
         {
-            s.duracionSegundos = (float)(fin - ini).TotalSeconds;
+            s.duracionSegundos = Mathf.Max(0f, (float)(fin - ini).TotalSeconds);
         }
 
+        // El puntaje se calcula aquí, con la sesión ya cerrada
+        ComputeScore(s);
+
         Save();
-        Debug.Log($"[PlayerDataStore] Sesión cerrada: '{s.nombre}' | duración: {s.duracionSegundos:F1}s | completada: {completada}");
+        Debug.Log($"[PlayerDataStore] Sesión cerrada: '{s.nombre}' | duración: {s.duracionSegundos:F1}s | puntaje: {s.puntajeTotal:F0} | completada: {completada}");
 
         ActiveSession = null;
     }
 
+    /// <summary>Seguro: si hay una sesión abierta, la cierra. Si no, no hace nada.</summary>
+    public static void CloseActiveSessionIfOpen(bool completada = true)
+    {
+        if (ActiveSession != null)
+            CloseActiveSession(completada);
+    }
+
     // ---------------------------------------------------------------- Actualizar datos de la sesión activa
 
-    /// <summary>Actualiza el último panel alcanzado por la sesión activa.</summary>
     public static void SetActiveSessionPanel(int panelIndex)
     {
         if (ActiveSession == null) return;
@@ -204,7 +265,6 @@ public static class PlayerDataStore
         Save();
     }
 
-    /// <summary>Guarda una decisión alimentaria (agrega o reemplaza en el índice dado).</summary>
     public static void SetDecision(int index, int valor)
     {
         if (ActiveSession == null) return;
@@ -216,37 +276,76 @@ public static class PlayerDataStore
         Save();
     }
 
-    /// <summary>Actualiza el puntaje de un minijuego (1 o 2).</summary>
-    public static void SetMinigameScore(int minigame, float score)
+    public static void SetTiempoMemorama(float tiempo, bool completado)
     {
         if (ActiveSession == null) return;
-
-        if (minigame == 1) ActiveSession.puntajeMinijuego1 = score;
-        else if (minigame == 2) ActiveSession.puntajeMinijuego2 = score;
-        else Debug.LogWarning($"[PlayerDataStore] Minijuego inválido: {minigame}");
-
+        ActiveSession.tiempoMemorama = tiempo;
+        ActiveSession.memoramaCompletado = completado;
+        ComputeScore(ActiveSession); // puntaje parcial siempre actualizado
         Save();
     }
 
-    /// <summary>Recalcula el puntaje total (o pon el que quieras).</summary>
+    public static void SetTiempoMolecula(float tiempo, bool completado)
+    {
+        if (ActiveSession == null) return;
+        ActiveSession.tiempoMolecula = tiempo;
+        ActiveSession.moleculaCompletado = completado;
+        ComputeScore(ActiveSession); // puntaje parcial siempre actualizado
+        Save();
+    }
+
+    // ---------------------------------------------------------------- Puntaje
+
+    /// <summary>Recalcula el puntaje de la sesión activa (se mantiene por compatibilidad).</summary>
     public static void RecalculateTotalScore()
     {
         if (ActiveSession == null) return;
-        ActiveSession.puntajeTotal = ActiveSession.puntajeMinijuego1 + ActiveSession.puntajeMinijuego2;
+        ComputeScore(ActiveSession);
         Save();
+    }
+
+    /// <summary>
+    /// Puntaje por minijuego completado: 50 base + hasta 50 por rapidez.
+    /// Más 50 si terminó toda la experiencia. Máximo total: 250.
+    /// </summary>
+    private static void ComputeScore(PlayerSession s)
+    {
+        float score = 0f;
+
+        if (s.memoramaCompletado)
+            score += PuntosMinijuego(s.tiempoMemorama);
+
+        if (s.moleculaCompletado)
+            score += PuntosMinijuego(s.tiempoMolecula);
+
+        if (s.experienciaCompletada)
+            score += BonoExperienciaCompleta;
+
+        s.puntajeTotal = score;
+    }
+
+    private static float PuntosMinijuego(float tiempo)
+    {
+        float rapidez = Mathf.Clamp01(1f - tiempo / SegundosParaBonoCero);
+        return PuntosBaseMinijuego + BonoMaxRapidez * rapidez;
     }
 
     // ---------------------------------------------------------------- Ranking
 
-    /// <summary>Devuelve el histórico ordenado por puntaje descendente (para el ranking).</summary>
-    public static List<PlayerSession> GetRanking(bool soloCompletadas = true)
+    /// <summary>
+    /// Devuelve los usuarios ordenados por puntaje descendente.
+    /// En empate, gana el que tardó menos.
+    /// </summary>
+    public static List<PlayerSession> GetRanking(bool soloCompletadas = false)
     {
-        var lista = Current.sesiones;
+        IEnumerable<PlayerSession> lista = Current.sesiones;
 
         if (soloCompletadas)
-            lista = lista.Where(s => s.experienciaCompletada).ToList();
+            lista = lista.Where(s => s.experienciaCompletada);
 
-        return lista.OrderByDescending(s => s.puntajeTotal).ToList();
+        return lista.OrderByDescending(s => s.puntajeTotal)
+                    .ThenBy(s => s.duracionSegundos)
+                    .ToList();
     }
 
     /// <summary>Imprime por consola todo el histórico (debug).</summary>
