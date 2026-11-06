@@ -344,26 +344,41 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 53f8937dbd3b0a84992d9faa10be7d2c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sequence: {fileID: 0}
-  rings: []
+  sequence: {fileID: 1481019695}
+  rings:
+  - {fileID: 1085217876}
+  - {fileID: 163981293}
+  - {fileID: 1544260575}
+  - {fileID: 1751129335}
+  - {fileID: 1161555282}
+  - {fileID: 1611247255}
   useEdgeFlash: 1
   goodColor: {r: 0.15, g: 1, b: 0.4, a: 1}
   badColor: {r: 1, g: 0.15, b: 0.15, a: 1}
   flashIntensity: 0.7
   flashSeconds: 0.9
-  canvasDistance: 0.47
-  vignetteZ: 147
-  drawOnTop: 0
+  ajustarVineta: 0
+  ajusteEnRojo: 1
+  vinetaPosicion: {x: -0.09, y: -0.23, z: 0.38}
+  overlaySize: 1.6
   autoFitFov: 0
   fitMargin: 1.15
-  overlaySize: 1.6
-  vignetteInner: 0.5
+  vignetteInner: 0.215
+  vignetteZ: 98.9
+  drawOnTop: 0
   audioSource: {fileID: 18823767}
   goodClip: {fileID: 8300000, guid: 8b0198ea07d7fcc4886efdf4b6ea6357, type: 3}
   badClip: {fileID: 8300000, guid: 96c3e7b425e6f0146987c2889f48370c, type: 3}
   volume: 1
   badVolume: 3
   badCooldown: 0.5
+  goodIndicator: {fileID: 0}
+  badIndicator: {fileID: 0}
+  indicatorSeconds: 1.2
+  placeInFrontOfCamera: 1
+  indicatorDistance: 0.8
+  indicatorHeight: 0
+  indicatorSide: 0
   useHaptics: 1
   logEvents: 1
 --- !u!4 &18823769

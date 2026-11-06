@@ -26,7 +26,7 @@ RenderSettings:
   m_AmbientIntensity: 1
   m_AmbientMode: 0
   m_SubtractiveShadowColor: {r: 0.01886791, g: 0.017337117, b: 0.017337117, a: 1}
-  m_SkyboxMaterial: {fileID: 2100000, guid: 1a4ecba8cb460f0459a5614828337752, type: 2}
+  m_SkyboxMaterial: {fileID: 2100000, guid: 1fe71a88fe4e8a74183ba0b495048b80, type: 2}
   m_HaloStrength: 0.5
   m_FlareStrength: 1
   m_FlareFadeSpeed: 3
@@ -5921,6 +5921,51 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &927754732
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 927754734}
+  - component: {fileID: 927754733}
+  m_Layer: 0
+  m_Name: settingsPanelManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &927754733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 927754732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 230f04386153a2246b125cf68804603f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  startHidden: 1
+--- !u!4 &927754734
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 927754732}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.7780298, y: 0.7393806, z: 0.33387604}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &974295708
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7520,7 +7565,7 @@ Transform:
   m_GameObject: {fileID: 1258650289}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -227.09747, y: -324.91467, z: 639.18945}
+  m_LocalPosition: {x: -227.09747, y: -187, z: 639.18945}
   m_LocalScale: {x: 170.0439, y: 170.0439, z: 170.0439}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -11638,6 +11683,18 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3138069557345735819, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 927754733}
+    - target: {fileID: 3138069557345735819, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: ClosePanel
+      objectReference: {fileID: 0}
+    - target: {fileID: 3138069557345735819, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: SettingsPanelManager, Assembly-CSharp
+      objectReference: {fileID: 0}
     - target: {fileID: 3495459915786468626, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
       value: 1
@@ -11685,6 +11742,10 @@ PrefabInstance:
     - target: {fileID: 6415872092148506017, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMin.x
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6676404820425631481, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7658183853514800507, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
@@ -11806,7 +11867,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1867425924
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14161,3 +14222,4 @@ SceneRoots:
   - {fileID: 3622989}
   - {fileID: 272784264}
   - {fileID: 1124438352}
+  - {fileID: 927754734}

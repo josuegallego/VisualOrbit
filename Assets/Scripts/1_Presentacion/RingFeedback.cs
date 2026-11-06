@@ -28,20 +28,29 @@ public class RingFeedback : MonoBehaviour
     [Range(0f, 1f)] public float flashIntensity = 0.7f;
     [Tooltip("Duracion total del destello.")]
     public float flashSeconds = 0.9f;
-    [Tooltip("Distancia del Canvas a la camara (metros).")]
-    public float canvasDistance = 0.4f;
-    [Tooltip("Posicion Z del objeto 'Vignette' dentro del Canvas (el valor 'Pos Z' del Inspector). " +
-             "147 es el valor que funciono al probar en Play. Si no se ve, cambialo AQUI (no en Play, porque se pierde).")]
+
+    [Header("VINETA: posicion y tamano (todo junto)")]
+    [Tooltip("ACTIVALO para dejar la vineta FIJA y visible todo el tiempo y acomodarla con el visor puesto. " +
+             "Todo lo de esta seccion se ve al instante. DESACTIVALO al terminar: vuelve a salir solo al acertar/fallar.")]
+    public bool ajustarVineta = false;
+    [Tooltip("Color del modo ajuste: marcado = ROJO (mal), desmarcado = VERDE (bien).")]
+    public bool ajusteEnRojo = false;
+    [Tooltip("Posicion respecto a la mirada, en metros: X = izquierda(-)/derecha(+), Y = abajo(-)/arriba(+), Z = distancia hacia delante.")]
+    public Vector3 vinetaPosicion = new Vector3(0f, 0f, 0.47f);
+    // Compatibilidad: VisionImpairment lee este valor
+    public float canvasDistance => vinetaPosicion.z;
+    [Tooltip("Tamano fijo del filtro (metros). Solo se usa si 'Auto Fit Fov' esta desactivado.")]
+    public float overlaySize = 1f;
+    [Tooltip("Ajusta solo el tamano del filtro al campo de vision real del visor.")]
+    public bool autoFitFov = true;
+    [Tooltip("Margen sobre el campo de vision (1.15 = 15 % mas grande). Solo con 'Auto Fit Fov'.")]
+    public float fitMargin = 1.15f;
+    [Tooltip("Tamano del centro transparente (mas alto = mas despejado).")]
+    [Range(0.1f, 0.9f)] public float vignetteInner = 0.45f;
+    [Tooltip("Posicion Z interna del objeto 'Vignette' dentro del Canvas. 147 funciono al probar en Play.")]
     public float vignetteZ = 147f;
     [Tooltip("Experimental: dibujar por encima de todo. Dejalo desactivado si ya se ve bien.")]
     public bool drawOnTop = false;
-    [Tooltip("Ajusta solo el tamano del filtro al campo de vision real del visor (recomendado).")]
-    public bool autoFitFov = true;
-    [Tooltip("Margen sobre el campo de vision (1.15 = 15 % mas grande).")]
-    public float fitMargin = 1.15f;
-    [Tooltip("Solo si 'Auto Fit Fov' esta desactivado: tamano fijo del filtro (metros).")]
-    public float overlaySize = 1f;
-    [Range(0.1f, 0.9f)] public float vignetteInner = 0.45f;
 
     [Header("Audio")]
     public AudioSource audioSource;
@@ -54,6 +63,23 @@ public class RingFeedback : MonoBehaviour
     [Tooltip("Ganancia del sonido de error.")]
     [Range(0f, 5f)] public float badVolume = 3f;
     public float badCooldown = 0.5f;
+
+    [Header("Indicadores propios BIEN / MAL (opcional)")]
+    [Tooltip("Objeto de tu Canvas que se muestra al acertar (por ejemplo 'BIEN'). Puede estar desactivado.")]
+    public GameObject goodIndicator;
+    [Tooltip("Objeto de tu Canvas que se muestra al fallar (por ejemplo 'mal'). Puede estar desactivado.")]
+    public GameObject badIndicator;
+    [Tooltip("Segundos que se ve el indicador.")]
+    public float indicatorSeconds = 1.2f;
+    [Tooltip("Coloca el indicador delante de la camara del jugador cada vez que sale. " +
+             "Apagalo si ya lo tienes colocado a mano en la escena.")]
+    public bool placeInFrontOfCamera = true;
+    [Tooltip("Metros hacia delante, en horizontal, desde la cabeza.")]
+    public float indicatorDistance = 0.8f;
+    [Tooltip("Metros hacia arriba (+) o abajo (-) respecto a los ojos.")]
+    public float indicatorHeight = 0f;
+    [Tooltip("Metros a la derecha (+) o a la izquierda (-).")]
+    public float indicatorSide = 0f;
 
     [Header("Vibracion de los controles (HU 3.3.3)")]
     public bool useHaptics = true;
@@ -70,6 +96,8 @@ public class RingFeedback : MonoBehaviour
     float flashTimer = -1f;
     float lastBadTime = -999f;
     float lastBadHaptic = -999f;
+    float builtInner = -1f;
+    bool wasAdjusting;
 
     const float Attack = 0.08f;
 
@@ -95,6 +123,9 @@ public class RingFeedback : MonoBehaviour
 
     void OnDisable()
     {
+        if (goodIndicator != null && hideGood != null) goodIndicator.SetActive(false);
+        if (badIndicator != null && hideBad != null) badIndicator.SetActive(false);
+
         Application.onBeforeRender -= Reposition;
         if (rings != null)
             foreach (var r in rings)
@@ -120,6 +151,7 @@ public class RingFeedback : MonoBehaviour
     {
         if (logEvents) Debug.Log($"[RingFeedback] '{ring.name}' BIEN -> verde", this);
         Flash(goodColor);
+        ShowIndicator(goodIndicator, true);
         Play(goodClip, volume);
         if (useHaptics) HapticService.Success();
     }
@@ -128,6 +160,7 @@ public class RingFeedback : MonoBehaviour
     {
         if (logEvents) Debug.Log($"[RingFeedback] '{ring.name}' MAL ({error:F0} grados) -> rojo", this);
         Flash(badColor);
+        ShowIndicator(badIndicator, false);
 
         if (Time.time - lastBadTime >= badCooldown)
         {
@@ -141,6 +174,7 @@ public class RingFeedback : MonoBehaviour
     {
         if (logEvents) Debug.Log($"[RingFeedback] '{ring.name}' fuera de orden -> rojo", this);
         Flash(badColor);
+        ShowIndicator(badIndicator, false);
         if (useHaptics && Time.time - lastBadHaptic >= badCooldown)
         {
             lastBadHaptic = Time.time;
@@ -162,6 +196,7 @@ public class RingFeedback : MonoBehaviour
     void Flash(Color color)
     {
         if (!useEdgeFlash) return;
+        if (ajustarVineta) return;          // en modo ajuste la vineta ya esta fija
         if (!EnsureOverlay()) return;
 
         flashColor = color;
@@ -172,6 +207,18 @@ public class RingFeedback : MonoBehaviour
 
     void Update()
     {
+        if (ajustarVineta)
+        {
+            AdjustPreview();
+            return;
+        }
+        if (wasAdjusting)
+        {
+            wasAdjusting = false;
+            flashTimer = -1f;
+            if (overlayCanvas != null) overlayCanvas.enabled = false;
+        }
+
         if (flashTimer < 0f || overlayImage == null) return;
 
         flashTimer += Time.deltaTime;
@@ -188,6 +235,109 @@ public class RingFeedback : MonoBehaviour
             flashTimer = -1f;
             overlayCanvas.enabled = false;   // no dibujar nada cuando no hay destello
         }
+    }
+
+    // Modo ajuste: vineta fija y visible; todos los valores se aplican en vivo
+    void AdjustPreview()
+    {
+        wasAdjusting = true;
+        flashTimer = -1f;
+        if (!EnsureOverlay()) return;
+
+        if (!Mathf.Approximately(builtInner, vignetteInner))
+        {
+            if (vignetteTexture != null) Destroy(vignetteTexture);
+            vignetteTexture = null;
+            overlayImage.texture = GetVignetteTexture();
+        }
+
+        Color c = ajusteEnRojo ? badColor : goodColor;
+        overlayImage.color = new Color(c.r, c.g, c.b, flashIntensity);
+        overlayCanvas.enabled = true;
+        Reposition();
+    }
+
+    // ------------------------------------------------------------ Indicadores BIEN / MAL
+
+    Coroutine hideGood, hideBad;
+
+    void ShowIndicator(GameObject indicator, bool good)
+    {
+        if (indicator == null) return;
+
+        // Solo uno a la vez
+        GameObject other = good ? badIndicator : goodIndicator;
+        if (other != null) other.SetActive(false);
+
+        if (placeInFrontOfCamera)
+        {
+            var cam = FindPlayerCamera();
+            if (cam != null)
+            {
+                Transform c = cam.transform;
+                Vector3 fwd = Vector3.ProjectOnPlane(c.forward, Vector3.up);
+                if (fwd.sqrMagnitude < 0.0001f) fwd = Vector3.ProjectOnPlane(c.up, Vector3.up);
+                fwd.Normalize();
+                Vector3 right = Vector3.Cross(Vector3.up, fwd);
+
+                Vector3 pos = c.position + fwd * indicatorDistance + right * indicatorSide + Vector3.up * indicatorHeight;
+                indicator.transform.SetPositionAndRotation(pos, Quaternion.LookRotation(fwd, Vector3.up));
+            }
+        }
+
+        indicator.SetActive(true);
+
+        if (good)
+        {
+            if (hideGood != null) StopCoroutine(hideGood);
+            hideGood = StartCoroutine(HideAfter(indicator, true));
+        }
+        else
+        {
+            if (hideBad != null) StopCoroutine(hideBad);
+            hideBad = StartCoroutine(HideAfter(indicator, false));
+        }
+    }
+
+    System.Collections.IEnumerator HideAfter(GameObject indicator, bool good)
+    {
+        yield return new WaitForSeconds(Mathf.Max(0.1f, indicatorSeconds));
+        if (indicator != null) indicator.SetActive(false);
+        if (good) hideGood = null; else hideBad = null;
+    }
+
+    [ContextMenu("Capturar posicion del indicador BIEN")]
+    void CaptureGood() => CaptureIndicator(goodIndicator);
+
+    [ContextMenu("Capturar posicion del indicador MAL")]
+    void CaptureBad() => CaptureIndicator(badIndicator);
+
+    // Mide donde esta el indicador respecto a la camara (dale Play, activa el objeto y colocalo a mano)
+    void CaptureIndicator(GameObject indicator)
+    {
+        var cam = FindPlayerCamera();
+        if (indicator == null || cam == null)
+        {
+            Debug.LogWarning("[RingFeedback] Falta el indicador o no encuentro la camara. Dale Play y coloca el objeto antes de capturar.", this);
+            return;
+        }
+
+        Transform c = cam.transform;
+        Vector3 fwd = Vector3.ProjectOnPlane(c.forward, Vector3.up);
+        if (fwd.sqrMagnitude < 0.0001f) fwd = Vector3.ProjectOnPlane(c.up, Vector3.up);
+        fwd.Normalize();
+        Vector3 right = Vector3.Cross(Vector3.up, fwd);
+        Vector3 to = indicator.transform.position - c.position;
+
+        indicatorDistance = Vector3.Dot(to, fwd);
+        indicatorSide = Vector3.Dot(to, right);
+        indicatorHeight = to.y;
+
+#if UNITY_EDITOR
+        UnityEditor.EditorUtility.SetDirty(this);
+#endif
+        Debug.Log($"[RingFeedback] Capturado: distancia {indicatorDistance:F2} m, altura {indicatorHeight:F2} m, lado {indicatorSide:F2} m. " +
+                  "Ahora Copy Component, detén Play y Paste Component Values.", this);
     }
 
     // Camara REAL del jugador (la del visor), no cualquiera con el tag MainCamera
@@ -268,7 +418,7 @@ public class RingFeedback : MonoBehaviour
     // Distancia del Canvas a la camara
     float EffectiveDistance()
     {
-        return canvasDistance;
+        return Mathf.Max(0.05f, vinetaPosicion.z);
     }
 
     // Tamano del filtro = lo justo para cubrir el campo de vision real del visor
@@ -301,7 +451,8 @@ public class RingFeedback : MonoBehaviour
         if (overlayCanvas == null || playerCam == null || !overlayCanvas.enabled) return;
 
         Transform c = playerCam.transform;
-        overlayCanvas.transform.SetPositionAndRotation(c.position + c.forward * EffectiveDistance(), c.rotation);
+        overlayCanvas.transform.SetPositionAndRotation(
+            c.position + c.forward * EffectiveDistance() + c.right * vinetaPosicion.x + c.up * vinetaPosicion.y, c.rotation);
     }
 
     // Textura blanca: transparente en el centro y opaca hacia los bordes (se tine con el color del destello)
@@ -327,6 +478,7 @@ public class RingFeedback : MonoBehaviour
             }
         }
 
+        builtInner = vignetteInner;
         vignetteTexture.SetPixels32(pixels);
         vignetteTexture.Apply(false, true);
         return vignetteTexture;
