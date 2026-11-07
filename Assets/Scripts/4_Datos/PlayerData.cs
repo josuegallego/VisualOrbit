@@ -5,6 +5,17 @@ using System.Linq;
 using UnityEngine;
 
 /// <summary>
+/// Una decisión concreta tomada por el jugador (ej: "desayuno" -> "Café con pan").
+/// </summary>
+[Serializable]
+public class DecisionRecord
+{
+    public string momento = "";   // "desayuno", "almuerzo", "cena", etc.
+    public string opcion = "";    // Nombre de lo que eligió: "Café", "Jugo de naranja"...
+    public bool saludable = true; // true = buena elección, false = mala elección
+}
+
+/// <summary>
 /// Una sesión individual de un estudiante con todos los datos de su partida.
 /// </summary>
 [Serializable]
@@ -21,7 +32,8 @@ public class PlayerSession
     public bool experienciaCompletada = false;
 
     // --- Decisiones alimentarias ---
-    public List<int> decisiones = new List<int>();
+    public List<int> decisiones = new List<int>();                          // índice -> valor (compatibilidad)
+    public List<DecisionRecord> decisionesDetalle = new List<DecisionRecord>(); // qué eligió exactamente
 
     // --- Minijuegos (Tiempos y si se completaron) ---
     public float tiempoMemorama = 0f;
@@ -52,10 +64,9 @@ public static class PlayerDataStore
     private const string FileName = "player_data.json";
 
     // ------------------------------------------------------------ Configuración del puntaje
-    // Ajusta estos valores a tu gusto.
-    private const float PuntosBaseMinijuego = 50f;   // Por completar un minijuego
-    private const float BonoMaxRapidez = 50f;        // Extra máximo por terminar rápido
-    private const float SegundosParaBonoCero = 100f; // Si tarda esto o más, no hay bono de rapidez
+    private const float PuntosBaseMinijuego = 50f;
+    private const float BonoMaxRapidez = 50f;
+    private const float SegundosParaBonoCero = 100f;
     private const float BonoExperienciaCompleta = 50f;
 
     // ------------------------------------------------------------ Ruta del archivo
@@ -156,6 +167,14 @@ public static class PlayerDataStore
                 if (data != null)
                 {
                     if (data.sesiones == null) data.sesiones = new List<PlayerSession>();
+
+                    // Compatibilidad con JSON viejos que no tenían estos campos
+                    foreach (var s in data.sesiones)
+                    {
+                        if (s.decisiones == null) s.decisiones = new List<int>();
+                        if (s.decisionesDetalle == null) s.decisionesDetalle = new List<DecisionRecord>();
+                    }
+
                     Debug.Log($"[PlayerDataStore] Cargado: {data.sesiones.Count} sesiones desde {FilePath}");
                     return data;
                 }
@@ -198,6 +217,7 @@ public static class PlayerDataStore
             ultimoPanel = 0,
             experienciaCompletada = false,
             decisiones = new List<int>(),
+            decisionesDetalle = new List<DecisionRecord>(),
             tiempoMemorama = 0f,
             memoramaCompletado = false,
             tiempoMolecula = 0f,
@@ -240,7 +260,6 @@ public static class PlayerDataStore
             s.duracionSegundos = Mathf.Max(0f, (float)(fin - ini).TotalSeconds);
         }
 
-        // El puntaje se calcula aquí, con la sesión ya cerrada
         ComputeScore(s);
 
         Save();
@@ -276,12 +295,51 @@ public static class PlayerDataStore
         Save();
     }
 
+    /// <summary>
+    /// Registra QUÉ eligió el jugador. Ejemplo:
+    /// PlayerDataStore.RegistrarDecision("desayuno", "Café con pan", false);
+    /// Si el momento ya tenía una decisión registrada, la reemplaza (por si el jugador retrocede).
+    /// </summary>
+    public static void RegistrarDecision(string momento, string opcion, bool saludable)
+    {
+        if (ActiveSession == null) return;
+        if (ActiveSession.decisionesDetalle == null)
+            ActiveSession.decisionesDetalle = new List<DecisionRecord>();
+
+        var existente = ActiveSession.decisionesDetalle.FirstOrDefault(d => d.momento == momento);
+        if (existente != null)
+        {
+            existente.opcion = opcion;
+            existente.saludable = saludable;
+        }
+        else
+        {
+            ActiveSession.decisionesDetalle.Add(new DecisionRecord
+            {
+                momento = momento,
+                opcion = opcion,
+                saludable = saludable
+            });
+        }
+
+        Save();
+        Debug.Log($"[PlayerDataStore] Decisión registrada: {momento} -> {opcion} (saludable: {saludable})");
+    }
+
+    /// <summary>Decisiones de la sesión activa (o de la última si no hay activa).</summary>
+    public static List<DecisionRecord> GetDecisionesDetalle()
+    {
+        var s = ActiveSession ?? LastSession;
+        if (s == null || s.decisionesDetalle == null) return new List<DecisionRecord>();
+        return s.decisionesDetalle;
+    }
+
     public static void SetTiempoMemorama(float tiempo, bool completado)
     {
         if (ActiveSession == null) return;
         ActiveSession.tiempoMemorama = tiempo;
         ActiveSession.memoramaCompletado = completado;
-        ComputeScore(ActiveSession); // puntaje parcial siempre actualizado
+        ComputeScore(ActiveSession);
         Save();
     }
 
@@ -290,7 +348,7 @@ public static class PlayerDataStore
         if (ActiveSession == null) return;
         ActiveSession.tiempoMolecula = tiempo;
         ActiveSession.moleculaCompletado = completado;
-        ComputeScore(ActiveSession); // puntaje parcial siempre actualizado
+        ComputeScore(ActiveSession);
         Save();
     }
 

@@ -5145,6 +5145,10 @@ MonoBehaviour:
   energyChange: 5
   interferenceChange: 20
   memoryChange: -10
+  momento: Almuerzo
+  nombreOpcion: "Lasa\xF1a"
+  calcularSaludableAutomatico: 1
+  esSaludable: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: Combustible ideal para tu entrega
   feedbackBody: "Tendr\xE1s mayor profundidad anal\xEDtica y menos errores en tres
@@ -8041,6 +8045,10 @@ MonoBehaviour:
   energyChange: -12
   interferenceChange: 20
   memoryChange: -10
+  momento: 
+  nombreOpcion: 
+  calcularSaludableAutomatico: 1
+  esSaludable: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "Energ\xEDa fugaz y bajo rendimiento"
   feedbackBody: "Tu memoria fallar\xE1 tras 75 minutos por falta de calcio, prote\xEDna
@@ -9574,6 +9582,10 @@ MonoBehaviour:
   energyChange: 0
   interferenceChange: 5
   memoryChange: -3
+  momento: 
+  nombreOpcion: 
+  calcularSaludableAutomatico: 1
+  esSaludable: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "M\xE1ximo impulso para tu aprendizaje"
   feedbackBody: "La colina del huevo crea acetilcolina, neurotransmisor clave para
@@ -10741,6 +10753,10 @@ MonoBehaviour:
   energyChange: -30
   interferenceChange: 28
   memoryChange: -20
+  momento: 
+  nombreOpcion: 
+  calcularSaludableAutomatico: 1
+  esSaludable: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: Tu cerebro no puede grabar datos
   feedbackBody: "Un pico de az\xFAcar y falta de colina (nutriente para la memoria)
@@ -13229,6 +13245,10 @@ MonoBehaviour:
   energyChange: -10
   interferenceChange: 20
   memoryChange: 5
+  momento: Almuerzo
+  nombreOpcion: Corrientazo
+  calcularSaludableAutomatico: 1
+  esSaludable: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "Rendimiento frenado por exceso de az\xFAcar"
   feedbackBody: "Tu concentraci\xF3n (+8%) y memoria (+5%) est\xE1n limitadas hoy.\n\nLa
@@ -13554,6 +13574,10 @@ MonoBehaviour:
   energyChange: -35
   interferenceChange: 30
   memoryChange: -35
+  momento: Almuerzo
+  nombreOpcion: Salchipapa con aguapanela
+  calcularSaludableAutomatico: 1
+  esSaludable: 0
   feedback: {fileID: 1667482641}
   feedbackTitle: "Apag\xF3n cognitivo de mediod\xEDa"
   feedbackBody: "Alta carga gluc\xE9mica + grasas saturadas + cero vegetales = colapso

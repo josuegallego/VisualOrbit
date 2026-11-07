@@ -1,4 +1,6 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,6 +42,7 @@ public class EnfermeraManager : MonoBehaviour
 
     [Header("Velocidad y Tiempos")]
     public float velocidadLetra = 0.03f;
+    public float velocidadTextoDecisiones = 0.035f;
     public float pausaEntreBloques = 1.5f;
     public float pausaAntesDeRecomendacion = 0.05f;
     public float duracionTransicionPanel = 0.5f;
@@ -94,6 +97,7 @@ public class EnfermeraManager : MonoBehaviour
         yield return new WaitForSeconds(pausaEntreBloques);
 
         string diagnostico = ObtenerDiagnostico();
+        string textoDecisiones = ObtenerTextoDecisiones();
         string recomendacion = ElegirRecomendacion();
         string boolRec = ElegirBoolRecomendacion();
         AudioClip audioRec = ElegirAudioRecomendacion(boolRec);
@@ -117,8 +121,18 @@ public class EnfermeraManager : MonoBehaviour
             vozAudioSource.Play();
         }
 
+        // Diagnóstico (barras)
         yield return EscribirParteTexto(diagnostico, audioRec);
 
+        // Decisiones concretas del jugador (2 ejemplos)
+        if (!string.IsNullOrEmpty(textoDecisiones))
+        {
+            textoDialogo.text = "";
+            yield return new WaitForSeconds(pausaAntesDeRecomendacion);
+            yield return EscribirTextoFijo(textoDecisiones, velocidadTextoDecisiones);
+        }
+
+        // Recomendación
         textoDialogo.text = "";
         yield return new WaitForSeconds(pausaAntesDeRecomendacion);
 
@@ -157,6 +171,8 @@ public class EnfermeraManager : MonoBehaviour
             botonContinuar.gameObject.SetActive(true);
     }
 
+    // ------------------------------------------------------------------ Diagnóstico
+
     string ObtenerDiagnostico()
     {
         var s = PlayerStats.Instance;
@@ -174,6 +190,67 @@ public class EnfermeraManager : MonoBehaviour
         return $"Mis registros indican que {decisiones}, lo que dejó {barras}.";
     }
 
+    // ------------------------------------------------------------------ Decisiones del jugador
+
+    /// <summary>
+    /// Construye una frase que nombra DOS decisiones reales del jugador.
+    /// Bueno -> dos saludables | Malo -> dos no saludables | Regular -> una de cada tipo.
+    /// Si no hay suficientes de un tipo, completa con las otras.
+    /// </summary>
+    string ObtenerTextoDecisiones()
+    {
+        List<DecisionRecord> todas = PlayerDataStore.GetDecisionesDetalle()
+            .Where(d => d != null && !string.IsNullOrEmpty(d.opcion))
+            .ToList();
+
+        if (todas.Count == 0) return "";
+
+        var saludables = todas.Where(d => d.saludable).OrderBy(_ => Random.value).ToList();
+        var noSaludables = todas.Where(d => !d.saludable).OrderBy(_ => Random.value).ToList();
+
+        var s = PlayerStats.Instance;
+        bool bueno = s != null && s.energy > 70f && s.interference < 30f && s.memory > 70f;
+        bool malo = s != null && (s.energy < 40f || s.interference > 60f || s.memory < 40f);
+
+        List<DecisionRecord> elegidas = new List<DecisionRecord>();
+
+        if (bueno)
+        {
+            elegidas.AddRange(saludables.Take(2));
+        }
+        else if (malo)
+        {
+            elegidas.AddRange(noSaludables.Take(2));
+        }
+        else
+        {
+            if (saludables.Count > 0) elegidas.Add(saludables[0]);
+            if (noSaludables.Count > 0) elegidas.Add(noSaludables[0]);
+        }
+
+        // Completar hasta 2 con lo que haya
+        if (elegidas.Count < 2)
+        {
+            foreach (var d in todas.OrderBy(_ => Random.value))
+            {
+                if (elegidas.Count >= 2) break;
+                if (!elegidas.Contains(d)) elegidas.Add(d);
+            }
+        }
+
+        if (elegidas.Count == 1)
+            return $"Por ejemplo, en el momento de {elegidas[0].momento} elegiste {elegidas[0].opcion}{Valoracion(elegidas[0])}.";
+
+        var a = elegidas[0];
+        var b = elegidas[1];
+        return $"Por ejemplo, en {a.momento} elegiste {a.opcion}{Valoracion(a)}, y en {b.momento} elegiste {b.opcion}{Valoracion(b)}.";
+    }
+
+    string Valoracion(DecisionRecord d)
+    {
+        return d.saludable ? " (una buena elección)" : " (no es lo mejor para tu cerebro)";
+    }
+
     string ElegirRecomendacion()
     {
         var s = PlayerStats.Instance;
@@ -186,6 +263,8 @@ public class EnfermeraManager : MonoBehaviour
         if (malo) return recomendacionMalo;
         return recomendacionRegular;
     }
+
+    // ------------------------------------------------------------------ Fondos
 
     IEnumerator CambiarFondoSegunDesempeno(string boolRec)
     {
@@ -250,6 +329,8 @@ public class EnfermeraManager : MonoBehaviour
         if (fondoRojo != null) fondoRojo.alpha = 0f;
     }
 
+    // ------------------------------------------------------------------ Animator / audio helpers
+
     void SetAlpha(CanvasGroup cg, float alpha) { if (cg != null) cg.alpha = alpha; }
     void ActivarBool(string nombre) { animatorEnfermera.SetBool(nombre, true); if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, true)"); }
     void DesactivarBool(string nombre) { animatorEnfermera.SetBool(nombre, false); if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, false)"); }
@@ -271,6 +352,8 @@ public class EnfermeraManager : MonoBehaviour
         if (boolRec == boolEnojada) return audioRecomendacionMalo;
         return audioRecomendacionRegular;
     }
+
+    // ------------------------------------------------------------------ Escritura de texto
 
     IEnumerator EscribirTextoNormal(string texto, AudioClip audio)
     {
@@ -305,7 +388,6 @@ public class EnfermeraManager : MonoBehaviour
 
     IEnumerator EscribirParteTexto(string texto, AudioClip audio)
     {
-
         float velocidadReal = 0.07f;
 
         if (audio != null && texto.Length > 150)
@@ -320,6 +402,17 @@ public class EnfermeraManager : MonoBehaviour
             textoDialogo.text += c;
             yield return new WaitForSeconds(velocidadReal);
         }
+    }
+
+    /// <summary>Escribe con velocidad fija, sin depender de la duración del audio.</summary>
+    IEnumerator EscribirTextoFijo(string texto, float velocidad)
+    {
+        foreach (char c in texto)
+        {
+            textoDialogo.text += c;
+            yield return new WaitForSeconds(velocidad);
+        }
+        yield return new WaitForSeconds(pausaEntreBloques * 0.5f);
     }
 
     void Log(string mensaje) { if (mostrarLogs) Debug.Log($"[Enfermera] {mensaje}"); }
