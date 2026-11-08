@@ -14,6 +14,25 @@ public class NeuralNetworkManager : MonoBehaviour
     public GameObject networkRoot;
     public NeuronProgress neuronProgress;
 
+    [Header("Tutorial (antes del juego)")]
+    [Tooltip("Si esta desactivado, MostrarTutorial() inicia el juego directamente.")]
+    public bool mostrarTutorial = true;
+    [Tooltip("Objeto con el conducto de demostracion + el panel del tutorial (FUERA de NeuralNetwork). " +
+             "Queda oculto hasta llamar a MostrarTutorial().")]
+    public GameObject tutorialRoot;
+    [Tooltip("Si esta activo, el tutorial se muestra solo al cargar la escena (sin pulsar Continuar).")]
+    public bool mostrarAlCargar = false;
+    [Tooltip("Si el jugador ya vio el tutorial antes, se salta.")]
+    public bool saltarSiYaVisto = false;
+    public string claveTutorial = "TutorialConexionesVisto";
+    [Tooltip("Objetos que se OCULTAN mientras dura el tutorial y se vuelven a mostrar al empezar el juego " +
+             "(temporizador, barra de progreso, panel del Continuar...). No pongas aqui este manager, " +
+             "NeuronProgress ni EnvironmentLighting.")]
+    public GameObject[] ocultarDuranteTutorial;
+    [Tooltip("Otros objetos del tutorial que NO estan dentro de Tutorial Root (por ejemplo PanelTutorial). " +
+             "Se muestran con el tutorial y se ocultan al empezar el juego.")]
+    public GameObject[] elementosDelTutorial;
+
     [Header("Indicadores Visuales de Ruta")]
     public GameObject indicadorRutaBuena;
     public GameObject indicadorRutaIntermedia;
@@ -34,6 +53,7 @@ public class NeuralNetworkManager : MonoBehaviour
     [Range(0f, 1f)] public float extremeThreshold = 0.5f;
 
     [Header("Escena de prueba")]
+    [Tooltip("Arranca el juego solo, SIN tutorial.")]
     public bool autoStart = false;
 
     [Header("Tiempo segun estado cognitivo")]
@@ -69,6 +89,7 @@ public class NeuralNetworkManager : MonoBehaviour
     public float Difficulty01 => 1f - Performance01;
     public bool IsStarted { get; private set; }
     public bool IsFinished { get; private set; }
+    public bool TutorialActivo { get; private set; }
     public RutaDificultad Ruta { get; private set; } = RutaDificultad.Intermedia;
     public float TiempoTotal { get; private set; }
     public float TiempoRestante { get; private set; }
@@ -80,6 +101,8 @@ public class NeuralNetworkManager : MonoBehaviour
     {
         Instance = this;
         if (networkRoot != null) networkRoot.SetActive(false);
+        if (tutorialRoot != null) tutorialRoot.SetActive(false);
+        SetActivos(elementosDelTutorial, false);
         ApagarIndicadores();
         OcultarPaneles();
         if (neuronProgress == null)
@@ -89,6 +112,7 @@ public class NeuralNetworkManager : MonoBehaviour
     void Start()
     {
         if (autoStart) StartGame();
+        else if (mostrarAlCargar) MostrarTutorial();
     }
 
     void OnDisable()
@@ -119,9 +143,80 @@ public class NeuralNetworkManager : MonoBehaviour
         }
     }
 
+    // ------------------------------------------------------------ Tutorial
+
+    /// <summary>
+    /// Conectar en el On Click del boton Continuar que antes llamaba a StartGame.
+    /// Muestra el tutorial (conducto de demostracion) y espera a TerminarTutorial().
+    /// Si no hay tutorial (o ya se vio), inicia el juego directamente.
+    /// </summary>
+    public void MostrarTutorial()
+    {
+        if (IsStarted || TutorialActivo) return;
+
+        bool yaVisto = saltarSiYaVisto && PlayerPrefs.GetInt(claveTutorial, 0) == 1;
+        if (!mostrarTutorial || tutorialRoot == null || yaVisto)
+        {
+            StartGame();
+            return;
+        }
+
+        TutorialActivo = true;
+        SetOcultosDuranteTutorial(true);
+        tutorialRoot.SetActive(true);
+        SetActivos(elementosDelTutorial, true);
+    }
+
+    static void SetActivos(GameObject[] objetos, bool activo)
+    {
+        if (objetos == null) return;
+        foreach (var go in objetos)
+            if (go != null) go.SetActive(activo);
+    }
+
+    void SetOcultosDuranteTutorial(bool ocultar)
+    {
+        if (ocultarDuranteTutorial == null) return;
+        foreach (var go in ocultarDuranteTutorial)
+            if (go != null) go.SetActive(!ocultar);
+    }
+
+    /// <summary>Conectar en el On Click del boton "Jugar" del panel del tutorial.</summary>
+    public void TerminarTutorial()
+    {
+        StartGame();   // StartGame se encarga de ocultar el tutorial
+    }
+
+    void CerrarTutorial()
+    {
+        bool estabaActivo = TutorialActivo;
+        TutorialActivo = false;
+
+        // Siempre se oculta el tutorial al empezar el juego, aunque no se haya llamado a MostrarTutorial()
+        if (tutorialRoot != null) tutorialRoot.SetActive(false);
+        SetActivos(elementosDelTutorial, false);
+
+        if (!estabaActivo) return;
+        SetOcultosDuranteTutorial(false);
+
+        PlayerPrefs.SetInt(claveTutorial, 1);
+        PlayerPrefs.Save();
+    }
+
+    [ContextMenu("Borrar progreso del tutorial")]
+    void BorrarProgresoTutorial()
+    {
+        PlayerPrefs.DeleteKey(claveTutorial);
+    }
+
+    // ------------------------------------------------------------ Juego
+
     public void StartGame()
     {
         if (IsStarted) return;
+
+        CerrarTutorial();
+
         IsStarted = true;
         IsFinished = false;
 

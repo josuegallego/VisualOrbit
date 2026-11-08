@@ -3,21 +3,7 @@ using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
-/// <summary>
-/// Anillo giratorio de un conducto (Etapa 6). Va en Ring_Root, junto al XR Grab Interactable.
-/// Gira SOLO alrededor del eje del tubo. El eje se fija en Start() usando solo la rotacion
-/// del padre (sin escala). La pose del editor es la pose RESUELTA; al iniciar se desordena.
-///
-/// Eje de giro (Axis Source):
-///  - TubeMesh (recomendado): la direccion MAS LARGA de la malla del tubo. No depende de como
-///    esten rotados Tube_Root, el conducto o el anillo, solo de donde esta el tubo de verdad.
-///  - RingMesh: la dimension mas pequena de la malla del anillo (solo vale si el anillo es mas
-///    ancho que grueso).
-///  - Manual: Axis Reference + Axis Choice.
-///
-/// CORRECCION: si XRI desparenta el anillo al agarrarlo, el script lo devuelve a su padre
-/// original (misma posicion, escala y rotacion local) para que el eje no se desvie.
-/// </summary>
+
 [RequireComponent(typeof(XRBaseInteractable))]
 public class TubeRingManipulator : MonoBehaviour
 {
@@ -60,7 +46,26 @@ public class TubeRingManipulator : MonoBehaviour
 
     [Header("Depuracion")]
     public bool logValues = true;
+    public float Offset => offset;
+    public Vector3 AxisDirection => AxisWorld();
 
+    public void DemoSetOffset(float degrees)
+    {
+        offset = degrees;
+        ApplyRotation();
+    }
+
+    public void DemoReset(float degrees)
+    {
+        IsSolved = false;
+        alignedTime = 0f;
+        snapping = false;
+        hasPrev = false;
+        wasSelecting = false;
+        blockedGrab = false;
+        interactable.enabled = true;
+        DemoSetOffset(degrees);
+    }
     public event Action<TubeRingManipulator> Solved;
     /// <summary>Se dispara al soltar el anillo girado pero lejos de la posicion correcta. Parametro: error en grados.</summary>
     public event Action<TubeRingManipulator, float> ReleasedWrong;

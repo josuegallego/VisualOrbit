@@ -19,4 +19,10 @@ public class RankingItem : MonoBehaviour
         int segundos = Mathf.FloorToInt(sesion.duracionSegundos % 60f);
         textoTiempo.text = $"{minutos:00}:{segundos:00}";
     }
+    public void AplicarColor(Color color)
+    {
+        if (textoNombre != null) textoNombre.color = color;
+        if (textoPuntaje != null) textoPuntaje.color = color;
+        if (textoTiempo != null) textoTiempo.color = color;
+    }
 }  
