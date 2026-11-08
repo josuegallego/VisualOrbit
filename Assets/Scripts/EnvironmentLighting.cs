@@ -42,6 +42,12 @@ public class EnvironmentLighting : MonoBehaviour
     public float lightMinIntensity = 0.2f;
     public float lightMaxIntensity = 1f;
 
+    [Header("Fin de tiempo")]
+    [Tooltip("Brillo relativo (0-1) al que baja el entorno cuando se acaba el tiempo.")]
+    [Range(0f, 1f)] public float timeUpBrightness = 0.2f;
+    [Tooltip("Segundos que tarda en oscurecerse.")]
+    public float timeUpSeconds = 1.5f;
+
     [Header("Pruebas")]
     public bool useManualProgress = false;
     [Range(0f, 1f)] public float manualProgress = 0f;
@@ -50,7 +56,7 @@ public class EnvironmentLighting : MonoBehaviour
     [Range(0f, 1f)] public float testPerformance01 = 1f;
     public bool logValues = true;
 
-    /// <summary>Multiplicador externo (1 = normal). Util si otro script quiere atenuar el entorno.</summary>
+    /// <summary>Multiplicador externo (1 = normal) para atenuar el entorno desde otro script.</summary>
     [HideInInspector] public float brightnessMultiplier = 1f;
 
     enum Mode { None, CameraAlpha, TintMaterial }
@@ -61,6 +67,8 @@ public class EnvironmentLighting : MonoBehaviour
     int colorId;
     float current;
     float lastLogged = -1f;
+    float timeUpFactor;
+    bool timeUp;
 
     void Awake()
     {
@@ -119,6 +127,12 @@ public class EnvironmentLighting : MonoBehaviour
                       $"base={baseBrightness:F2} | max malo={maxBrightnessBadPerformance:F2} | max bueno={maxBrightnessGoodPerformance:F2}", this);
     }
 
+    /// <summary>Oscurece (true) o restaura (false) el entorno cuando se acaba el tiempo.</summary>
+    public void SetTimeUp(bool on)
+    {
+        timeUp = on;
+    }
+
     void OnEnable()
     {
         if (progress != null) progress.ProgressChanged += OnProgressChanged;
@@ -139,7 +153,9 @@ public class EnvironmentLighting : MonoBehaviour
     {
         float target = TargetBrightness();
         current = Mathf.MoveTowards(current, target, Time.deltaTime / Mathf.Max(0.01f, smoothSeconds));
-        Apply(current);
+        timeUpFactor = Mathf.MoveTowards(timeUpFactor, timeUp ? 1f : 0f, Time.deltaTime / Mathf.Max(0.01f, timeUpSeconds));
+        float timeUpMultiplier = Mathf.Lerp(1f, timeUpBrightness, timeUpFactor);
+        Apply(current * timeUpMultiplier);
 
         if (logValues && Mathf.Abs(target - lastLogged) > 0.001f)
         {

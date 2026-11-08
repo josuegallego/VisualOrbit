@@ -16,6 +16,10 @@ public class NeuronProgress : MonoBehaviour
     [Tooltip("Lista manual. Se usa si 'Auto Find' esta desactivado.")]
     public List<NeuronController> neurons = new List<NeuronController>();
 
+    [Tooltip("Opcional: las neuronas dentro de este objeto no cuentan (por ejemplo, el tutorial). " +
+             "Las neuronas dentro de un TutorialConduitDemo ya se ignoran solas.")]
+    public Transform ignoreRoot;
+
     [Header("Depuracion")]
     public bool logEvents = true;
 
@@ -34,6 +38,11 @@ public class NeuronProgress : MonoBehaviour
             neurons.Clear();
             neurons.AddRange(FindObjectsByType<NeuronController>(FindObjectsInactive.Include, FindObjectsSortMode.None));
         }
+
+        // Las neuronas del tutorial (conducto de demostracion) no cuentan para el progreso del juego
+        neurons.RemoveAll(n => n == null
+                               || n.GetComponentInParent<TutorialConduitDemo>(true) != null
+                               || (ignoreRoot != null && n.transform.IsChildOf(ignoreRoot)));
 
         foreach (var n in neurons)
             if (n != null) n.LitChanged += OnNeuronLitChanged;
