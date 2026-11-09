@@ -1,9 +1,35 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+
+/// <summary>
+/// Una opción que el jugador pudo elegir, con el audio de la enfermera diciéndola.
+/// El audio debe decir solo el nombre de la opción (ej: "huevo con jugo de lulo").
+/// </summary>
+[System.Serializable]
+public class AudioOpcion
+{
+    public string momento;   // Desayuno / Almuerzo / Cena (sirve para desempatar opciones parecidas)
+    public string opcion;    // Debe coincidir con DecisionRecord.opcion
+    public AudioClip audio;  // Voz de la enfermera diciendo la opción
+}
+
+/// <summary>
+/// Audios de la frase que rodea a la opción, por momento del día.
+/// </summary>
+[System.Serializable]
+public class AudioMomento
+{
+    public string momento;        // Desayuno / Almuerzo / Cena
+    public string textoMomento;   // Cómo se escribe: "el desayuno", "el almuerzo", "la cena"
+    public AudioClip prefijo;     // "Por ejemplo, en el desayuno elegiste"
+    public AudioClip conector;    // "y en el desayuno elegiste"
+}
 
 public class EnfermeraManager : MonoBehaviour
 {
@@ -21,6 +47,42 @@ public class EnfermeraManager : MonoBehaviour
     public AudioClip audioRecomendacionMalo;
     public AudioClip audioDejandoAlgoEnClaro;
     public AudioClip audioDespedida;
+
+    [Header("Audios del diagnóstico (opcionales, sin números)")]
+    [Tooltip("Si asignas el clip, se usa el texto fijo de abajo (sin números). Si está vacío, se usa la frase con números y sin voz.")]
+    public AudioClip audioDiagnosticoBueno;
+    public AudioClip audioDiagnosticoRegular;
+    public AudioClip audioDiagnosticoMalo;
+
+    [Header("Audios de las decisiones")]
+    public AudioClip audioBuenaEleccion;   // "una buena elección"
+    public AudioClip audioMalaEleccion;    // "no es lo mejor para tu cerebro"
+
+    [Tooltip("Prefijo y conector por momento (Desayuno, Almuerzo, Cena).")]
+    public AudioMomento[] audiosMomentos = new AudioMomento[]
+    {
+        new AudioMomento { momento = "Desayuno", textoMomento = "el desayuno" },
+        new AudioMomento { momento = "Almuerzo", textoMomento = "el almuerzo" },
+        new AudioMomento { momento = "Cena",     textoMomento = "la cena" },
+    };
+
+    [Header("Audios de las opciones elegidas")]
+    [Tooltip("Un clip por cada opción posible. Se busca por nombre (sin importar tildes ni mayúsculas) y se desempata por momento.")]
+    public AudioOpcion[] audiosOpciones = new AudioOpcion[]
+    {
+        // DESAYUNO
+        new AudioOpcion { momento = "Desayuno", opcion = "Energizante más galletas" },
+        new AudioOpcion { momento = "Desayuno", opcion = "Café más pan queso" },
+        new AudioOpcion { momento = "Desayuno", opcion = "Huevo con jugo de lulo" },
+        // ALMUERZO
+        new AudioOpcion { momento = "Almuerzo", opcion = "Salchipapa con aguapanela" },
+        new AudioOpcion { momento = "Almuerzo", opcion = "Corrientazo" },
+        new AudioOpcion { momento = "Almuerzo", opcion = "Lasaña" },
+        // CENA
+        new AudioOpcion { momento = "Cena", opcion = "Chocolate y pandebono" },
+        new AudioOpcion { momento = "Cena", opcion = "Gaseosa más pastel de chocolate" },
+        new AudioOpcion { momento = "Cena", opcion = "Energizante más papas" },
+    };
 
     [Header("Fondos de color (con CanvasGroup, hijos del PanelDialogo)")]
     public CanvasGroup fondoNormal;
@@ -40,9 +102,19 @@ public class EnfermeraManager : MonoBehaviour
     [TextArea(2, 5)] public string dejandoAlgoEnClaro = "Recuerda que esta experiencia es educativa y no reemplaza un diagnóstico médico real.";
     [TextArea(2, 5)] public string despedida = "Cuídate y nos vemos en la próxima jornada.";
 
+    [Header("Textos fijos del diagnóstico (deben decir lo mismo que el audio)")]
+    [TextArea(2, 5)] public string diagnosticoBueno = "Mis registros indican que elegiste opciones balanceadas, y tu energía, memoria e interferencia se mantuvieron estables.";
+    [TextArea(2, 5)] public string diagnosticoRegular = "Mis registros indican que elegiste opciones variadas, y tu energía, memoria e interferencia quedaron en un punto intermedio.";
+    [TextArea(2, 5)] public string diagnosticoMalo = "Mis registros indican que elegiste opciones con exceso de azúcares, y tu energía y memoria bajaron mientras tu interferencia subió.";
+
+    [Header("Textos de las valoraciones (deben decir lo mismo que el audio)")]
+    public string textoBuenaEleccion = " (una buena elección)";
+    public string textoMalaEleccion = " (no es lo mejor para tu cerebro)";
+
     [Header("Velocidad y Tiempos")]
     public float velocidadLetra = 0.03f;
-    public float velocidadTextoDecisiones = 0.035f;
+    public float velocidadTextoDecisiones = 0.035f;   // Solo se usa cuando un segmento no tiene audio
+    public float velocidadDiagnostico = 0.07f;        // Solo se usa cuando no hay audio en diagnóstico/recomendación
     public float pausaEntreBloques = 1.5f;
     public float pausaAntesDeRecomendacion = 0.05f;
     public float duracionTransicionPanel = 0.5f;
@@ -63,6 +135,39 @@ public class EnfermeraManager : MonoBehaviour
     public bool mostrarLogs = true;
 
     private bool yaIniciado = false;
+
+    // ------------------------------------------------------------------ Validación en el Editor
+
+    void OnValidate()
+    {
+        if (audiosOpciones == null) return;
+
+        var vistos = new HashSet<string>();
+        foreach (var a in audiosOpciones)
+        {
+            if (a == null || string.IsNullOrEmpty(a.opcion)) continue;
+
+            string clave = Normalizar(a.momento) + "|" + Normalizar(a.opcion);
+            if (!vistos.Add(clave))
+                Debug.LogWarning($"[Enfermera] Opción duplicada en Audios Opciones: \"{a.momento} - {a.opcion}\". Solo se usará la primera.");
+        }
+    }
+
+    // ------------------------------------------------------------------ Evaluación de desempeño
+
+    enum Desempeno { Bueno, Regular, Malo }
+
+    Desempeno EvaluarDesempeno()
+    {
+        var s = PlayerStats.Instance;
+        if (s == null) return Desempeno.Regular;
+
+        if (s.energy > 70f && s.interference < 30f && s.memory > 70f) return Desempeno.Bueno;
+        if (s.energy < 40f || s.interference > 60f || s.memory < 40f) return Desempeno.Malo;
+        return Desempeno.Regular;
+    }
+
+    // ------------------------------------------------------------------ Secuencia principal
 
     public void IniciarSecuencia()
     {
@@ -88,7 +193,7 @@ public class EnfermeraManager : MonoBehaviour
         Log("1. Reproduciendo Saludo");
         animatorEnfermera.Play(nombreSaludo);
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTextoNormal(saludoBase, audioSaludo);
+        yield return EscribirSegmento(saludoBase, audioSaludo, true, velocidadLetra);
         animatorEnfermera.Play(nombreIdle);
         yield return new WaitForSeconds(pausaEntreBloques);
 
@@ -96,8 +201,9 @@ public class EnfermeraManager : MonoBehaviour
         if (panelBarras != null) panelBarras.SetActive(true);
         yield return new WaitForSeconds(pausaEntreBloques);
 
-        string diagnostico = ObtenerDiagnostico();
-        string textoDecisiones = ObtenerTextoDecisiones();
+        AudioClip audioDiag;
+        string diagnostico = ObtenerDiagnostico(out audioDiag);
+        List<DecisionRecord> decisiones = ElegirDecisiones();
         string recomendacion = ElegirRecomendacion();
         string boolRec = ElegirBoolRecomendacion();
         AudioClip audioRec = ElegirAudioRecomendacion(boolRec);
@@ -114,34 +220,19 @@ public class EnfermeraManager : MonoBehaviour
 
         yield return new WaitForSeconds(delayAntesDeTexto);
 
-        textoDialogo.text = "";
-        if (vozAudioSource != null && audioRec != null)
-        {
-            vozAudioSource.clip = audioRec;
-            vozAudioSource.Play();
-        }
+        // 3a. Diagnóstico (barras)
+        yield return EscribirSegmento(diagnostico, audioDiag, true, velocidadDiagnostico);
 
-        // Diagnóstico (barras)
-        yield return EscribirParteTexto(diagnostico, audioRec);
-
-        // Decisiones concretas del jugador (2 ejemplos)
-        if (!string.IsNullOrEmpty(textoDecisiones))
+        // 3b. Decisiones concretas del jugador, todas con voz
+        if (decisiones.Count > 0)
         {
-            textoDialogo.text = "";
             yield return new WaitForSeconds(pausaAntesDeRecomendacion);
-            yield return EscribirTextoFijo(textoDecisiones, velocidadTextoDecisiones);
+            yield return EscribirDecisiones(decisiones);
         }
 
-        // Recomendación
-        textoDialogo.text = "";
+        // 3c. Recomendación
         yield return new WaitForSeconds(pausaAntesDeRecomendacion);
-
-        yield return EscribirParteTexto(recomendacion, audioRec);
-
-        if (vozAudioSource != null && vozAudioSource.isPlaying)
-        {
-            yield return new WaitWhile(() => vozAudioSource.isPlaying);
-        }
+        yield return EscribirSegmento(recomendacion, audioRec, true, velocidadDiagnostico);
 
         DesactivarBool(boolRec);
 
@@ -150,20 +241,20 @@ public class EnfermeraManager : MonoBehaviour
 
         yield return new WaitForSeconds(pausaEntreBloques);
 
-        Log($"4. Activando Bool Dejando Algo En Claro");
+        Log("4. Activando Bool Dejando Algo En Claro");
         yield return VolverAlFondoNormal();
 
         ActivarBool(boolDejandoAlgoEnClaro);
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTextoNormal(dejandoAlgoEnClaro, audioDejandoAlgoEnClaro);
+        yield return EscribirSegmento(dejandoAlgoEnClaro, audioDejandoAlgoEnClaro, true, velocidadLetra);
 
         DesactivarBool(boolDejandoAlgoEnClaro);
         yield return new WaitForSeconds(pausaEntreBloques);
 
-        Log($"5. Reproduciendo Despedida");
+        Log("5. Reproduciendo Despedida");
         animatorEnfermera.Play(nombreDespedida);
         yield return new WaitForSeconds(delayAntesDeTexto);
-        yield return EscribirTextoNormal(despedida, audioDespedida);
+        yield return EscribirSegmento(despedida, audioDespedida, true, velocidadLetra);
         animatorEnfermera.Play(nombreIdle);
 
         Log("6. Mostrando botón Continuar");
@@ -173,17 +264,39 @@ public class EnfermeraManager : MonoBehaviour
 
     // ------------------------------------------------------------------ Diagnóstico
 
-    string ObtenerDiagnostico()
+    /// <summary>
+    /// Si hay clip de diagnóstico para el desempeño actual, devuelve el texto fijo (sin números) y el clip.
+    /// Si no, devuelve la frase con los números y sin clip.
+    /// </summary>
+    string ObtenerDiagnostico(out AudioClip clip)
     {
+        clip = null;
+
         var s = PlayerStats.Instance;
         if (s == null) return "No hay datos de tu desempeño.";
 
-        bool bueno = s.energy > 70f && s.interference < 30f && s.memory > 70f;
-        bool malo = s.energy < 40f || s.interference > 60f || s.memory < 40f;
+        Desempeno d = EvaluarDesempeno();
+
+        switch (d)
+        {
+            case Desempeno.Bueno: clip = audioDiagnosticoBueno; break;
+            case Desempeno.Malo: clip = audioDiagnosticoMalo; break;
+            default: clip = audioDiagnosticoRegular; break;
+        }
+
+        if (clip != null)
+        {
+            switch (d)
+            {
+                case Desempeno.Bueno: return diagnosticoBueno;
+                case Desempeno.Malo: return diagnosticoMalo;
+                default: return diagnosticoRegular;
+            }
+        }
 
         string decisiones = "elegiste opciones con exceso de azúcares";
-        if (bueno) decisiones = "elegiste opciones balanceadas";
-        else if (!malo) decisiones = "elegiste opciones variadas";
+        if (d == Desempeno.Bueno) decisiones = "elegiste opciones balanceadas";
+        else if (d == Desempeno.Regular) decisiones = "elegiste opciones variadas";
 
         string barras = $"tu energía en {s.energy:F0}%, tu memoria en {s.memory:F0}% y tu interferencia en {s.interference:F0}%";
 
@@ -193,39 +306,34 @@ public class EnfermeraManager : MonoBehaviour
     // ------------------------------------------------------------------ Decisiones del jugador
 
     /// <summary>
-    /// Construye una frase que nombra DOS decisiones reales del jugador.
+    /// Elige DOS decisiones reales del jugador.
     /// Bueno -> dos saludables | Malo -> dos no saludables | Regular -> una de cada tipo.
     /// Si no hay suficientes de un tipo, completa con las otras.
     /// </summary>
-    string ObtenerTextoDecisiones()
+    List<DecisionRecord> ElegirDecisiones()
     {
         List<DecisionRecord> todas = PlayerDataStore.GetDecisionesDetalle()
             .Where(d => d != null && !string.IsNullOrEmpty(d.opcion))
             .ToList();
 
-        if (todas.Count == 0) return "";
+        List<DecisionRecord> elegidas = new List<DecisionRecord>();
+        if (todas.Count == 0) return elegidas;
 
         var saludables = todas.Where(d => d.saludable).OrderBy(_ => Random.value).ToList();
         var noSaludables = todas.Where(d => !d.saludable).OrderBy(_ => Random.value).ToList();
 
-        var s = PlayerStats.Instance;
-        bool bueno = s != null && s.energy > 70f && s.interference < 30f && s.memory > 70f;
-        bool malo = s != null && (s.energy < 40f || s.interference > 60f || s.memory < 40f);
-
-        List<DecisionRecord> elegidas = new List<DecisionRecord>();
-
-        if (bueno)
+        switch (EvaluarDesempeno())
         {
-            elegidas.AddRange(saludables.Take(2));
-        }
-        else if (malo)
-        {
-            elegidas.AddRange(noSaludables.Take(2));
-        }
-        else
-        {
-            if (saludables.Count > 0) elegidas.Add(saludables[0]);
-            if (noSaludables.Count > 0) elegidas.Add(noSaludables[0]);
+            case Desempeno.Bueno:
+                elegidas.AddRange(saludables.Take(2));
+                break;
+            case Desempeno.Malo:
+                elegidas.AddRange(noSaludables.Take(2));
+                break;
+            default:
+                if (saludables.Count > 0) elegidas.Add(saludables[0]);
+                if (noSaludables.Count > 0) elegidas.Add(noSaludables[0]);
+                break;
         }
 
         // Completar hasta 2 con lo que haya
@@ -238,112 +346,178 @@ public class EnfermeraManager : MonoBehaviour
             }
         }
 
-        if (elegidas.Count == 1)
-            return $"Por ejemplo, en el momento de {elegidas[0].momento} elegiste {elegidas[0].opcion}{Valoracion(elegidas[0])}.";
-
-        var a = elegidas[0];
-        var b = elegidas[1];
-        return $"Por ejemplo, en {a.momento} elegiste {a.opcion}{Valoracion(a)}, y en {b.momento} elegiste {b.opcion}{Valoracion(b)}.";
+        return elegidas;
     }
 
-    string Valoracion(DecisionRecord d)
+    /// <summary>
+    /// Escribe "Por ejemplo, en el desayuno elegiste X (...), y en la cena elegiste Y (...)."
+    /// Cada parte (prefijo, opción, valoración) suena con su propio clip y el texto se sincroniza con él.
+    /// </summary>
+    IEnumerator EscribirDecisiones(List<DecisionRecord> decisiones)
     {
-        return d.saludable ? " (una buena elección)" : " (no es lo mejor para tu cerebro)";
+        textoDialogo.text = "";
+
+        for (int i = 0; i < decisiones.Count; i++)
+        {
+            DecisionRecord d = decisiones[i];
+            AudioMomento am = BuscarMomento(d.momento);
+            string nombreMomento = (am != null && !string.IsNullOrEmpty(am.textoMomento)) ? am.textoMomento : d.momento;
+
+            string textoPrefijo;
+            AudioClip clipPrefijo;
+
+            if (i == 0)
+            {
+                textoPrefijo = $"Por ejemplo, en {nombreMomento} elegiste ";
+                clipPrefijo = am != null ? am.prefijo : null;
+            }
+            else
+            {
+                textoPrefijo = $", y en {nombreMomento} elegiste ";
+                clipPrefijo = am != null ? am.conector : null;
+            }
+
+            if (clipPrefijo == null)
+                Log($"AVISO: falta el audio de {(i == 0 ? "prefijo" : "conector")} para el momento \"{d.momento}\".");
+
+            // 1) Prefijo
+            yield return EscribirSegmento(textoPrefijo, clipPrefijo, false, velocidadTextoDecisiones);
+
+            // 2) Opción elegida
+            AudioClip clipOpcion = BuscarAudioOpcion(d);
+            yield return EscribirSegmento(d.opcion, clipOpcion, false, velocidadTextoDecisiones);
+
+            // 3) Valoración
+            string textoVal = d.saludable ? textoBuenaEleccion : textoMalaEleccion;
+            AudioClip clipVal = d.saludable ? audioBuenaEleccion : audioMalaEleccion;
+            yield return EscribirSegmento(textoVal, clipVal, false, velocidadTextoDecisiones);
+        }
+
+        textoDialogo.text += ".";
+        yield return new WaitForSeconds(pausaEntreBloques * 0.5f);
     }
+
+    AudioMomento BuscarMomento(string momento)
+    {
+        if (audiosMomentos == null || string.IsNullOrEmpty(momento)) return null;
+
+        string buscado = Normalizar(momento);
+        foreach (var m in audiosMomentos)
+        {
+            if (m == null) continue;
+            string mm = Normalizar(m.momento);
+            if (string.IsNullOrEmpty(mm)) continue;
+            if (mm == buscado || mm.Contains(buscado) || buscado.Contains(mm))
+                return m;
+        }
+        return null;
+    }
+
+    // ------------------------------------------------------------------ Búsqueda de audio por opción
+
+    /// <summary>
+    /// Busca el clip de una decisión:
+    /// 1) Coincidencia exacta del nombre (sin tildes/mayúsculas). Si hay varias, desempata por momento.
+    /// 2) Si no hay exacta, coincidencia parcial filtrada por momento; solo se usa si es única.
+    /// Si queda ambiguo, no reproduce nada (mejor silencio que el clip equivocado) y lo avisa en consola.
+    /// </summary>
+    AudioClip BuscarAudioOpcion(DecisionRecord d)
+    {
+        if (audiosOpciones == null || d == null) return null;
+
+        string buscada = Normalizar(d.opcion);
+        string momentoBuscado = Normalizar(d.momento);
+
+        // 1) Exactas
+        List<AudioOpcion> candidatas = audiosOpciones
+            .Where(a => a != null && Normalizar(a.opcion) == buscada)
+            .ToList();
+
+        // 2) Parciales (solo si no hubo exactas)
+        bool esParcial = false;
+        if (candidatas.Count == 0)
+        {
+            candidatas = audiosOpciones
+                .Where(a => a != null && !string.IsNullOrEmpty(a.opcion) &&
+                            (Normalizar(a.opcion).Contains(buscada) || buscada.Contains(Normalizar(a.opcion))))
+                .ToList();
+            esParcial = true;
+        }
+
+        // Desempate por momento
+        if (candidatas.Count > 1 && !string.IsNullOrEmpty(momentoBuscado))
+        {
+            var porMomento = candidatas.Where(a => MomentoCoincide(a.momento, momentoBuscado)).ToList();
+            if (porMomento.Count > 0) candidatas = porMomento;
+        }
+
+        if (candidatas.Count == 0)
+        {
+            Log($"AVISO: ninguna entrada coincide con la opción \"{d.opcion}\" (momento \"{d.momento}\").");
+            return null;
+        }
+
+        if (candidatas.Count > 1 && esParcial)
+        {
+            Log($"AVISO: la opción \"{d.opcion}\" (momento \"{d.momento}\") es ambigua entre varias entradas. No se reproduce audio. Revisa qué texto guarda DecisionRecord.opcion.");
+            return null;
+        }
+
+        AudioOpcion elegida = candidatas[0];
+        Log($"Opción del jugador: \"{d.opcion}\" ({d.momento}) -> entrada \"{elegida.opcion}\" -> clip \"{(elegida.audio != null ? elegida.audio.name : "NINGUNO")}\"");
+
+        if (elegida.audio == null)
+            Log($"AVISO: la entrada \"{elegida.opcion}\" no tiene clip asignado (la enfermera quedará en silencio en esa parte).");
+
+        return elegida.audio;
+    }
+
+    bool MomentoCoincide(string momentoEntrada, string momentoBuscadoNormalizado)
+    {
+        string m = Normalizar(momentoEntrada);
+        if (string.IsNullOrEmpty(m) || string.IsNullOrEmpty(momentoBuscadoNormalizado)) return false;
+        return m == momentoBuscadoNormalizado || m.Contains(momentoBuscadoNormalizado) || momentoBuscadoNormalizado.Contains(m);
+    }
+
+    /// <summary>Minúsculas, sin tildes y sin espacios repetidos, para comparar nombres.</summary>
+    static string Normalizar(string s)
+    {
+        if (string.IsNullOrEmpty(s)) return "";
+
+        string descompuesto = s.Normalize(NormalizationForm.FormD);
+        StringBuilder sb = new StringBuilder();
+        foreach (char c in descompuesto)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark)
+                sb.Append(c);
+        }
+
+        string limpio = sb.ToString().ToLowerInvariant();
+        return string.Join(" ", limpio.Split(new[] { ' ', '\t' }, System.StringSplitOptions.RemoveEmptyEntries));
+    }
+
+    // ------------------------------------------------------------------ Recomendación
 
     string ElegirRecomendacion()
     {
-        var s = PlayerStats.Instance;
-        if (s == null) return recomendacionRegular;
-
-        bool bueno = s.energy > 70f && s.interference < 30f && s.memory > 70f;
-        bool malo = s.energy < 40f || s.interference > 60f || s.memory < 40f;
-
-        if (bueno) return recomendacionBueno;
-        if (malo) return recomendacionMalo;
-        return recomendacionRegular;
-    }
-
-    // ------------------------------------------------------------------ Fondos
-
-    IEnumerator CambiarFondoSegunDesempeno(string boolRec)
-    {
-        CanvasGroup objetivo = fondoNormal;
-        if (boolRec == boolHablando) objetivo = fondoVerde;
-        else if (boolRec == boolEnojada) objetivo = fondoRojo;
-        else objetivo = fondoNaranja;
-
-        if (objetivo == null) yield break;
-
-        float t = 0f;
-        float aNormal = fondoNormal != null ? fondoNormal.alpha : 0f;
-        float aVerde = fondoVerde != null ? fondoVerde.alpha : 0f;
-        float aNaranja = fondoNaranja != null ? fondoNaranja.alpha : 0f;
-        float aRojo = fondoRojo != null ? fondoRojo.alpha : 0f;
-
-        while (t < duracionTransicionPanel)
+        switch (EvaluarDesempeno())
         {
-            t += Time.unscaledDeltaTime;
-            float k = t / duracionTransicionPanel;
-
-            if (fondoNormal != null) fondoNormal.alpha = Mathf.Lerp(aNormal, objetivo == fondoNormal ? 1f : 0f, k);
-            if (fondoVerde != null) fondoVerde.alpha = Mathf.Lerp(aVerde, objetivo == fondoVerde ? 1f : 0f, k);
-            if (fondoNaranja != null) fondoNaranja.alpha = Mathf.Lerp(aNaranja, objetivo == fondoNaranja ? 1f : 0f, k);
-            if (fondoRojo != null) fondoRojo.alpha = Mathf.Lerp(aRojo, objetivo == fondoRojo ? 1f : 0f, k);
-
-            yield return null;
+            case Desempeno.Bueno: return recomendacionBueno;
+            case Desempeno.Malo: return recomendacionMalo;
+            default: return recomendacionRegular;
         }
-
-        if (fondoNormal != null) fondoNormal.alpha = objetivo == fondoNormal ? 1f : 0f;
-        if (fondoVerde != null) fondoVerde.alpha = objetivo == fondoVerde ? 1f : 0f;
-        if (fondoNaranja != null) fondoNaranja.alpha = objetivo == fondoNaranja ? 1f : 0f;
-        if (fondoRojo != null) fondoRojo.alpha = objetivo == fondoRojo ? 1f : 0f;
     }
-
-    IEnumerator VolverAlFondoNormal()
-    {
-        if (fondoNormal == null) yield break;
-
-        float t = 0f;
-        float aNormal = fondoNormal.alpha;
-        float aVerde = fondoVerde != null ? fondoVerde.alpha : 0f;
-        float aNaranja = fondoNaranja != null ? fondoNaranja.alpha : 0f;
-        float aRojo = fondoRojo != null ? fondoRojo.alpha : 0f;
-
-        while (t < duracionTransicionPanel)
-        {
-            t += Time.unscaledDeltaTime;
-            float k = t / duracionTransicionPanel;
-
-            if (fondoNormal != null) fondoNormal.alpha = Mathf.Lerp(aNormal, 1f, k);
-            if (fondoVerde != null) fondoVerde.alpha = Mathf.Lerp(aVerde, 0f, k);
-            if (fondoNaranja != null) fondoNaranja.alpha = Mathf.Lerp(aNaranja, 0f, k);
-            if (fondoRojo != null) fondoRojo.alpha = Mathf.Lerp(aRojo, 0f, k);
-
-            yield return null;
-        }
-
-        if (fondoNormal != null) fondoNormal.alpha = 1f;
-        if (fondoVerde != null) fondoVerde.alpha = 0f;
-        if (fondoNaranja != null) fondoNaranja.alpha = 0f;
-        if (fondoRojo != null) fondoRojo.alpha = 0f;
-    }
-
-    // ------------------------------------------------------------------ Animator / audio helpers
-
-    void SetAlpha(CanvasGroup cg, float alpha) { if (cg != null) cg.alpha = alpha; }
-    void ActivarBool(string nombre) { animatorEnfermera.SetBool(nombre, true); if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, true)"); }
-    void DesactivarBool(string nombre) { animatorEnfermera.SetBool(nombre, false); if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, false)"); }
 
     string ElegirBoolRecomendacion()
     {
-        var s = PlayerStats.Instance;
-        if (s == null) return boolHablando;
-        bool bueno = s.energy > 70f && s.interference < 30f && s.memory > 70f;
-        bool malo = s.energy < 40f || s.interference > 60f || s.memory < 40f;
-        if (bueno) return boolHablando;
-        if (malo) return boolEnojada;
-        return boolDecepcionada;
+        if (PlayerStats.Instance == null) return boolHablando;
+
+        switch (EvaluarDesempeno())
+        {
+            case Desempeno.Bueno: return boolHablando;
+            case Desempeno.Malo: return boolEnojada;
+            default: return boolDecepcionada;
+        }
     }
 
     AudioClip ElegirAudioRecomendacion(string boolRec)
@@ -353,66 +527,94 @@ public class EnfermeraManager : MonoBehaviour
         return audioRecomendacionRegular;
     }
 
+    // ------------------------------------------------------------------ Fondos
+
+    IEnumerator CambiarFondoSegunDesempeno(string boolRec)
+    {
+        CanvasGroup objetivo;
+        if (boolRec == boolHablando) objetivo = fondoVerde;
+        else if (boolRec == boolEnojada) objetivo = fondoRojo;
+        else objetivo = fondoNaranja;
+
+        if (objetivo == null) yield break;
+
+        yield return TransicionFondos(objetivo);
+    }
+
+    IEnumerator VolverAlFondoNormal()
+    {
+        if (fondoNormal == null) yield break;
+        yield return TransicionFondos(fondoNormal);
+    }
+
+    /// <summary>Lleva a 1 el alpha del fondo objetivo y a 0 el de los demás.</summary>
+    IEnumerator TransicionFondos(CanvasGroup objetivo)
+    {
+        CanvasGroup[] fondos = { fondoNormal, fondoVerde, fondoNaranja, fondoRojo };
+        float[] inicio = new float[fondos.Length];
+        for (int i = 0; i < fondos.Length; i++)
+            inicio[i] = fondos[i] != null ? fondos[i].alpha : 0f;
+
+        float t = 0f;
+        while (t < duracionTransicionPanel)
+        {
+            t += Time.unscaledDeltaTime;
+            float k = Mathf.Clamp01(t / duracionTransicionPanel);
+
+            for (int i = 0; i < fondos.Length; i++)
+            {
+                if (fondos[i] == null) continue;
+                fondos[i].alpha = Mathf.Lerp(inicio[i], fondos[i] == objetivo ? 1f : 0f, k);
+            }
+            yield return null;
+        }
+
+        for (int i = 0; i < fondos.Length; i++)
+        {
+            if (fondos[i] != null) fondos[i].alpha = fondos[i] == objetivo ? 1f : 0f;
+        }
+    }
+
+    // ------------------------------------------------------------------ Animator helpers
+
+    void SetAlpha(CanvasGroup cg, float alpha) { if (cg != null) cg.alpha = alpha; }
+    void ActivarBool(string nombre) { animatorEnfermera.SetBool(nombre, true); if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, true)"); }
+    void DesactivarBool(string nombre) { animatorEnfermera.SetBool(nombre, false); if (mostrarLogs) Debug.Log($"[Enfermera] SetBool({nombre}, false)"); }
+
     // ------------------------------------------------------------------ Escritura de texto
 
-    IEnumerator EscribirTextoNormal(string texto, AudioClip audio)
+    /// <summary>
+    /// Escribe un texto letra por letra.
+    /// - Si hay audio: lo reproduce, sincroniza la velocidad con su duración y espera a que termine.
+    /// - Si no hay audio: usa velocidadFija.
+    /// </summary>
+    IEnumerator EscribirSegmento(string texto, AudioClip audio, bool limpiarAntes, float velocidadFija, bool esperarAudio = true)
     {
-        textoDialogo.text = "";
+        if (limpiarAntes) textoDialogo.text = "";
+        if (string.IsNullOrEmpty(texto)) yield break;
+
+        float velocidad = velocidadFija;
 
         if (vozAudioSource != null && audio != null)
         {
+            vozAudioSource.Stop();
             vozAudioSource.clip = audio;
             vozAudioSource.Play();
+
+            velocidad = (audio.length / texto.Length) / Mathf.Max(0.01f, multiplicadorVelocidad);
+            if (velocidad < 0.01f) velocidad = 0.01f;
         }
 
-        float velocidadReal = velocidadLetra;
-
-        if (audio != null && texto.Length > 0)
-        {
-            float velocidadBase = audio.length / texto.Length;
-            velocidadReal = velocidadBase / multiplicadorVelocidad;
-            if (velocidadReal < 0.01f) velocidadReal = 0.01f;
-        }
-
-        foreach (char c in texto)
-        {
-            textoDialogo.text += c;
-            yield return new WaitForSeconds(velocidadReal);
-        }
-
-        if (vozAudioSource != null && vozAudioSource.isPlaying)
-        {
-            yield return new WaitWhile(() => vozAudioSource.isPlaying);
-        }
-    }
-
-    IEnumerator EscribirParteTexto(string texto, AudioClip audio)
-    {
-        float velocidadReal = 0.07f;
-
-        if (audio != null && texto.Length > 150)
-        {
-            float velocidadBase = audio.length / texto.Length;
-            velocidadReal = velocidadBase / multiplicadorVelocidad;
-            if (velocidadReal < 0.05f) velocidadReal = 0.035f;
-        }
-
-        foreach (char c in texto)
-        {
-            textoDialogo.text += c;
-            yield return new WaitForSeconds(velocidadReal);
-        }
-    }
-
-    /// <summary>Escribe con velocidad fija, sin depender de la duración del audio.</summary>
-    IEnumerator EscribirTextoFijo(string texto, float velocidad)
-    {
         foreach (char c in texto)
         {
             textoDialogo.text += c;
             yield return new WaitForSeconds(velocidad);
         }
-        yield return new WaitForSeconds(pausaEntreBloques * 0.5f);
+
+        if (esperarAudio && vozAudioSource != null && vozAudioSource.isPlaying)
+        {
+            yield return new WaitWhile(() => vozAudioSource.isPlaying);
+        }
     }
 
     void Log(string mensaje) { if (mostrarLogs) Debug.Log($"[Enfermera] {mensaje}"); }

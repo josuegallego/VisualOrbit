@@ -1059,6 +1059,52 @@ MonoBehaviour:
   audioRecomendacionMalo: {fileID: 8300000, guid: 40782e9e39731124b9c52e19cb7d479a, type: 3}
   audioDejandoAlgoEnClaro: {fileID: 8300000, guid: 84782c28e59ba6644a4f6bcf0eef144e, type: 3}
   audioDespedida: {fileID: 8300000, guid: f9041d3577e7d3840902ef1d7d1f94fd, type: 3}
+  audioDiagnosticoBueno: {fileID: 8300000, guid: 9df196b5f6866744cb9e9e153668c049, type: 3}
+  audioDiagnosticoRegular: {fileID: 8300000, guid: 0752d54a4e85c8b4e9fea2a0d44d1a0b, type: 3}
+  audioDiagnosticoMalo: {fileID: 8300000, guid: 2d744192bdcdbce47ad4471e8d2f182b, type: 3}
+  audioBuenaEleccion: {fileID: 8300000, guid: 2e36e4395604eb34e955edb2f326aa4a, type: 3}
+  audioMalaEleccion: {fileID: 8300000, guid: 7835944d1bdcf1040a232cf91d1bc2ba, type: 3}
+  audiosMomentos:
+  - momento: Desayuno
+    textoMomento: el desayuno
+    prefijo: {fileID: 8300000, guid: 48b731939d0ace049a5766a643237003, type: 3}
+    conector: {fileID: 8300000, guid: 5f1ece82898f78c46984f913cba97269, type: 3}
+  - momento: Almuerzo
+    textoMomento: el almuerzo
+    prefijo: {fileID: 8300000, guid: eec949f45988d9f43807e4c074c53a5e, type: 3}
+    conector: {fileID: 8300000, guid: ebd4fe98606c24d47867a434c545c880, type: 3}
+  - momento: Cena
+    textoMomento: la cena
+    prefijo: {fileID: 8300000, guid: 1a10d190fd9a6474b95074c1703f22b8, type: 3}
+    conector: {fileID: 8300000, guid: d8b4bee0ba5cd394b90e35b4064c4c75, type: 3}
+  audiosOpciones:
+  - momento: Desayuno
+    opcion: "Energizante m\xE1s galletas"
+    audio: {fileID: 8300000, guid: 71cf0459ca107ff4c89be03ec8bdb7a2, type: 3}
+  - momento: Desayuno
+    opcion: "Caf\xE9 m\xE1s pan queso"
+    audio: {fileID: 8300000, guid: 559b66409e5f5b34eaafc3a6fbf1d7dc, type: 3}
+  - momento: Desayuno
+    opcion: Huevo con jugo de lulo
+    audio: {fileID: 8300000, guid: b929efd2c70397c4fa9cc54be8840f24, type: 3}
+  - momento: Almuerzo
+    opcion: Salchipapa con aguapanela
+    audio: {fileID: 8300000, guid: 19576f25806c1f54f848f3cb6fc89e9a, type: 3}
+  - momento: Almuerzo
+    opcion: Corrientazo
+    audio: {fileID: 8300000, guid: d952e7dc36e94c14fa9909aa32ea2973, type: 3}
+  - momento: Almuerzo
+    opcion: "Lasa\xF1a"
+    audio: {fileID: 8300000, guid: 97d97879a4dd32444b78511efc6c66c9, type: 3}
+  - momento: Cena
+    opcion: Chocolate y pandebono
+    audio: {fileID: 8300000, guid: db9cc45e965ef784cb2f0523cc44ab42, type: 3}
+  - momento: Cena
+    opcion: "Gaseosa m\xE1s pastel de chocolate"
+    audio: {fileID: 8300000, guid: 14d819a11ee68434a989584ee5685110, type: 3}
+  - momento: Cena
+    opcion: "Energizante m\xE1s papas"
+    audio: {fileID: 8300000, guid: 2e11521a960840c49bb780bb7f65c55b, type: 3}
   fondoNormal: {fileID: 1117918610}
   fondoVerde: {fileID: 1219515188}
   fondoNaranja: {fileID: 297056964}
@@ -1084,8 +1130,17 @@ MonoBehaviour:
     un diagn\xF3stico m\xE9dico real.\n"
   despedida: "Cu\xEDdate, y espero poder vernos en la pr\xF3xima jornada. Gracias
     por usar Inside Your Mind!"
+  diagnosticoBueno: "Mis registros indican que elegiste opciones balanceadas, y tu
+    energ\xEDa, memoria e interferencia se mantuvieron estables."
+  diagnosticoRegular: "Mis registros indican que elegiste opciones variadas, y tu
+    energ\xEDa, memoria e interferencia quedaron en un punto intermedio."
+  diagnosticoMalo: "Mis registros indican que elegiste opciones con exceso de az\xFAcares,
+    y tu energ\xEDa y memoria bajaron mientras tu interferencia subi\xF3."
+  textoBuenaEleccion: " (una buena elecci\xF3n)"
+  textoMalaEleccion: ' (no es lo mejor para tu cerebro)'
   velocidadLetra: 0.03
   velocidadTextoDecisiones: 0.035
+  velocidadDiagnostico: 0.07
   pausaEntreBloques: 1.5
   pausaAntesDeRecomendacion: 2
   duracionTransicionPanel: 0.5
