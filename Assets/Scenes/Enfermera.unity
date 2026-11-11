@@ -1053,10 +1053,10 @@ MonoBehaviour:
   botonContinuar: {fileID: 1625740907}
   panelBarras: {fileID: 1509218120}
   vozAudioSource: {fileID: 307844268}
-  audioSaludo: {fileID: 8300000, guid: df63f5ef669647a4b9d3c31ea506ac06, type: 3}
-  audioRecomendacionBueno: {fileID: 8300000, guid: 6a9e5d4d1425de94fb51591f8949f2ff, type: 3}
-  audioRecomendacionRegular: {fileID: 8300000, guid: a1ca220622297c4489aa0dec372fe384, type: 3}
-  audioRecomendacionMalo: {fileID: 8300000, guid: 40782e9e39731124b9c52e19cb7d479a, type: 3}
+  audioSaludo: {fileID: 8300000, guid: 6f8addfc934448b4caf7ceed83e13433, type: 3}
+  audioRecomendacionBueno: {fileID: 8300000, guid: 080d04870e3cac540ad628783de8981e, type: 3}
+  audioRecomendacionRegular: {fileID: 8300000, guid: d65aa487fb2c17d4db7bd6f6d0269ce7, type: 3}
+  audioRecomendacionMalo: {fileID: 8300000, guid: b2d6f6cb19c77c745862d3ee01d37a49, type: 3}
   audioDejandoAlgoEnClaro: {fileID: 8300000, guid: 84782c28e59ba6644a4f6bcf0eef144e, type: 3}
   audioDespedida: {fileID: 8300000, guid: f9041d3577e7d3840902ef1d7d1f94fd, type: 3}
   audioDiagnosticoBueno: {fileID: 8300000, guid: 9df196b5f6866744cb9e9e153668c049, type: 3}
@@ -1112,7 +1112,9 @@ MonoBehaviour:
   particulasSatisfaccion1: {fileID: 1634373148}
   particulasSatisfaccion2: {fileID: 2071919054}
   saludoBase: "Hola, soy Marcela Ram\xEDrez, enfermera de la UAO y espero te encuentres
-    bien. \nHe revisado tus decisiones y tu desempe\xF1o durante la jornada."
+    bien.  He revisado tus decisiones y tu desempe\xF1o durante la jornada.\nLo que
+    te recomiendo se basa en evidencia cient\xEDfica, literatura sobre el hipocampo
+    y la corteza prefrontal y las Gu\xEDas Alimentarias DGA 2025-2030."
   recomendacionBueno: "Tus elecciones fueron equilibradas. Tu energ\xEDa, memoria
     e interferencia cognitiva se mantuvieron estables. Sigue as\xED, tu cerebro te
     lo agradece. Hoy te elegiste a ti, ma\xF1ana puedes volver a elegirte."
@@ -1121,11 +1123,9 @@ MonoBehaviour:
     o pl\xE1tano cocido, agua y una fruta entera. En almuerzo y cena debes tener
     obligatoriamente 4 elementos. Cada comida es una nueva oportunidad para nutrir
     tu mente."
-  recomendacionMalo: "Tus decisiones afectaron seriamente tu rendimiento cognitivo.
-    Tu memoria y energ\xEDa bajaron, y tu interferencia cognitiva subi\xF3. Necesitas
-    incluir prote\xEDnas, carbohidratos complejos, vegetales y grasas saludables
-    en cada comida. Cada d\xEDa es una p\xE1gina y ma\xF1ana puedes escribir una
-    nueva."
+  recomendacionMalo: "Necesitas incluir prote\xEDnas, carbohidratos complejos, vegetales
+    y grasas saludables en cada comida. Cada d\xEDa es una p\xE1gina y ma\xF1ana
+    puedes escribir una nueva."
   dejandoAlgoEnClaro: "Recuerda que esta experiencia es educativa y no reemplaza
     un diagn\xF3stico m\xE9dico real.\n"
   despedida: "Cu\xEDdate, y espero poder vernos en la pr\xF3xima jornada. Gracias
