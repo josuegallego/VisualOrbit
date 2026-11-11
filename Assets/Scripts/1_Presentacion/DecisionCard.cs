@@ -8,7 +8,7 @@ using UnityEngine.UI;
 /// Todo lo demas (bloquear las otras tarjetas, abrir el panel y decidir a donde va Continuar)
 /// lo resuelve solo o lo decide el FeedbackPanel.
 /// </summary>
-public class DecisionCard : MonoBehaviour
+public class DecisionCard : MonoBehaviour, UnityEngine.EventSystems.IPointerEnterHandler
 {
     [Header("Boton de la tarjeta")]
     public Button button;
@@ -27,6 +27,12 @@ public class DecisionCard : MonoBehaviour
     public bool calcularSaludableAutomatico = true;
     [Tooltip("Solo se usa si 'Calcular Saludable Automatico' esta apagado.")]
     public bool esSaludable = true;
+
+    [Header("Vibracion (HU 4.2.1)")]
+    [Tooltip("Vibracion suave en los controles al elegir (clic) esta decision.")]
+    public bool vibrarAlElegir = true;
+    [Tooltip("Roce muy suave en los controles al apuntar a la tarjeta (mientras se puede elegir).")]
+    public bool vibrarAlPasarPuntero = true;
 
     [Header("Retroalimentacion")]
     public FeedbackPanel feedback;
@@ -49,10 +55,20 @@ public class DecisionCard : MonoBehaviour
         SetSiblingsInteractable(true);
     }
 
+    // El puntero (rayo del control) entra en la tarjeta o en cualquiera de sus hijos
+    public void OnPointerEnter(UnityEngine.EventSystems.PointerEventData eventData)
+    {
+        if (!vibrarAlPasarPuntero || used) return;
+        if (button != null && !button.IsInteractable()) return;
+        HapticService.Tick();
+    }
+
     public void Choose()
     {
         if (used) return;       // evita doble click
         used = true;
+
+        if (vibrarAlElegir) HapticService.Soft();
 
         // Guardar QUE eligio el jugador (queda en el JSON)
         RegistrarEnStore();

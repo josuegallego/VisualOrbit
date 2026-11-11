@@ -114,6 +114,10 @@ public class EnfermeraManager : MonoBehaviour
     [Header("Velocidad y Tiempos")]
     public float velocidadLetra = 0.03f;
     public float velocidadTextoDecisiones = 0.035f;   // Solo se usa cuando un segmento no tiene audio
+
+    [Header("Vibracion (HU 4.2.1)")]
+    [Tooltip("Vibracion suave en los controles cada vez que la enfermera nombra una decision del jugador.")]
+    public bool vibrarAlMencionarDecision = true;
     public float velocidadDiagnostico = 0.07f;        // Solo se usa cuando no hay audio en diagnóstico/recomendación
     public float pausaEntreBloques = 1.5f;
     public float pausaAntesDeRecomendacion = 0.05f;
@@ -383,7 +387,8 @@ public class EnfermeraManager : MonoBehaviour
             // 1) Prefijo
             yield return EscribirSegmento(textoPrefijo, clipPrefijo, false, velocidadTextoDecisiones);
 
-            // 2) Opción elegida
+            // 2) Opción elegida (aquí la enfermera "menciona" la decisión: vibración suave)
+            if (vibrarAlMencionarDecision) HapticService.Soft();
             AudioClip clipOpcion = BuscarAudioOpcion(d);
             yield return EscribirSegmento(d.opcion, clipOpcion, false, velocidadTextoDecisiones);
 

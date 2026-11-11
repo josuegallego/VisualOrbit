@@ -24,5 +24,12 @@ public class ControllerMenuToggle : MonoBehaviour
             SettingsPanelManager.Instance.TogglePanel();
 
         estabaPresionado = presionado;
+
+#if ENABLE_INPUT_SYSTEM
+        // Atajo para el simulador / editor: tecla F1 abre y cierra la configuracion
+        var kb = UnityEngine.InputSystem.Keyboard.current;
+        if (kb != null && kb.f1Key.wasPressedThisFrame && SettingsPanelManager.Instance != null)
+            SettingsPanelManager.Instance.TogglePanel();
+#endif
     }
 }

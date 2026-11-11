@@ -33,6 +33,8 @@ public class SettingsAudioRouter : MonoBehaviour
     [Tooltip("Las fuentes en bucle (y las del Video Player) cuentan como musica; el resto como efectos.")]
     public bool loopsSonMusica = true;
     public bool mostrarLogs = true;
+    [Tooltip("DESMARCALO para apagar este script: devuelve los volumenes originales y deja de tocar el audio (sirve para saber si el problema es de este script).")]
+    public bool activo = true;
 
     class Entry { public float baseVol; public AudioChannelType canal; }
 
@@ -90,7 +92,22 @@ public class SettingsAudioRouter : MonoBehaviour
         efectos = sm != null ? sm.CurrentEffectsVolume : PlayerPrefs.GetFloat("Settings_EffectsVolume", 1f);
         voz = sm != null ? sm.CurrentVoiceVolume : PlayerPrefs.GetFloat("Settings_VoiceVolume", 1f);
         musica = sm != null ? sm.CurrentSpatialMusic : PlayerPrefs.GetInt("Settings_SpatialMusic", 1) == 1;
+        if (mostrarLogs)
+            Debug.Log($"[SettingsAudioRouter] Valores guardados -> Efectos {efectos:F2}, Voces {voz:F2}, Musica {(musica ? "ON" : "OFF")}. " +
+                      "Si Efectos es 0 o Musica es OFF, por eso no suena (menu Tools > Audio > Restablecer ajustes de audio).");
     }
+
+#if UNITY_EDITOR
+    [UnityEditor.MenuItem("Tools/Audio/Restablecer ajustes de audio (Efectos 1, Voces 1, Musica ON)")]
+    static void ResetAudioPrefs()
+    {
+        PlayerPrefs.SetFloat("Settings_EffectsVolume", 1f);
+        PlayerPrefs.SetFloat("Settings_VoiceVolume", 1f);
+        PlayerPrefs.SetInt("Settings_SpatialMusic", 1);
+        PlayerPrefs.Save();
+        Debug.Log("[SettingsAudioRouter] Ajustes de audio restablecidos. Detén Play y vuelve a darle Play.");
+    }
+#endif
 
     IEnumerator Maintain()
     {
@@ -98,6 +115,7 @@ public class SettingsAudioRouter : MonoBehaviour
         var wait = new WaitForSecondsRealtime(1f);
         while (true)
         {
+            if (!activo) { RestoreAll(); yield return wait; continue; }
             Rescan();
             HookControls();
             yield return wait;
@@ -106,8 +124,20 @@ public class SettingsAudioRouter : MonoBehaviour
 
     // ------------------------------------------------------------ Audio
 
+    void RestoreAll()
+    {
+        foreach (var kv in entries)
+        {
+            var s = kv.Key;
+            if (s == null) continue;
+            if (kv.Value.canal == AudioChannelType.Musica) s.mute = false;
+            else s.volume = kv.Value.baseVol;
+        }
+    }
+
     void Rescan()
     {
+        if (!activo) return;
         if (saltarEscenasConAudioManager &&
             FindFirstObjectByType<AudioManager>(FindObjectsInactive.Include) != null)
             return;
@@ -137,6 +167,7 @@ public class SettingsAudioRouter : MonoBehaviour
 
     void ApplyAll()
     {
+        if (!activo) return;
         foreach (var kv in entries)
         {
             var s = kv.Key;

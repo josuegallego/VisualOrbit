@@ -182,6 +182,26 @@ public class RingFeedback : MonoBehaviour
         }
     }
 
+    // ------------------------------------------------------------ Uso desde otros minijuegos (ej. memorama)
+
+    /// <summary>Destello verde en los bordes + vibracion de acierto. Llamar desde fuera (UnityEvent o codigo).</summary>
+    public void FlashBien()
+    {
+        Flash(goodColor);
+        if (useHaptics) HapticService.Success();
+    }
+
+    /// <summary>Destello rojo en los bordes + vibracion de error. Llamar desde fuera (UnityEvent o codigo).</summary>
+    public void FlashMal()
+    {
+        Flash(badColor);
+        if (useHaptics && Time.time - lastBadHaptic >= badCooldown)
+        {
+            lastBadHaptic = Time.time;
+            HapticService.Error();
+        }
+    }
+
     // ------------------------------------------------------------ Audio
 
     void Play(AudioClip clip, float gain)

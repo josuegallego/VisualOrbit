@@ -6,6 +6,7 @@ using UnityEngine;
 /// Servicio de vibracion de los controles (HU 3.3.3).
 ///   HapticService.Success();  -> dos toques cortos y suaves, que suben ("tic-tic"): acierto.
 ///   HapticService.Error();    -> un zumbido largo y fuerte: error.
+///   HapticService.Soft();     -> un toque muy suave y corto (HU 4.2.1: al elegir/mencionar una decision).
 /// Son muy distintos a proposito para reconocerlos sin mirar. Se mandan a los dos controles.
 /// Los valores se pueden cambiar por codigo (campos estaticos) si hace falta afinarlos en las gafas.
 /// </summary>
@@ -18,6 +19,12 @@ public static class HapticService
 
     // Error: un zumbido largo y fuerte
     public static float errorAmp = 1.0f, errorDur = 0.45f;
+
+    // Suave: un solo toque corto y de poca fuerza (se siente como un "toc" discreto)
+    public static float softAmp = 0.25f, softDur = 0.12f;
+
+    // Tic: roce casi imperceptible al pasar el puntero por encima de una tarjeta
+    public static float tickAmp = 0.12f, tickDur = 0.04f;
 
     static HapticRunner runner;
     static readonly List<UnityEngine.XR.InputDevice> devices = new List<UnityEngine.XR.InputDevice>();
@@ -32,6 +39,16 @@ public static class HapticService
     public static void Error()
     {
         Run(Pattern(new Step(errorAmp, errorDur, 0f)));
+    }
+
+    public static void Soft()
+    {
+        Run(Pattern(new Step(softAmp, softDur, 0f)));
+    }
+
+    public static void Tick()
+    {
+        Run(Pattern(new Step(tickAmp, tickDur, 0f)));
     }
 
     // ------------------------------------------------------------ interno

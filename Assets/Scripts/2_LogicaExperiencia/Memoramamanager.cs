@@ -552,10 +552,30 @@ public class MemoramaManager : MonoBehaviour
         barraLlenadoPorcentaje.fillAmount = objetivoNormalizado;
     }
 
+    [Header("Impacto en las barras (HU memorama)")]
+    [Tooltip("Cambio TOTAL que recibe cada barra si el jugador completa todas las parejas. " +
+             "Se reparte entre las parejas y NUNCA se pasa de este total, aunque el juego se reinicie.")]
+    public float impactoTotalEnergia = 5f;
+    public float impactoTotalInterferencia = -5f;
+    public float impactoTotalMemoria = 10f;
+
+    float fraccionImpactoAplicada = 0f;
+
     void AplicarImpactoBarras()
     {
         if (PlayerStats.Instance == null) return;
-        PlayerStats.Instance.ApplyEffects(5f, -5f, 10f);
+
+        // Antes se sumaban +5/-5/+10 POR CADA pareja (con 9 parejas: +45/-45/+90) y se pisaban
+        // los resultados de las decisiones. Ahora el total es fijo y se reparte entre las parejas.
+        float totalParejas = Mathf.Max(1f, cartas.Count / 2f);
+        float fraccion = Mathf.Min(1f / totalParejas, 1f - fraccionImpactoAplicada);
+        if (fraccion <= 0.0001f) return;
+        fraccionImpactoAplicada += fraccion;
+
+        PlayerStats.Instance.ApplyEffects(
+            impactoTotalEnergia * fraccion,
+            impactoTotalInterferencia * fraccion,
+            impactoTotalMemoria * fraccion);
         PlayerStats.Instance.ForzarActualizacion();
     }
 }
