@@ -16636,9 +16636,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  headPosition: {x: -1.6526885, y: 2.90144, z: 1.4760702}
+  headPosition: {x: -0.5926741, y: 2.9243395, z: -1.0145088}
   configured: 1
-  headYaw: 35.323944
+  headYaw: 9.956933
   useHeadHeight: 1
   delaySeconds: 0.5
   holdSeconds: 0.5

@@ -1065,10 +1065,10 @@ MonoBehaviour:
   botonContinuar: {fileID: 1625740907}
   panelBarras: {fileID: 1509218120}
   vozAudioSource: {fileID: 307844268}
-  audioSaludo: {fileID: 8300000, guid: 6f8addfc934448b4caf7ceed83e13433, type: 3}
-  audioRecomendacionBueno: {fileID: 8300000, guid: 080d04870e3cac540ad628783de8981e, type: 3}
-  audioRecomendacionRegular: {fileID: 8300000, guid: d65aa487fb2c17d4db7bd6f6d0269ce7, type: 3}
-  audioRecomendacionMalo: {fileID: 8300000, guid: b2d6f6cb19c77c745862d3ee01d37a49, type: 3}
+  audioSaludo: {fileID: 8300000, guid: f14bba67468474d429a1b7e6b2654546, type: 3}
+  audioRecomendacionBueno: {fileID: 8300000, guid: f23c8345576098341ae11ecddcef7452, type: 3}
+  audioRecomendacionRegular: {fileID: 8300000, guid: 45166cba99f978946856cd2b8ae52c15, type: 3}
+  audioRecomendacionMalo: {fileID: 8300000, guid: 45166cba99f978946856cd2b8ae52c15, type: 3}
   audioDejandoAlgoEnClaro: {fileID: 8300000, guid: 84782c28e59ba6644a4f6bcf0eef144e, type: 3}
   audioDespedida: {fileID: 8300000, guid: f9041d3577e7d3840902ef1d7d1f94fd, type: 3}
   audioDiagnosticoBueno: {fileID: 8300000, guid: 9df196b5f6866744cb9e9e153668c049, type: 3}
@@ -1779,9 +1779,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  headPosition: {x: -0.039941788, y: 1.0719656, z: 0.6989528}
+  headPosition: {x: 0.26209235, y: 1.255116, z: -0.48262352}
   configured: 1
-  headYaw: 0.5999954
+  headYaw: 6.749869
   useHeadHeight: 1
   delaySeconds: 0
   holdSeconds: 1.5
@@ -4684,8 +4684,8 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1614370087}
-  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: 0, y: 0, z: 8.7}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 28}
   m_LocalScale: {x: 5.297208, y: 14.25123, z: 4.973904}
   m_ConstrainProportionsScale: 0
   m_Children:

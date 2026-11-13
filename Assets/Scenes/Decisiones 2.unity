@@ -1619,7 +1619,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 958605659148592500, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 958605659148592500, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1639,7 +1639,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3495459915786468626, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0.38
       objectReference: {fileID: 0}
     - target: {fileID: 3495459915786468626, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1675,7 +1675,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6415872092148506017, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0.38
       objectReference: {fileID: 0}
     - target: {fileID: 6415872092148506017, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1683,7 +1683,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6415872092148506017, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0.38
       objectReference: {fileID: 0}
     - target: {fileID: 6676404820425631481, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_Enabled
@@ -1751,7 +1751,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8808067660078927161, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8808067660078927161, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMax.y
@@ -1759,7 +1759,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8808067660078927161, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 1
+      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 9202247628847492222, guid: 1854a9fac84c8034fa023d7de5a36f4f, type: 3}
       propertyPath: onValueChanged.m_PersistentCalls.m_Calls.Array.data[1].m_Target
@@ -5143,12 +5143,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 800430149}
   energyChange: 5
-  interferenceChange: 20
-  memoryChange: -10
+  interferenceChange: -5
+  memoryChange: 5
   momento: Almuerzo
   nombreOpcion: "Lasa\xF1a"
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: Combustible ideal para tu entrega
   feedbackBody: "Tendr\xE1s mayor profundidad anal\xEDtica y menos errores en tres
@@ -8049,6 +8051,8 @@ MonoBehaviour:
   nombreOpcion: 
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "Energ\xEDa fugaz y bajo rendimiento"
   feedbackBody: "Tu memoria fallar\xE1 tras 75 minutos por falta de calcio, prote\xEDna
@@ -9586,6 +9590,8 @@ MonoBehaviour:
   nombreOpcion: 
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "M\xE1ximo impulso para tu aprendizaje"
   feedbackBody: "La colina del huevo crea acetilcolina, neurotransmisor clave para
@@ -10757,6 +10763,8 @@ MonoBehaviour:
   nombreOpcion: 
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: Tu cerebro no puede grabar datos
   feedbackBody: "Un pico de az\xFAcar y falta de colina (nutriente para la memoria)
@@ -13243,12 +13251,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   button: {fileID: 2018094501}
   energyChange: -10
-  interferenceChange: 20
-  memoryChange: 5
+  interferenceChange: 10
+  memoryChange: -10
   momento: Almuerzo
   nombreOpcion: Corrientazo
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "Rendimiento frenado por exceso de az\xFAcar"
   feedbackBody: "Tu concentraci\xF3n (+8%) y memoria (+5%) est\xE1n limitadas hoy.\n\nLa
@@ -13571,13 +13581,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 444237261}
-  energyChange: -35
-  interferenceChange: 30
-  memoryChange: -35
+  energyChange: -25
+  interferenceChange: 20
+  memoryChange: -25
   momento: Almuerzo
   nombreOpcion: Salchipapa con aguapanela
   calcularSaludableAutomatico: 1
   esSaludable: 0
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "Apag\xF3n cognitivo de mediod\xEDa"
   feedbackBody: "Alta carga gluc\xE9mica + grasas saturadas + cero vegetales = colapso

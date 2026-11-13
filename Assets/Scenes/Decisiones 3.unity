@@ -4102,13 +4102,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1405398291}
-  energyChange: -30
-  interferenceChange: 30
-  memoryChange: -30
+  energyChange: -20
+  interferenceChange: 15
+  memoryChange: -20
   momento: Cena
   nombreOpcion: Gaseosa mas pastel de chocolate
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: 'Combo Ultraprocesado: Menos 40% de Memoria'
   feedbackBody: "Las DGA (Gu\xEDas Alimentarias), excluyen snacks y bebidas azucaradas
@@ -4406,6 +4408,8 @@ MonoBehaviour:
   nombreOpcion: 
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: Combustible ideal para tu entrega
   feedbackBody: "Tendr\xE1s mayor profundidad anal\xEDtica y menos errores en tres
@@ -6686,13 +6690,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1135177392}
-  energyChange: -15
+  energyChange: -25
   interferenceChange: 20
-  memoryChange: -20
+  memoryChange: -25
   momento: Cena
   nombreOpcion: "Energizante m\xE1s papas"
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: " Rendimiento en riesgo por bebidas energ\xE9ticas"
   feedbackBody: "Tu consolidaci\xF3n de memoria (-45%), interferencia cognitiva (+10%)
@@ -7549,6 +7555,8 @@ MonoBehaviour:
   nombreOpcion: 
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "Energ\xEDa fugaz y bajo rendimiento"
   feedbackBody: "Tu memoria fallar\xE1 tras 75 minutos por falta de calcio, prote\xEDna
@@ -8201,13 +8209,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1417342292}
-  energyChange: -35
-  interferenceChange: 30
-  memoryChange: -25
+  energyChange: -10
+  interferenceChange: 10
+  memoryChange: -10
   momento: Cena
   nombreOpcion: Chocolate y pandebono
   calcularSaludableAutomatico: 1
   esSaludable: 0
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: 'Chocolate y pandebono: saboteadores del aprendizaje'
   feedbackBody: "Seg\xFAn las DGA (Gu\xEDas alimentarias), evitar estimulantes nocturnos
@@ -9332,6 +9342,8 @@ MonoBehaviour:
   nombreOpcion: 
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "M\xE1ximo impulso para tu aprendizaje"
   feedbackBody: "La colina del huevo crea acetilcolina, neurotransmisor clave para
@@ -10718,6 +10730,8 @@ MonoBehaviour:
   nombreOpcion: 
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: Tu cerebro no puede grabar datos
   feedbackBody: "Un pico de az\xFAcar y falta de colina (nutriente para la memoria)
@@ -13134,6 +13148,8 @@ MonoBehaviour:
   nombreOpcion: 
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "Rendimiento frenado por exceso de az\xFAcar"
   feedbackBody: "Tu concentraci\xF3n (+8%) y memoria (+5%) est\xE1n limitadas hoy.\n\nLa
@@ -13634,6 +13650,8 @@ MonoBehaviour:
   nombreOpcion: 
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "Apag\xF3n cognitivo de mediod\xEDa"
   feedbackBody: "Alta carga gluc\xE9mica + grasas saturadas + cero vegetales = colapso

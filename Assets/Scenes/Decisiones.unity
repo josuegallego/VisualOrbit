@@ -9308,13 +9308,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 1963212055}
-  energyChange: -20
-  interferenceChange: 20
-  memoryChange: -20
+  energyChange: -10
+  interferenceChange: 10
+  memoryChange: -10
   momento: desayuno
   nombreOpcion: Cafe mas pan queso
   calcularSaludableAutomatico: 1
   esSaludable: 0
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "Energ\xEDa fugaz y bajo rendimiento"
   feedbackBody: "Tu memoria fallar\xE1 tras 75 minutos por falta de calcio, prote\xEDna
@@ -11624,13 +11626,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 431443818}
-  energyChange: 0
+  energyChange: 5
   interferenceChange: 20
-  memoryChange: -5
+  memoryChange: 5
   momento: desayuno
   nombreOpcion: Huevo con jugo de lulo
   calcularSaludableAutomatico: 1
   esSaludable: 1
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: "M\xE1ximo impulso para tu aprendizaje"
   feedbackBody: "La colina del huevo crea acetilcolina, neurotransmisor clave para
@@ -13767,13 +13771,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   button: {fileID: 332977958}
-  energyChange: -38
-  interferenceChange: 28
-  memoryChange: -35
+  energyChange: -25
+  interferenceChange: 20
+  memoryChange: -25
   momento: desayuno
   nombreOpcion: Energizante mas galletas
   calcularSaludableAutomatico: 1
   esSaludable: 0
+  vibrarAlElegir: 1
+  vibrarAlPasarPuntero: 1
   feedback: {fileID: 1667482641}
   feedbackTitle: Tu cerebro no puede grabar datos
   feedbackBody: "Un pico de az\xFAcar y falta de colina (nutriente para la memoria)
