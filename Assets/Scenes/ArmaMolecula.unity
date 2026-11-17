@@ -8166,7 +8166,7 @@ MonoBehaviour:
   tiempoMedio: 90
   tiempoDeficiente: 60
   textoTiempo: {fileID: 465001159}
-  barraTiempo: {fileID: 663583089}
+  barraTiempo: {fileID: 89707968}
   colorTiempo: {r: 1, g: 1, b: 1, a: 1}
   brilloTiempo: 0.9
   forzarTimerBlanco: 1

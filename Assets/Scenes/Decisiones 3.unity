@@ -149,8 +149,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f79eb9242d910b744a2d39ff09384021, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  materialSkybox: {fileID: 2100000, guid: b71927b32d033f94899fb90c0efc062b, type: 2}
-  exposureMejor: 1.5
+  materialSkybox: {fileID: 2100000, guid: 1fe71a88fe4e8a74183ba0b495048b80, type: 2}
+  exposureMejor: 1
   exposurePeor: -1
   pesoInterferencia: 0.5
   pesoMemoria: 0.3
