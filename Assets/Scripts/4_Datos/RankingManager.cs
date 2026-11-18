@@ -1,4 +1,4 @@
-using System;
+Ôªøusing System;
 using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
@@ -11,14 +11,21 @@ public class RankingManager : MonoBehaviour
     [Header("Opcional")]
     public GameObject textoVacio;
 
-    [Header("Mensaje de posiciÛn")]
+    [Header("Mensaje de posici√≥n")]
     public TMPro.TMP_Text textoPosicion; // un texto aparte, fuera de las filas
 
     [Header("Colores")]
     public Color colorNormal = Color.white;
-    public Color colorMejor = new Color(1f, 0.84f, 0f);    // dorado
-    public Color colorReciente = new Color(0.3f, 0.9f, 1f);   // celeste
-    public Color colorAmbos = new Color(0.6f, 1f, 0.5f);   // mejor y m·s reciente
+    public Color colorMejor = new Color(1f, 0.84f, 0f);       // dorado
+    public Color colorReciente = new Color(0.3f, 0.9f, 1f);   // celeste: el jugador actual ("T√∫")
+    public Color colorAmbos = new Color(0.6f, 1f, 0.5f);      // mejor y jugador actual
+
+    [Header("Jugador fuera del top")]
+    [Tooltip("Si el jugador qued√≥ m√°s abajo de las filas disponibles, la √∫ltima fila muestra su puesto real.")]
+    public bool mostrarJugadorSiQuedoFuera = true;
+
+    /// <summary>Sesi√≥n del jugador que acaba de terminar (la usa ResultadoJugador para el panel 'Tu resultado').</summary>
+    public static PlayerSession SesionJugadorActual { get; private set; }
 
     PlayerSession sesionJugador;
 
@@ -26,6 +33,7 @@ public class RankingManager : MonoBehaviour
     {
         // Guardamos la referencia antes de cerrarla
         sesionJugador = PlayerDataStore.ActiveSession;
+        SesionJugadorActual = sesionJugador;
         PlayerDataStore.CloseActiveSessionIfOpen(true);
         MostrarRanking();
     }
@@ -36,24 +44,24 @@ public class RankingManager : MonoBehaviour
 
         if (textoVacio != null) textoVacio.SetActive(ranking.Count == 0);
 
+        int posJugador = sesionJugador != null ? ranking.IndexOf(sesionJugador) + 1 : 0;
+
         if (textoPosicion != null)
         {
-            int pos = sesionJugador != null ? ranking.IndexOf(sesionJugador) + 1 : 0;
-
-            if (pos > 0)
+            if (posJugador > 0)
             {
                 textoPosicion.gameObject.SetActive(true);
-                textoPosicion.text = pos <= filas.Count
-                    ? $"°Quedaste en el puesto {pos}!"
-                    : $"Quedaste en el puesto {pos} de {ranking.Count}";
+                textoPosicion.text = posJugador <= filas.Count
+                    ? $"¬°Quedaste en el puesto {posJugador}!"
+                    : $"Quedaste en el puesto {posJugador} de {ranking.Count}";
             }
             else
             {
-                textoPosicion.gameObject.SetActive(false); // entrÛ al ranking sin haber jugado
+                textoPosicion.gameObject.SetActive(false); // entr√≥ al ranking sin haber jugado
             }
         }
 
-        // QuiÈn terminÛ m·s recientemente (seg˙n fechaFin) -> referencia a la sesiÛn
+        // Qui√©n termin√≥ m√°s recientemente (solo se usa si no hay jugador actual)
         PlayerSession sesionReciente = null;
         DateTime masReciente = DateTime.MinValue;
 
@@ -70,20 +78,31 @@ public class RankingManager : MonoBehaviour
             }
         }
 
+        PlayerSession resaltada = sesionJugador != null ? sesionJugador : sesionReciente;
+
+        // ¬øEl jugador qued√≥ fuera de las filas? Entonces la √∫ltima fila es para √©l.
+        bool jugadorFuera = mostrarJugadorSiQuedoFuera && posJugador > filas.Count && filas.Count > 0;
+
         for (int i = 0; i < filas.Count; i++)
         {
-            if (i < ranking.Count)
-            {
-                filas[i].gameObject.SetActive(true);
-                filas[i].Configurar(ranking[i]);
+            int idx = i;
+            if (jugadorFuera && i == filas.Count - 1) idx = posJugador - 1;
 
-                bool esMejor = (i == 0); // el ranking ya viene ordenado por puntaje
-                bool esReciente = (ranking[i] == sesionReciente);
+            if (idx < ranking.Count)
+            {
+                var s = ranking[idx];
+                bool esJugador = sesionJugador != null && s == sesionJugador;
+
+                filas[i].gameObject.SetActive(true);
+                filas[i].Configurar(s, idx + 1, esJugador);
+
+                bool esMejor = (idx == 0); // el ranking ya viene ordenado por puntaje
+                bool esResaltada = (s == resaltada);
 
                 Color c = colorNormal;
-                if (esMejor && esReciente) c = colorAmbos;
+                if (esMejor && esResaltada) c = colorAmbos;
                 else if (esMejor) c = colorMejor;
-                else if (esReciente) c = colorReciente;
+                else if (esResaltada) c = colorReciente;
 
                 filas[i].AplicarColor(c);
             }
@@ -92,6 +111,5 @@ public class RankingManager : MonoBehaviour
                 filas[i].gameObject.SetActive(false);
             }
         }
-
     }
 }
