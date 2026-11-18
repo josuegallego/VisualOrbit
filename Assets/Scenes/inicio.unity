@@ -4455,8 +4455,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "Los precios en las opciones de alimentaci\xF3n se \nmuestran como referencia,
     para que puedas tomar una\ndecisi\xF3n basada en el presupuesto que tienes destinado\npara
-    tu alimentaci\xF3n diaria.\n\nRecuerda, esta experiencia no reemplaza un diagnostico
-    medico real"
+    tu alimentaci\xF3n diaria. \n\nSi eliges mal, tu visi\xF3n puede nublarse. Es
+    parte de la experiencia\n\nEsto NO reemplaza un diagnostico medico real."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1c8e694e60c3dad41bd14a26ba849865, type: 2}
   m_sharedMaterial: {fileID: -3009694975347919624, guid: 1c8e694e60c3dad41bd14a26ba849865, type: 2}

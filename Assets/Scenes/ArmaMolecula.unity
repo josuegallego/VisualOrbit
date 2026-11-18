@@ -8135,9 +8135,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   networkRoot: {fileID: 972705565}
   neuronProgress: {fileID: 0}
-  mostrarTutorial: 1
+  mostrarTutorial: 0
   tutorialRoot: {fileID: 653849389}
-  mostrarAlCargar: 1
+  mostrarAlCargar: 0
   saltarSiYaVisto: 0
   claveTutorial: TutorialConexionesVisto
   ocultarDuranteTutorial:
@@ -8159,7 +8159,7 @@ MonoBehaviour:
   rawBest: 1
   roundToExtremes: 0
   extremeThreshold: 0.5
-  autoStart: 0
+  autoStart: 1
   umbralOptimo: 70
   umbralDeficiente: 39
   tiempoOptimo: 120

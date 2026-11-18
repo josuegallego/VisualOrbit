@@ -83,6 +83,24 @@ public class VisionImpairment : MonoBehaviour
     [Tooltip("Aberracion cromatica (franjas de color en los bordes) para sensacion de mareo.")]
     [Range(0f, 1f)] public float chromatic = 0.5f;
 
+    [Header("Panel de aviso (por que se ve borroso)")]
+    [Tooltip("Cada vez que empieza un tramo borroso muestra este panel explicando que los indicadores afectan la vista.")]
+    public bool mostrarPanel = true;
+    [Tooltip("Imagen del panel (panel_vista_nublada, importada como Sprite 2D and UI).")]
+    public Sprite panelAviso;
+    [Tooltip("Segundos que se queda visible.")]
+    public float panelSegundos = 5f;
+    [Tooltip("Segundos minimos entre un aviso y otro. 0 = en cada tramo borroso.")]
+    public float panelEnfriamiento = 20f;
+    [Tooltip("Distancia (m) delante de la mirada.")]
+    public float panelDistancia = 1.1f;
+    [Tooltip("Altura respecto a la mirada (m). Negativo = mas abajo.")]
+    public float panelAltura = -0.05f;
+    [Tooltip("Ancho del panel en metros.")]
+    public float panelAncho = 0.9f;
+    [Tooltip("Que tanto tarda en aparecer y desaparecer.")]
+    public float panelFundido = 0.4f;
+
     [Header("Depuracion")]
     public bool logEvents = true;
 
@@ -101,12 +119,20 @@ public class VisionImpairment : MonoBehaviour
     VolumeProfile runtimeProfile;
     GameObject runtimeVolumeGo;
 
+    // panel de aviso
+    float lastPanel = -999f, panelTimer;
+    Canvas panelCanvas;
+    CanvasGroup panelGroup;
+    Image panelImage;
+    Vector3 panelDir;
+
     void OnDestroy()
     {
         if (texture != null) Destroy(texture);
         if (runtimeVolumeGo != null) Destroy(runtimeVolumeGo);
         if (runtimeProfile != null) Destroy(runtimeProfile);
         if (canvas != null) Destroy(canvas.gameObject);
+        if (panelCanvas != null) Destroy(panelCanvas.gameObject);
     }
 
     void OnEnable()
@@ -119,6 +145,8 @@ public class VisionImpairment : MonoBehaviour
         Application.onBeforeRender -= Reposition;
         if (blurVolume != null) blurVolume.weight = 0f;
         if (canvas != null) canvas.enabled = false;
+        if (panelCanvas != null) panelCanvas.enabled = false;
+        panelTimer = 0f;
     }
 
     float TargetSeverity()
@@ -143,14 +171,18 @@ public class VisionImpairment : MonoBehaviour
         }
         else
         {
-            AdvanceStage();
-            goal = StageLevel(stage) * Mathf.Lerp(0.4f, 1f, Mathf.InverseLerp(minSeverity, 1f, severity));
+            // Mientras se muestra el panel de aviso el borroso espera (y el tramo no avanza):
+            // asi el jugador lee la causa ANTES de que la vista se nuble.
+            if (panelTimer <= 0f) AdvanceStage();
+            goal = panelTimer > 0f ? 0f
+                 : StageLevel(stage) * Mathf.Lerp(0.4f, 1f, Mathf.InverseLerp(minSeverity, 1f, severity));
         }
 
         intensity = Mathf.MoveTowards(intensity, goal, Time.deltaTime / Mathf.Max(0.05f, transitionSeconds));
 
         ApplyVolume();
         ApplyVeil();
+        UpdatePanel();
     }
 
     // Medio borroso -> muy borroso -> limpio -> repite. Las duraciones dependen de que tan mal van las barras.
@@ -163,6 +195,7 @@ public class VisionImpairment : MonoBehaviour
             stage = Stage.Medium;
             stageDuration = Hold(mediumHold, k);
             stageTimer = 0f;
+            OnBlurEpisodeStart();
             return;
         }
 
@@ -174,7 +207,7 @@ public class VisionImpairment : MonoBehaviour
         {
             case Stage.Medium: stage = Stage.Strong; stageDuration = Hold(strongHold, k); break;
             case Stage.Strong: stage = Stage.Clear;  stageDuration = Hold(clearHold, k);  break;
-            default:           stage = Stage.Medium; stageDuration = Hold(mediumHold, k);  break;
+            default:           stage = Stage.Medium; stageDuration = Hold(mediumHold, k);  OnBlurEpisodeStart(); break;
         }
 
         if (logEvents) Debug.Log($"[VisionImpairment] Tramo {stage} ({stageDuration:F1}s), gravedad {severity:F2}", this);
@@ -190,6 +223,93 @@ public class VisionImpairment : MonoBehaviour
             case Stage.Strong: return 1f;
             default: return 0f;
         }
+    }
+
+
+    // ------------------------------------------------------------ Panel de aviso
+
+    // Se llama cada vez que empieza un tramo borroso
+    void OnBlurEpisodeStart()
+    {
+        if (!mostrarPanel) return;
+        if (Time.time - lastPanel < panelEnfriamiento) return;
+
+        Sprite sp = panelAviso;
+        if (sp == null) { if (logEvents) Debug.LogWarning("[VisionImpairment] Falta el sprite del panel de aviso (Panel Aviso).", this); return; }
+        if (!EnsurePanel()) return;
+
+        lastPanel = Time.time;
+        panelImage.sprite = sp;
+        panelTimer = panelSegundos;
+        panelDir = Vector3.zero;   // arranca justo delante de la mirada
+        if (logEvents) Debug.Log("[VisionImpairment] Panel de aviso mostrado.", this);
+    }
+
+    void UpdatePanel()
+    {
+        if (panelCanvas == null) return;
+        if (panelTimer <= 0f)
+        {
+            if (panelCanvas.enabled) panelCanvas.enabled = false;
+            return;
+        }
+
+        panelTimer -= Time.unscaledDeltaTime;
+        float t = panelSegundos - panelTimer;
+        float f = Mathf.Clamp01(Mathf.Min(t, panelTimer) / Mathf.Max(0.05f, panelFundido));
+        panelGroup.alpha = Mathf.SmoothStep(0f, 1f, f);
+        panelCanvas.enabled = true;
+        PosicionarPanel(Mathf.Lerp(0.85f, 1f, Mathf.SmoothStep(0f, 1f, f)));
+    }
+
+    // Flota delante de la mirada y la sigue con retraso suave
+    void PosicionarPanel(float escala)
+    {
+        if (panelCanvas == null || playerCam == null) return;
+        Transform c = playerCam.transform;
+        if (panelDir == Vector3.zero) panelDir = c.forward;
+        panelDir = Vector3.Slerp(panelDir, c.forward, 1f - Mathf.Exp(-4f * Time.unscaledDeltaTime));
+        Vector3 pos = c.position + panelDir * panelDistancia + c.up * panelAltura;
+        panelCanvas.transform.SetPositionAndRotation(pos, Quaternion.LookRotation(pos - c.position, c.up));
+
+        var rt = (RectTransform)panelCanvas.transform;
+        float px = panelAncho / Mathf.Max(1f, rt.sizeDelta.x);
+        panelCanvas.transform.localScale = Vector3.one * px * escala;
+    }
+
+    bool EnsurePanel()
+    {
+        var cam = FindPlayerCamera();
+        if (cam == null) return false;
+        playerCam = cam;
+        if (panelCanvas != null) return true;
+
+        int layer = LayerMask.NameToLayer("UI");
+        if (layer < 0 || (cam.cullingMask & (1 << layer)) == 0) layer = cam.gameObject.layer;
+
+        var go = new GameObject("VisionImpairment_Panel", typeof(RectTransform));
+        go.layer = layer;
+        panelCanvas = go.AddComponent<Canvas>();
+        panelCanvas.renderMode = RenderMode.WorldSpace;
+        panelCanvas.sortingOrder = 950;   // por encima del velo (900), por debajo de los destellos (1000)
+        panelCanvas.worldCamera = cam;
+        ((RectTransform)go.transform).sizeDelta = new Vector2(1600f, 800f);
+        panelGroup = go.AddComponent<CanvasGroup>();
+        panelGroup.blocksRaycasts = false;
+        panelGroup.interactable = false;
+
+        var imgGo = new GameObject("Panel", typeof(RectTransform));
+        imgGo.layer = layer;
+        imgGo.transform.SetParent(go.transform, false);
+        panelImage = imgGo.AddComponent<Image>();
+        panelImage.raycastTarget = false;
+        panelImage.preserveAspect = true;
+        var r = panelImage.rectTransform;
+        r.anchorMin = Vector2.zero; r.anchorMax = Vector2.one;
+        r.offsetMin = Vector2.zero; r.offsetMax = Vector2.zero;
+
+        panelCanvas.enabled = false;
+        return true;
     }
 
     // ------------------------------------------------------------ Capa 2: Volume
