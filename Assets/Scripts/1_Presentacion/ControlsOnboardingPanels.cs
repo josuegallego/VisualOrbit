@@ -15,13 +15,13 @@ using UnityEngine.XR;
 /// Al final aparece el boton Continuar (y opcionalmente un panel "Listo").
 ///
 /// Si no detecta el boton (simulador): Enter cuenta como pulsacion y, pasados X segundos, avanza solo.
-/// Pasos: GATILLO, AGARRE, BOTON Y (la Y abre la configuracion y aqui se cierra sola).
+/// Pasos: GATILLO, AGARRE, BOTON Y (la Y abre la configuracion y aqui se cierra sola) y JOYSTICK IZQUIERDO (mover).
 ///
 /// USO: ver el final del archivo.
 /// </summary>
 public class ControlsOnboardingPanels : MonoBehaviour
 {
-    public enum Boton { Gatillo, Agarre, BotonY }
+    public enum Boton { Gatillo, Agarre, BotonY, JoystickIzquierdo }
 
     [System.Serializable]
     public class Paso
@@ -38,7 +38,14 @@ public class ControlsOnboardingPanels : MonoBehaviour
         new Paso { boton = Boton.Gatillo, color = new Color(0.92f, 1f, 0f) },
         new Paso { boton = Boton.Agarre,  color = new Color(0f, 0.94f, 1f) },
         new Paso { boton = Boton.BotonY,  color = new Color(0.15f, 0.82f, 0.41f) },
+        new Paso { boton = Boton.JoystickIzquierdo, color = new Color(0.75f, 0.43f, 1f) },
     };
+
+    [Header("Bienvenida (antes del primer paso)")]
+    [Tooltip("Opcional: panel 'Conoce tus controles' que aparece primero y se va solo.")]
+    public Image panelBienvenida;
+    [Tooltip("Segundos que se muestra la bienvenida antes de pasar al primer boton.")]
+    public float bienvenidaSegundos = 5f;
 
     [Header("Al terminar")]
     [Tooltip("Opcional: panel 'Listo' que aparece al final.")]
@@ -70,6 +77,25 @@ public class ControlsOnboardingPanels : MonoBehaviour
     public float segundosParaAvanzarSolo = 25f;
     [Range(0.1f, 1f)] public float umbralAnalogico = 0.6f;
 
+    [Header("Feedback de acierto / error (viñetas verde y roja + vibracion)")]
+    [Tooltip("El RingFeedback (el mismo de los minijuegos: viñeta verde/roja y vibracion). " +
+             "Copialo de ArmaMolecula con Copy Component > Paste Component As New. Si queda vacio se busca en la escena.")]
+    public RingFeedback vineta;
+    [Tooltip("Si el jugador presiona OTRO boton, muestra la viñeta roja, vibra y sacude el panel.")]
+    public bool avisarBotonIncorrecto = true;
+    [Tooltip("El joystick izquierdo tambien cuenta como error en los pasos que no son del joystick (por defecto no, porque se mueve sin querer).")]
+    public bool joystickCuentaComoError = false;
+    [Tooltip("Mover el joystick DERECHO (esta bloqueado) tambien muestra la viñeta roja, vibra y sacude el panel.")]
+    public bool joystickDerechoCuentaComoError = true;
+    [Tooltip("Segundos minimos entre un error y otro.")]
+    public float pausaEntreErrores = 1f;
+    [Tooltip("Duracion de la sacudida del panel al equivocarse (0 = sin sacudida).")]
+    public float sacudidaPanel = 0.35f;
+    [Tooltip("Intensidad de la sacudida (unidades del Canvas).")]
+    public float sacudidaFuerza = 14f;
+    [Tooltip("Mientras el tutorial no llegue al paso del boton Y, el menu de configuracion (ControllerMenuToggle) queda desactivado, para que presionar Y por error no abra la configuracion.")]
+    public bool bloquearMenuHastaPasoY = true;
+
     [Header("Extras")]
     public bool vibrarAlAcertar = true;
     public AudioClip sonidoAcierto;
@@ -89,9 +115,30 @@ public class ControlsOnboardingPanels : MonoBehaviour
 
     // ------------------------------------------------------------------ ciclo de vida
 
+    ControllerMenuToggle menuToggle;
+
     void Awake()
     {
         if (animacionAnterior == null) animacionAnterior = FindFirstObjectByType<ControlVRAnimation>();
+        if (vineta == null) vineta = FindFirstObjectByType<RingFeedback>();
+        menuToggle = FindFirstObjectByType<ControllerMenuToggle>();
+    }
+
+    void OnDisable()
+    {
+        if (menuToggle != null) menuToggle.enabled = true;   // no dejamos la configuracion bloqueada
+    }
+
+    void Bien()
+    {
+        if (vineta != null) vineta.FlashBien();
+        if (vibrarAlAcertar && (vineta == null || !vineta.useHaptics)) HapticService.Success();
+    }
+
+    void Mal()
+    {
+        if (vineta != null) vineta.FlashMal();
+        else HapticService.Error();
     }
 
     void Start()
@@ -101,7 +148,9 @@ public class ControlsOnboardingPanels : MonoBehaviour
             foreach (var go in ocultarAlIniciar) if (go != null) go.SetActive(false);
         foreach (var p in pasos) if (p.panel != null) { Base(p.panel.rectTransform); Grupo(p.panel); p.panel.gameObject.SetActive(false); }
         if (panelFinal != null) { Base(panelFinal.rectTransform); Grupo(panelFinal); panelFinal.gameObject.SetActive(false); }
+        if (panelBienvenida != null) { Base(panelBienvenida.rectTransform); Grupo(panelBienvenida); panelBienvenida.gameObject.SetActive(false); }
         if (continuarObj != null) continuarObj.SetActive(false);
+        if (bloquearMenuHastaPasoY && menuToggle != null) menuToggle.enabled = false;
         StartCoroutine(Secuencia());
     }
 
@@ -110,6 +159,22 @@ public class ControlsOnboardingPanels : MonoBehaviour
     IEnumerator Secuencia()
     {
         yield return new WaitForSeconds(esperaInicial);
+
+        if (panelBienvenida != null)
+        {
+            yield return Entrada(panelBienvenida);
+            float tb = 0f;
+            var rtb = panelBienvenida.rectTransform;
+            while (tb < bienvenidaSegundos)
+            {
+                tb += Time.deltaTime;
+                rtb.localScale = Base(rtb) * (1f + respiracion * Mathf.Sin(tb * velocidadRespiracion));
+                yield return null;
+            }
+            rtb.localScale = Base(rtb);
+            yield return Salida(panelBienvenida);
+            panelBienvenida.gameObject.SetActive(false);
+        }
 
         for (int i = 0; i < pasos.Length; i++)
         {
@@ -121,14 +186,66 @@ public class ControlsOnboardingPanels : MonoBehaviour
             Image flash = CrearFlash(p.panel);
             yield return Entrada(p.panel);
 
+            // En el paso del boton Y se habilita el menu de configuracion (el tutorial abre y cierra el panel)
+            if (menuToggle != null && bloquearMenuHastaPasoY) menuToggle.enabled = (p.boton == Boton.BotonY);
+
             bool antes = Presionado(p.boton);
             float t = 0f, tAnim = 0f;
             var rt = p.panel.rectTransform;
+
+            // Estado previo de los demas botones, para detectar un boton NUEVO que no es el pedido
+            var todos = (Boton[])System.Enum.GetValues(typeof(Boton));
+            var previos = new Dictionary<Boton, bool>();
+            foreach (var b in todos) previos[b] = Presionado(b);
+            float proximoError = 0f, sacudida = 0f;
+            bool derPrevio = LeerJoystickDerecho();
+            Vector2 posBase = rt.anchoredPosition;
+
             while (true)
             {
                 bool ahora = Presionado(p.boton) || TeclaSimular();
                 if (ahora && !antes) break;
                 antes = ahora;
+
+                if (avisarBotonIncorrecto && joystickDerechoCuentaComoError)
+                {
+                    bool der = LeerJoystickDerecho();
+                    if (der && !derPrevio && Time.time >= proximoError)
+                    {
+                        proximoError = Time.time + pausaEntreErrores;
+                        sacudida = sacudidaPanel;
+                        Mal();
+                        if (logEvents) Debug.Log("[ControlsOnboardingPanels] Joystick derecho (bloqueado).", this);
+                    }
+                    derPrevio = der;
+                }
+
+                if (avisarBotonIncorrecto)
+                {
+                    foreach (var b in todos)
+                    {
+                        if (b == p.boton) continue;
+                        bool n = Presionado(b);
+                        bool eraAntes = previos[b];
+                        previos[b] = n;
+                        if (!n || eraAntes) continue;
+                        if (b == Boton.JoystickIzquierdo && !joystickCuentaComoError) continue;
+                        if (Time.time < proximoError) continue;
+
+                        proximoError = Time.time + pausaEntreErrores;
+                        sacudida = sacudidaPanel;
+                        Mal();
+                        if (logEvents) Debug.Log($"[ControlsOnboardingPanels] Boton incorrecto: {b} (se pedia {p.boton}).", this);
+                    }
+                }
+
+                if (sacudida > 0f)
+                {
+                    sacudida -= Time.deltaTime;
+                    float k = Mathf.Clamp01(sacudida / Mathf.Max(0.01f, sacudidaPanel));
+                    rt.anchoredPosition = posBase + Vector2.right * (Mathf.Sin(Time.time * 70f) * sacudidaFuerza * k);
+                    if (sacudida <= 0f) rt.anchoredPosition = posBase;
+                }
 
                 t += Time.deltaTime;
                 tAnim += Time.deltaTime;
@@ -143,8 +260,10 @@ public class ControlsOnboardingPanels : MonoBehaviour
             }
 
             // Acierto
+            rt.anchoredPosition = posBase;
             if (halo != null) Destroy(halo.gameObject);
-            if (vibrarAlAcertar) HapticService.Soft();
+            Bien();
+            if (menuToggle != null && bloquearMenuHastaPasoY) menuToggle.enabled = false;
             if (sonidoAcierto != null) Sonar(sonidoAcierto, volumenAcierto);
             yield return Acierto(p.panel, flash);
 
@@ -158,7 +277,8 @@ public class ControlsOnboardingPanels : MonoBehaviour
             p.panel.gameObject.SetActive(false);
         }
 
-        // Final
+        // Final: se devuelve el menu de configuracion
+        if (menuToggle != null) menuToggle.enabled = true;
         if (panelFinal != null)
         {
             Image halo = ondasDeLuz ? CrearHalo(panelFinal, colorFinal) : null;
@@ -304,6 +424,7 @@ public class ControlsOnboardingPanels : MonoBehaviour
             case Boton.Agarre: return Leer(InputDeviceCharacteristics.Left, CommonUsages.gripButton, CommonUsages.grip)
                                    || Leer(InputDeviceCharacteristics.Right, CommonUsages.gripButton, CommonUsages.grip);
             case Boton.BotonY: return LeerY();
+            case Boton.JoystickIzquierdo: return LeerJoystickIzquierdo();
         }
         return false;
     }
@@ -317,6 +438,25 @@ public class ControlsOnboardingPanels : MonoBehaviour
             if (d.TryGetFeatureValue(boton, out bool b) && b) return true;
             if (d.TryGetFeatureValue(analogico, out float f) && f >= umbralAnalogico) return true;
         }
+        return false;
+    }
+
+    // Joystick izquierdo movido lo suficiente (se detecta con el visor puesto; en PC, Enter)
+    bool LeerJoystickIzquierdo()
+    {
+        dispositivos.Clear();
+        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Controller | InputDeviceCharacteristics.Left, dispositivos);
+        foreach (var d in dispositivos)
+            if (d.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 v) && v.magnitude >= umbralAnalogico) return true;
+        return false;
+    }
+
+    bool LeerJoystickDerecho()
+    {
+        dispositivos.Clear();
+        InputDevices.GetDevicesWithCharacteristics(InputDeviceCharacteristics.Controller | InputDeviceCharacteristics.Right, dispositivos);
+        foreach (var d in dispositivos)
+            if (d.TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 v) && v.magnitude >= umbralAnalogico) return true;
         return false;
     }
 

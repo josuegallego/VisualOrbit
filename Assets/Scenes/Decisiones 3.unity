@@ -7776,7 +7776,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3766955175015954747, guid: ef29085a7258f02449cc84dae269049a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.133
+      value: -3.63
       objectReference: {fileID: 0}
     - target: {fileID: 3766955175015954747, guid: ef29085a7258f02449cc84dae269049a, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8574,9 +8574,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  headPosition: {x: 1.377233, y: 1.4150493, z: 0.4216066}
+  headPosition: {x: 0.9435994, y: 2.1924295, z: -1.4844738}
   configured: 1
-  headYaw: 0.8
+  headYaw: 4.062671
   useHeadHeight: 1
   delaySeconds: 0
   holdSeconds: 1.5

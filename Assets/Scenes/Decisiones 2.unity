@@ -1885,9 +1885,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
-  headPosition: {x: 1.2527938, y: 1.4219787, z: 0.118157744}
+  headPosition: {x: 1.1592773, y: 2.0807939, z: -2.212601}
   configured: 1
-  headYaw: 0.80000013
+  headYaw: 1.0117888
   useHeadHeight: 1
   delaySeconds: 0
   holdSeconds: 1.5
@@ -11835,7 +11835,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3766955175015954747, guid: ef29085a7258f02449cc84dae269049a, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -3.133
+      value: -3.53
       objectReference: {fileID: 0}
     - target: {fileID: 3766955175015954747, guid: ef29085a7258f02449cc84dae269049a, type: 3}
       propertyPath: m_LocalRotation.w

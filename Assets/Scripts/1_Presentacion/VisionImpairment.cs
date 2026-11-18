@@ -90,8 +90,10 @@ public class VisionImpairment : MonoBehaviour
     public Sprite panelAviso;
     [Tooltip("Segundos que se queda visible.")]
     public float panelSegundos = 5f;
-    [Tooltip("Segundos minimos entre un aviso y otro. 0 = en cada tramo borroso.")]
-    public float panelEnfriamiento = 20f;
+    [Tooltip("Si esta activo, el aviso sale UNA sola vez por jugador (aunque el minijuego se reinicie o cambies de escena).")]
+    public bool soloUnaVezPorJugador = true;
+    [Tooltip("Si 'Solo Una Vez' esta apagado: segundos minimos entre un aviso y otro (0 = en cada tramo borroso).")]
+    public float panelEnfriamiento = 60f;
     [Tooltip("Distancia (m) delante de la mirada.")]
     public float panelDistancia = 1.1f;
     [Tooltip("Altura respecto a la mirada (m). Negativo = mas abajo.")]
@@ -120,7 +122,11 @@ public class VisionImpairment : MonoBehaviour
     GameObject runtimeVolumeGo;
 
     // panel de aviso
-    float lastPanel = -999f, panelTimer;
+    // Estado estatico: sobrevive a reinicios del minijuego y a cambios de escena
+    static float ultimoPanelRealtime = -999f;
+    static bool avisoMostrado;
+    static object avisoSesion;
+    float panelTimer;
     Canvas panelCanvas;
     CanvasGroup panelGroup;
     Image panelImage;
@@ -232,13 +238,18 @@ public class VisionImpairment : MonoBehaviour
     void OnBlurEpisodeStart()
     {
         if (!mostrarPanel) return;
-        if (Time.time - lastPanel < panelEnfriamiento) return;
+
+        object sesionActual = PlayerDataStore.ActiveSession;   // un jugador nuevo vuelve a ver el aviso una vez
+        if (sesionActual != avisoSesion) { avisoSesion = sesionActual; avisoMostrado = false; }
+        if (soloUnaVezPorJugador && avisoMostrado) return;
+        if (Time.realtimeSinceStartup - ultimoPanelRealtime < panelEnfriamiento) return;
 
         Sprite sp = panelAviso;
         if (sp == null) { if (logEvents) Debug.LogWarning("[VisionImpairment] Falta el sprite del panel de aviso (Panel Aviso).", this); return; }
         if (!EnsurePanel()) return;
 
-        lastPanel = Time.time;
+        ultimoPanelRealtime = Time.realtimeSinceStartup;
+        avisoMostrado = true;
         panelImage.sprite = sp;
         panelTimer = panelSegundos;
         panelDir = Vector3.zero;   // arranca justo delante de la mirada

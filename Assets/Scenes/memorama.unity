@@ -3808,9 +3808,10 @@ MonoBehaviour:
   chromatic: 0.5
   mostrarPanel: 1
   panelAviso: {fileID: 21300000, guid: ce6b8121a3e67264e81bcb51eeff85fe, type: 3}
-  panelSegundos: 5
+  panelSegundos: 10
+  soloUnaVezPorJugador: 1
   panelEnfriamiento: 20
-  panelDistancia: 1.1
+  panelDistancia: 0.8
   panelAltura: -0.05
   panelAncho: 0.9
   panelFundido: 0.4

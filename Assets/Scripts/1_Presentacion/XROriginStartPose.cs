@@ -32,7 +32,7 @@ public class XROriginStartPose : MonoBehaviour
     [Header("Momento")]
     [Tooltip("Espera antes de colocar, para que el visor ya reporte su posicion.")]
     public float delaySeconds = 0f;
-    [Tooltip("Segundos durante los que se reaplica cada fotograma.")]
+    [Tooltip("Maximo de segundos que espera a que el visor tenga tracking (se reaplica cada fotograma SOLO hasta entonces).")]
     public float holdSeconds = 1.5f;
 
     [Header("Depuracion")]
@@ -68,22 +68,34 @@ public class XROriginStartPose : MonoBehaviour
         }
         cc = origin.Origin != null ? origin.Origin.GetComponent<CharacterController>() : null;
 
-        // Se coloca ya en el primer fotograma y se mantiene: asi no se ve el salto
-        if (delaySeconds > 0f)
-        {
-            yield return new WaitForSeconds(delaySeconds);
-        }
-
-        float end = Time.time + holdSeconds;
+        // Se coloca ya en el primer fotograma. Mientras el visor todavia NO reporta tracking, la camara no
+        // sigue a la cabeza, asi que reaplicar cada fotograma no se nota (y evita el salto inicial).
+        // En cuanto hay tracking se aplica una ultima vez y SE SUELTA: reaplicar cada fotograma con el
+        // visor ya activo "clava" el giro y el mundo/canvas parece seguir tu mirada durante ese tiempo.
+        bool visorActivo = UnityEngine.XR.XRSettings.isDeviceActive;
+        float espera = visorActivo ? holdSeconds : Mathf.Min(holdSeconds, 0.3f);   // simulador: casi nada
+        float end = Time.time + espera;
         do
         {
             Apply();
+            if (visorActivo && CabezaConTracking())
+            {
+                yield return new WaitForEndOfFrame();
+                Apply();                 // una vez mas, ya con la pose real
+                break;
+            }
             yield return new WaitForEndOfFrame();
         } while (Time.time < end);
 
         if (logEvents)
             Debug.Log($"[XROriginStartPose] Cabeza en {origin.Camera.transform.position} " +
                       $"(giro {origin.Camera.transform.eulerAngles.y:F1}); destino {TargetPos} / {TargetYaw:F1}.", this);
+    }
+
+    static bool CabezaConTracking()
+    {
+        var d = UnityEngine.XR.InputDevices.GetDeviceAtXRNode(UnityEngine.XR.XRNode.Head);
+        return d.isValid && d.TryGetFeatureValue(UnityEngine.XR.CommonUsages.isTracked, out bool t) && t;
     }
 
     [ContextMenu("Colocar ahora")]
