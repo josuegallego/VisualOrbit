@@ -104,7 +104,7 @@ public class SettingsPanelManager : MonoBehaviour
             }
         }
 
-        isPanelOpen = !isPanelOpen;
+        isPanelOpen = !settingsPanel.activeSelf; // estado real: otros botones pueden apagarlo sin avisar
         settingsPanel.SetActive(isPanelOpen);
 
         if (isPanelOpen)

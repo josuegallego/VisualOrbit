@@ -31,9 +31,23 @@ public class SaveButton : MonoBehaviour
     [Tooltip("Cerrar el panel despues de guardar")]
     public bool cerrarPanel = true;
 
+    [Tooltip("Reemplaza lo que tenga el OnClick del boton (por ejemplo un SetActive(false) viejo) por Guardar + cerrar bien.")]
+    public bool autoConectar = true;
+
     Coroutine rutina;
     Vector3 escalaOriginal;
     bool escalaGuardada;
+
+    void Awake()
+    {
+        if (!autoConectar) return;
+        var boton = GetComponent<Button>();
+        if (boton == null) return;
+        // new = descarta las llamadas persistentes del inspector (el SetActive(false) viejo apagaba el panel
+        // sin avisar al SettingsPanelManager y sin restaurar los paneles anteriores)
+        boton.onClick = new Button.ButtonClickedEvent();
+        boton.onClick.AddListener(OnSaveClicked);
+    }
 
     void OnDisable()
     {

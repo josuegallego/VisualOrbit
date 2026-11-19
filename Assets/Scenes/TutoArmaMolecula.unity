@@ -936,7 +936,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &417564821
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3065,7 +3065,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &809281864
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5765,12 +5765,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pasos:
   - boton: 5
-    panel: {fileID: 809281865}
-    color: {r: 0, g: 0.94, b: 1, a: 1}
-    segundos: 6
-    modelos:
-    - {fileID: 1725314487}
-  - boton: 5
     panel: {fileID: 417564822}
     color: {r: 0.15, g: 0.82, b: 0.41, a: 1}
     segundos: 6
@@ -5785,7 +5779,7 @@ MonoBehaviour:
   botonSiguiente: {fileID: 981837559}
   panelBienvenida: {fileID: 0}
   bienvenidaSegundos: 0
-  panelFinal: {fileID: 1163945752}
+  panelFinal: {fileID: 1623269148}
   colorFinal: {r: 0.2, g: 1, b: 0.9, a: 1}
   continuarObj: {fileID: 1422681946}
   ocultarAlIniciar: []

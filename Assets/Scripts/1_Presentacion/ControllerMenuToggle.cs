@@ -17,10 +17,29 @@ public class ControllerMenuToggle : MonoBehaviour
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     static void CrearSiHaceFalta()
     {
-        if (FindFirstObjectByType<ControllerMenuToggle>(FindObjectsInactive.Include) != null) return;
+        if (instancia != null || FindFirstObjectByType<ControllerMenuToggle>(FindObjectsInactive.Include) != null) return;
         var go = new GameObject("ControllerMenuToggle (auto)");
         DontDestroyOnLoad(go);
         go.AddComponent<ControllerMenuToggle>();
+    }
+
+    static ControllerMenuToggle instancia;
+    static int ultimoFrameToggle = -1;
+
+    // Si hay dos copias (la de la escena + la auto-creada), cada pulsacion abria y cerraba el panel
+    // en el mismo fotograma. Solo vive una; y nunca se alterna dos veces en el mismo fotograma.
+    void Awake()
+    {
+        if (instancia != null && instancia != this) { Destroy(this); return; }
+        instancia = this;
+    }
+
+    static void Alternar()
+    {
+        if (Time.frameCount == ultimoFrameToggle) return;
+        ultimoFrameToggle = Time.frameCount;
+        if (SettingsPanelManager.Instance != null) SettingsPanelManager.Instance.TogglePanel();
+        else Debug.LogWarning("ControllerMenuToggle: no hay SettingsPanelManager en esta escena.");
     }
 
     bool estabaPresionado;
@@ -39,8 +58,11 @@ public class ControllerMenuToggle : MonoBehaviour
             if (d.TryGetFeatureValue(CommonUsages.secondaryButton, out bool y) && y) presionado = true;
         }
 
-        if (presionado && !estabaPresionado && SettingsPanelManager.Instance != null)
-            SettingsPanelManager.Instance.TogglePanel();
+        if (presionado && !estabaPresionado)
+        {
+            Debug.Log("[ControllerMenuToggle] Boton Y/menu pulsado. SettingsPanelManager: " + (SettingsPanelManager.Instance != null));
+            Alternar();
+        }
 
         estabaPresionado = presionado;
 
@@ -50,8 +72,7 @@ public class ControllerMenuToggle : MonoBehaviour
         if (kb != null && kb[teclaSimulador].wasPressedThisFrame && !EscribiendoEnCampo()
             )
         {
-            if (SettingsPanelManager.Instance != null) SettingsPanelManager.Instance.TogglePanel();
-            else Debug.LogWarning("ControllerMenuToggle: no hay SettingsPanelManager en esta escena.");
+            Alternar();
         }
 #endif
     }
