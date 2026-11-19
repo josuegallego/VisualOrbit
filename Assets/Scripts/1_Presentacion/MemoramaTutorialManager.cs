@@ -1,4 +1,4 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +11,7 @@ public class MemoramaTutorialManager : MonoBehaviour
     public CartaVoltear carta4;
 
     [Header("Control VR 3D")]
-    [Tooltip("El Renderer del botón del control (Trigger o A) que va a brillar")]
+    [Tooltip("El Renderer del botÃ³n del control (Trigger o A) que va a brillar")]
     public Renderer botonControlRenderer;
     public Color colorBrilloBoton = Color.cyan;
     public float velocidadParpadeo = 0.5f;
@@ -24,49 +24,62 @@ public class MemoramaTutorialManager : MonoBehaviour
     public Image barraTiempo;
     public float tiempoTotalTimer = 50f;
 
+    [Header("Sincronizacion con los paneles")]
+    [Tooltip("Cada pareja de cartas solo hace su demostracion mientras su panel esta visible, y empieza desde cero cada vez que aparece.")]
+    public bool soloMientrasVisible = true;
+
     void Start()
     {
-        StartCoroutine(RutinaPrincipal());
+        // Una rutina por pareja: arrancan cuando el panel de esas cartas se activa.
+        StartCoroutine(RutinaPareja(carta1, carta2, Color.green));
+        StartCoroutine(RutinaPareja(carta3, carta4, Color.red));
         StartCoroutine(RutinaTimer());
         StartCoroutine(RutinaControlVR());
     }
 
-    IEnumerator RutinaPrincipal()
-    {
-        yield return new WaitForSeconds(2f);
+    bool Visible(CartaVoltear c) => c != null && (!soloMientrasVisible || c.gameObject.activeInHierarchy);
 
+    // Espera (sin consumir nada) hasta que las dos cartas esten visibles.
+    IEnumerator EsperarVisibles(CartaVoltear a, CartaVoltear b)
+    {
+        while (!(Visible(a) && Visible(b))) yield return null;
+    }
+
+    // Espera "t" segundos; devuelve false si las cartas se ocultaron antes (el panel cambio).
+    IEnumerator Esperar(float t, CartaVoltear a, CartaVoltear b, System.Action<bool> ok)
+    {
+        float r = 0f;
+        while (r < t)
+        {
+            if (!(Visible(a) && Visible(b))) { ok(false); yield break; }
+            r += Time.deltaTime;
+            yield return null;
+        }
+        ok(true);
+    }
+
+    IEnumerator RutinaPareja(CartaVoltear a, CartaVoltear b, Color resalte)
+    {
+        if (a == null || b == null) yield break;
         while (true)
         {
-            // --- FASE 1: MOSTRAR UN ACIERTO ---
-            carta1.MostrarFrente();
-            yield return new WaitForSeconds(3f);
+            yield return EsperarVisibles(a, b);
 
-            carta2.MostrarFrente();
-            yield return new WaitForSeconds(1f);
+            // Siempre arranca con las dos cartas boca abajo y sin resalte.
+            a.QuitarResalte(); b.QuitarResalte();
+            a.MostrarDorso(true); b.MostrarDorso(true);
 
-            carta1.Resaltar(Color.green, 0.8f);
-            carta2.Resaltar(Color.green, 0.8f);
-            yield return new WaitForSeconds(3f);
-
-            carta1.MostrarDorso();
-            carta2.MostrarDorso();
-            yield return new WaitForSeconds(2f);
-
-            // --- FASE 2: MOSTRAR UN ERROR ---
-            carta3.MostrarFrente();
-            yield return new WaitForSeconds(3f);
-
-            carta4.MostrarFrente();
-            yield return new WaitForSeconds(1f);
-
-            carta3.Resaltar(Color.red, 0.8f);
-            carta4.Resaltar(Color.red, 0.8f);
-            yield return new WaitForSeconds(3f);
-
-            carta3.MostrarDorso();
-            carta4.MostrarDorso();
-
-            yield return new WaitForSeconds(3f);
+            bool ok = true;
+            yield return Esperar(1.0f, a, b, v => ok = v); if (!ok) continue;
+            a.MostrarFrente();
+            yield return Esperar(2.0f, a, b, v => ok = v); if (!ok) continue;
+            b.MostrarFrente();
+            yield return Esperar(1.0f, a, b, v => ok = v); if (!ok) continue;
+            a.Resaltar(resalte, 0.8f); b.Resaltar(resalte, 0.8f);
+            yield return Esperar(3.0f, a, b, v => ok = v); if (!ok) continue;
+            a.QuitarResalte(); b.QuitarResalte();
+            a.MostrarDorso(); b.MostrarDorso();
+            yield return Esperar(2.0f, a, b, v => ok = v);
         }
     }
 
@@ -74,12 +87,12 @@ public class MemoramaTutorialManager : MonoBehaviour
     {
         if (botonControlRenderer == null) yield break;
 
-        // NUEVO: En URP, hay que habilitar la propiedad de emisión en el material instanciado
+        // NUEVO: En URP, hay que habilitar la propiedad de emisiÃ³n en el material instanciado
         Material mat = botonControlRenderer.material;
         mat.EnableKeyword("_EMISSION");
         mat.globalIlluminationFlags = MaterialGlobalIlluminationFlags.RealtimeEmissive;
 
-        // En URP, también aseguramos que la propiedad de emisión esté activa en el shader
+        // En URP, tambiÃ©n aseguramos que la propiedad de emisiÃ³n estÃ© activa en el shader
         if (mat.HasProperty("_EmissionColor"))
             mat.SetColor("_EmissionColor", Color.black);
 

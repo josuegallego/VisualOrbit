@@ -1182,18 +1182,24 @@ MonoBehaviour:
   - boton: 0
     panel: {fileID: 501210950}
     color: {r: 0.92, g: 1, b: 0, a: 1}
+    segundos: 6
+    modelos: []
   - boton: 1
     panel: {fileID: 1729169433}
     color: {r: 0, g: 0.94, b: 1, a: 1}
+    segundos: 6
+    modelos: []
   - boton: 2
     panel: {fileID: 2083624323}
     color: {r: 0.15, g: 0.82, b: 0.41, a: 1}
+    segundos: 6
+    modelos: []
   - boton: 3
     panel: {fileID: 42848460}
     color: {r: 0.74509805, g: 0.43137255, b: 1, a: 1}
-  - boton: 3
-    panel: {fileID: 42848460}
-    color: {r: 0.74509805, g: 0.43137255, b: 1, a: 1}
+    segundos: 6
+    modelos: []
+  botonSiguiente: {fileID: 0}
   panelBienvenida: {fileID: 2089427317}
   bienvenidaSegundos: 8
   panelFinal: {fileID: 1173109217}

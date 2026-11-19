@@ -21,7 +21,7 @@ using UnityEngine.XR;
 /// </summary>
 public class ControlsOnboardingPanels : MonoBehaviour
 {
-    public enum Boton { Gatillo, Agarre, BotonY, JoystickIzquierdo }
+    public enum Boton { Gatillo, Agarre, BotonY, JoystickIzquierdo, Tiempo, Siguiente }
 
     [System.Serializable]
     public class Paso
@@ -30,6 +30,10 @@ public class ControlsOnboardingPanels : MonoBehaviour
         [Tooltip("Objeto Image del panel de este paso (con el sprite panel_onboarding_n).")]
         public Image panel;
         public Color color = new Color(0.92f, 1f, 0f);
+        [Tooltip("Solo para Boton = Tiempo: segundos que se muestra el panel (tambien avanza si el jugador aprieta el gatillo).")]
+        public float segundos = 6f;
+        [Tooltip("Objetos (modelos 3D, animaciones...) que se activan junto con este panel y se desactivan al terminar el paso.")]
+        public GameObject[] modelos;
     }
 
     [Header("Pasos (en orden)")]
@@ -40,6 +44,11 @@ public class ControlsOnboardingPanels : MonoBehaviour
         new Paso { boton = Boton.BotonY,  color = new Color(0.15f, 0.82f, 0.41f) },
         new Paso { boton = Boton.JoystickIzquierdo, color = new Color(0.75f, 0.43f, 1f) },
     };
+
+    [Header("Boton SIGUIENTE (pasos con Boton = Siguiente)")]
+    [Tooltip("Boton de la interfaz (un Button con su texto 'SIGUIENTE'). Aparece con cada panel de tipo Siguiente y se oculta al pulsarlo. " +
+             "En el ultimo paso, si hay Continuar Obj, sale ese en su lugar.")]
+    public Button botonSiguiente;
 
     [Header("Bienvenida (antes del primer paso)")]
     [Tooltip("Opcional: panel 'Conoce tus controles' que aparece primero y se va solo.")]
@@ -146,10 +155,15 @@ public class ControlsOnboardingPanels : MonoBehaviour
         if (animacionAnterior != null) animacionAnterior.enabled = false;
         if (ocultarAlIniciar != null)
             foreach (var go in ocultarAlIniciar) if (go != null) go.SetActive(false);
-        foreach (var p in pasos) if (p.panel != null) { Base(p.panel.rectTransform); Grupo(p.panel); p.panel.gameObject.SetActive(false); }
+        foreach (var p in pasos)
+        {
+            if (p.panel != null) { Base(p.panel.rectTransform); Grupo(p.panel); p.panel.gameObject.SetActive(false); }
+            Modelos(p, false);
+        }
         if (panelFinal != null) { Base(panelFinal.rectTransform); Grupo(panelFinal); panelFinal.gameObject.SetActive(false); }
         if (panelBienvenida != null) { Base(panelBienvenida.rectTransform); Grupo(panelBienvenida); panelBienvenida.gameObject.SetActive(false); }
         if (continuarObj != null) continuarObj.SetActive(false);
+        if (botonSiguiente != null) { botonSiguiente.onClick.AddListener(() => siguientePulsado = true); botonSiguiente.gameObject.SetActive(false); }
         if (bloquearMenuHastaPasoY && menuToggle != null) menuToggle.enabled = false;
         StartCoroutine(Secuencia());
     }
@@ -184,7 +198,18 @@ public class ControlsOnboardingPanels : MonoBehaviour
 
             Image halo = ondasDeLuz ? CrearHalo(p.panel, p.color) : null;
             Image flash = CrearFlash(p.panel);
+            Modelos(p, true);
+            bool porBoton = p.boton == Boton.Siguiente;
+            bool soloTiempo = p.boton == Boton.Tiempo || porBoton;   // paso informativo: sin aviso de boton incorrecto
+            siguientePulsado = false;
             yield return Entrada(p.panel);
+            bool ultimo = i == pasos.Length - 1;
+            bool usaContinuar = porBoton && ultimo && continuarObj != null;
+            if (porBoton)
+            {
+                if (usaContinuar) continuarObj.SetActive(true);
+                else if (botonSiguiente != null) botonSiguiente.gameObject.SetActive(true);
+            }
 
             // En el paso del boton Y se habilita el menu de configuracion (el tutorial abre y cierra el panel)
             if (menuToggle != null && bloquearMenuHastaPasoY) menuToggle.enabled = (p.boton == Boton.BotonY);
@@ -203,11 +228,22 @@ public class ControlsOnboardingPanels : MonoBehaviour
 
             while (true)
             {
-                bool ahora = Presionado(p.boton) || TeclaSimular();
-                if (ahora && !antes) break;
+                if (usaContinuar)
+                {
+                    // el boton Continuar lleva a la siguiente escena: el panel se queda
+                    tAnim += Time.deltaTime;
+                    rt.localScale = Base(rt) * (1f + respiracion * Mathf.Sin(tAnim * velocidadRespiracion));
+                    yield return null;
+                    continue;
+                }
+                bool ahora = porBoton ? (siguientePulsado || TeclaSimular())
+                           : soloTiempo ? (Presionado(Boton.Gatillo) || TeclaSimular())
+                           : (Presionado(p.boton) || TeclaSimular());
+                if (porBoton ? ahora : (ahora && !antes)) break;
+                if (p.boton == Boton.Tiempo && p.segundos > 0f && t >= p.segundos) break;
                 antes = ahora;
 
-                if (avisarBotonIncorrecto && joystickDerechoCuentaComoError)
+                if (avisarBotonIncorrecto && joystickDerechoCuentaComoError && !soloTiempo)
                 {
                     bool der = LeerJoystickDerecho();
                     if (der && !derPrevio && Time.time >= proximoError)
@@ -220,7 +256,7 @@ public class ControlsOnboardingPanels : MonoBehaviour
                     derPrevio = der;
                 }
 
-                if (avisarBotonIncorrecto)
+                if (avisarBotonIncorrecto && !soloTiempo)
                 {
                     foreach (var b in todos)
                     {
@@ -249,7 +285,7 @@ public class ControlsOnboardingPanels : MonoBehaviour
 
                 t += Time.deltaTime;
                 tAnim += Time.deltaTime;
-                if (segundosParaAvanzarSolo > 0f && t >= segundosParaAvanzarSolo)
+                if (!soloTiempo && segundosParaAvanzarSolo > 0f && t >= segundosParaAvanzarSolo)
                 {
                     if (logEvents) Debug.Log("[ControlsOnboardingPanels] Avanza solo (no se detecto el boton).", this);
                     break;
@@ -262,10 +298,14 @@ public class ControlsOnboardingPanels : MonoBehaviour
             // Acierto
             rt.anchoredPosition = posBase;
             if (halo != null) Destroy(halo.gameObject);
-            Bien();
+            if (porBoton && botonSiguiente != null) botonSiguiente.gameObject.SetActive(false);
             if (menuToggle != null && bloquearMenuHastaPasoY) menuToggle.enabled = false;
-            if (sonidoAcierto != null) Sonar(sonidoAcierto, volumenAcierto);
-            yield return Acierto(p.panel, flash);
+            if (!soloTiempo)
+            {
+                Bien();
+                if (sonidoAcierto != null) Sonar(sonidoAcierto, volumenAcierto);
+                yield return Acierto(p.panel, flash);
+            }
 
             if (p.boton == Boton.BotonY && SettingsPanelManager.Instance != null)
             {
@@ -275,6 +315,7 @@ public class ControlsOnboardingPanels : MonoBehaviour
             yield return Salida(p.panel);
             Destroy(flash.gameObject);
             p.panel.gameObject.SetActive(false);
+            Modelos(p, false);
         }
 
         // Final: se devuelve el menu de configuracion
@@ -294,6 +335,14 @@ public class ControlsOnboardingPanels : MonoBehaviour
             }
         }
         else if (continuarObj != null) continuarObj.SetActive(true);
+    }
+
+    bool siguientePulsado;
+
+    static void Modelos(Paso p, bool on)
+    {
+        if (p.modelos == null) return;
+        foreach (var go in p.modelos) if (go != null) go.SetActive(on);
     }
 
     // ------------------------------------------------------------------ animaciones
