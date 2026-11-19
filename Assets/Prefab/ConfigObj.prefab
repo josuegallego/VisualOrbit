@@ -1051,7 +1051,11 @@ MonoBehaviour:
   effectsSlider: {fileID: 955458457922162000}
   spatialMusicToggle: {fileID: 9202247628847492222}
   avisoGuardado: {fileID: 2863575861073339058}
-  duracionAviso: 4
+  vibrar: 1
+  sonidoGuardado: {fileID: 0}
+  escalaPulso: 1.12
+  cerrarDespues: 0.9
+  cerrarPanel: 1
 --- !u!114 &7832137896685940103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1595,7 +1599,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 8c7820b1bbd1c2b448e2066bc6424bf6, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0eed819dc79e0f749a46442247d5d172, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

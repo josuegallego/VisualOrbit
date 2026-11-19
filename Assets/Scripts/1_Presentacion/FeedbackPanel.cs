@@ -1,4 +1,4 @@
-using TMPro;
+﻿using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -57,6 +57,7 @@ public class FeedbackPanel : MonoBehaviour
         if (bodyText != null) bodyText.text = body;
 
         SessionService.RecordDecision(decisionIndex, optionNumber);
+
     }
 
     // La tarjeta llama a esto despues de la pausa: oculta el panel de decisiones y muestra este

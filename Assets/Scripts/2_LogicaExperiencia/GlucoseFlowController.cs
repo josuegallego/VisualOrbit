@@ -66,6 +66,10 @@ public class GlucoseFlowController : MonoBehaviour
     /// <summary>Enciende o apaga el flujo. Al apagar, las particulas que ya salieron terminan su recorrido.</summary>
     public void SetFlow(bool on)
     {
+        // Si el objeto estaba desactivado, Awake aun no corrio (TimeUpConsequence busca tambien los inactivos)
+        if (ps == null) ps = GetComponent<ParticleSystem>();
+        if (ps == null) return;
+
         bool changed = IsFlowing != on;
         IsFlowing = on;
 
@@ -84,6 +88,8 @@ public class GlucoseFlowController : MonoBehaviour
     /// <summary>Ajusta velocidad, vida y densidad segun el desempeno (0 a 1).</summary>
     public void ApplyFluidity(float performance01)
     {
+        if (ps == null) ps = GetComponent<ParticleSystem>();
+        if (ps == null) return;
         float p = Mathf.Clamp01(performance01);
 
         float length = 1f;

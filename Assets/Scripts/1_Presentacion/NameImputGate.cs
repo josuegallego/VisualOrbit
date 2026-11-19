@@ -36,6 +36,20 @@ public class NameInputGate : MonoBehaviour
     [Tooltip("Opacidad del boton mientras esta bloqueado (0.1 = casi invisible).")]
     [SerializeField, Range(0f, 1f)] private float lockedAlpha = 0.08f;
 
+    [Header("Boton INICIAR: aparece solo cuando el nombre esta listo")]
+    [Tooltip("Si esta activo, el boton esta totalmente invisible hasta que el nombre se confirme (Enter).")]
+    [SerializeField] private bool ocultarBotonHastaConfirmar = true;
+
+    [Header("Panel del login (cambia de imagen al confirmar)")]
+    [Tooltip("El panel si es un objeto del mundo (SpriteRenderer), como 'Cuadro'.")]
+    [SerializeField] private SpriteRenderer panelSprite;
+    [Tooltip("El panel si es una Image de UI.")]
+    [SerializeField] private Image panelImage;
+    [Tooltip("Imagen mientras escribe (con las instrucciones). Si la dejas vacia usa la que ya tiene el panel.")]
+    [SerializeField] private Sprite spriteEscribiendo;
+    [Tooltip("Imagen cuando el nombre ya esta listo (sin textos debajo del input: ahi aparece el boton).")]
+    [SerializeField] private Sprite spriteListo;
+
     [Header("Eventos")]
     public UnityEvent onConfirmed;
 
@@ -75,6 +89,9 @@ public class NameInputGate : MonoBehaviour
         }
 
         nameInput.text = string.Empty;
+
+        if (spriteEscribiendo == null)
+            spriteEscribiendo = panelSprite != null ? panelSprite.sprite : (panelImage != null ? panelImage.sprite : null);
 
         // El boton se ve atenuado mientras esta bloqueado
         startGroup = startButton.GetComponent<CanvasGroup>();
@@ -260,7 +277,19 @@ public class NameInputGate : MonoBehaviour
         bool valid = lengthOk && IsConfirmed(value);
 
         startButton.interactable = valid;
-        targetAlpha = valid ? 1f : lockedAlpha;
+        targetAlpha = valid ? 1f : (ocultarBotonHastaConfirmar ? 0f : lockedAlpha);
+        AplicarPanel(valid);
+
+        // El boton puede estar desactivado en la escena: se activa solo cuando el nombre esta confirmado
+        if (ocultarBotonHastaConfirmar && startButton.gameObject != gameObject)
+        {
+            bool activo = startButton.gameObject.activeSelf;
+            if (valid != activo)
+            {
+                if (valid && startGroup != null) startGroup.alpha = 0f;   // entra con fundido
+                startButton.gameObject.SetActive(valid);
+            }
+        }
 
         // Bloqueado: no recibe el rayo ni muestra hover, para que no parezca pulsable
         if (startGroup != null)
@@ -279,6 +308,14 @@ public class NameInputGate : MonoBehaviour
 
         if (img != null)
             img.color = valid ? Color.white : disabledColor;
+    }
+
+    private void AplicarPanel(bool listo)
+    {
+        Sprite destino = listo && spriteListo != null ? spriteListo : spriteEscribiendo;
+        if (destino == null) return;
+        if (panelSprite != null && panelSprite.sprite != destino) panelSprite.sprite = destino;
+        if (panelImage != null && panelImage.sprite != destino) panelImage.sprite = destino;
     }
 
     private void OnStartClicked()
