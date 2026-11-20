@@ -103,7 +103,7 @@ No requiere tener Unity instalado.
      adb install -r InsideYourMind.apk
      ```
 
-6. En el visor, abra \\\*\\\*Biblioteca → Orígenes desconocidos\\\*\\\* y ejecute \\\*\\\*Inside Your Mind\\\*\\\*.
+6. En el visor, abra Biblioteca → Orígenes desconocidos y ejecute Inside Your Mind.
 
 #### Controles en el visor (solo controles Meta Quest Touch)
 
@@ -119,20 +119,20 @@ La experiencia se maneja únicamente con los controles; no usa seguimiento de ma
 
 No requiere tener Unity instalado.
 
-1. Descargue la compilación para Windows de la experiencia (carpeta `Build/` o el archivo `.zip` publicado en la sección \\\*\\\*Releases\\\*\\\* del repositorio).
-2. \\\*\\\*Descomprima la carpeta completa.\\\*\\\* No ejecute el `.exe` desde dentro del ZIP ni lo mueva fuera de su carpeta: necesita los archivos `\\\\\\\*\\\\\\\_Data` y `UnityPlayer.dll` que lo acompañan.
-3. Ejecute \\\*\\\*`InsideYourMind.exe`\\\*\\\*.
+1. Descargue la compilación para Windows de la experiencia (carpeta `Build/` o el archivo `.zip` publicado en la sección Releases del repositorio).
+2. Descomprima la carpeta completa. No ejecute el `.exe` desde dentro del ZIP ni lo mueva fuera de su carpeta: necesita los archivos `Player_Data` y `UnityPlayer.dll` que lo acompañan.
+3. Ejecute InsideYourMind.exe.
 4. Use los controles de la sección 4.3, que son los mismos del simulador.
 
 ### 4.3 PC con el simulador XR de Unity (teclado y mouse)
 
-Esta opción no requiere visor. Utiliza el \\\*\\\*XR Device Simulator\\\*\\\* de Unity XR Interaction Toolkit para emular el visor y los controles con el teclado y el mouse.
+Esta opción no requiere visor. Utiliza el XR Device Simulator de Unity XR Interaction Toolkit para emular el visor y los controles con el teclado y el mouse.
 
-1. Descargue la \\\*\\\*carpeta completa\\\*\\\* del proyecto (no solo `Assets`: también se necesitan `Packages` y `ProjectSettings`).
-2. En \\\*\\\*Unity Hub\\\*\\\*, use \\\*\\\*Add → Add project from disk\\\*\\\* y seleccione la carpeta descargada.
-3. Ábralo con \\\*\\\*Unity 6000.5.6f1\\\*\\\* (instálela desde Unity Hub si no la tiene) y espere a que importe los recursos. La primera vez puede tardar varios minutos.
-4. Abra la escena inicial de la experiencia y verifique que contenga el prefab \\\*\\\*XR Device Simulator\\\*\\\* (se importa desde \\\*\\\*Package Manager → XR Interaction Toolkit → Samples\\\*\\\*).
-5. Presione \\\*\\\*Play\\\*\\\*.
+1. Descargue la carpeta completa del proyecto (no solo `Assets`: también se necesitan `Packages` y `ProjectSettings`).
+2. En Unity Hub, useAdd → Add project from disk y seleccione la carpeta descargada.
+3. Ábralo con Unity 6000.5.6f1 (instálela desde Unity Hub si no la tiene) y espere a que importe los recursos. La primera vez puede tardar varios minutos.
+4. Abra la escena inicial de la experiencia y verifique que contenga el prefab XR Device Simulator (se importa desde Package Manager → XR Interaction Toolkit → Samples).
+5. Presione Play.
 
 #### Controles del simulador XR (teclado y mouse)
 
@@ -152,17 +152,17 @@ Se usan las teclas por defecto del XR Device Simulator.
 ### 4.4 Generar el APK o la compilación de Windows desde Unity
 
 1. Abra el proyecto como se indica en 4.3.
-2. \\\*\\\*APK (Meta Quest 3):\\\*\\\*
+2. APK (Meta Quest 3):
 
-   \\\* \\\*\\\*File → Build Profiles\\\*\\\*, seleccione \\\*\\\*Android\\\*\\\* y haga clic en \\\*\\\*Switch Platform\\\*\\\*.
-   \\\* En \\\*\\\*Project Settings → XR Plug-in Management\\\*\\\*, habilite el proveedor \\\*\\\*Oculus\\\*\\\* para Android.
-   \\\* Haga clic en \\\*\\\*Build\\\*\\\* (o \\\*\\\*Build And Run\\\*\\\* con el visor conectado).
-3. \\\*\\\*Windows (PC sin Unity):\\\*\\\*
+   File → Build Profiles, seleccione Android y haga clic en Switch Platform.
+   En Project Settings → XR Plug-in Management, habilite el proveedor Oculus para Android.
+   Haga clic en Build (o *Build And Run con el visor conectado).
+3. Windows (PC sin Unity):
 
-   \\\* \\\*\\\*File → Build Profiles\\\*\\\*, seleccione \\\*\\\*Windows\\\*\\\* y haga clic en \\\*\\\*Build\\\*\\\*.
-   \\\* Distribuya la carpeta completa generada.
+   File → Build Profiles, seleccione Windows y haga clic en Build.
+   Distribuya la carpeta completa generada.
 
-## 5\\\\. Estructura del repositorio
+## 5. Estructura del repositorio
 
 ```
 
@@ -178,17 +178,17 @@ VisualOrbit/
 
 ```
 
-## 6\\\\. Créditos
+## 6. Créditos
 
-Proyecto desarrollado para la clase de \\\*\\\*Diseño Multimedia 2\\\*\\\*, en el marco de Visual Orbit y la Universidad Autónoma de Occidente (UAO), Cali, Colombia.
+Proyecto desarrollado para la clase de Diseño Multimedia 2, en el marco de Visual Orbit y la Universidad Autónoma de Occidente (UAO), Cali, Colombia.
 
-\\\*\\\*Desarrolladores:\\\*\\\*
+Desarrolladores:
 
-\\\* Josué Santiago Gallego
-\\\* Estefanía del Amor Restrepo
-\\\* Daniel Muñoz
-\\\* Valentina Montero
-\\\* Mariana Parra
+ Josué Santiago Gallego
+ Estefanía del Amor Restrepo
+ Daniel Muñoz
+ Valentina Montero
+ Mariana Parra
 
 
 
