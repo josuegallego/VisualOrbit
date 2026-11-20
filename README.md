@@ -1,194 +1,352 @@
-# Inside Your Mind (Visual Orbit)
+# Inside Your Mind — Visual Orbit
 
-Experiencia educativa de realidad virtual para **Meta Quest 3**, desarrollada en Unity para la clase de **Diseño Multimedia 2** y dirigida a estudiantes de **Ingeniería Multimedia de séptimo y octavo semestre**. Proyecto desarrollado en el marco de Visual Orbit / Universidad Autónoma de Occidente (UAO).
+**Experiencia educativa de realidad virtual para Meta Quest 3**
 
+Inside Your Mind es un proyecto desarrollado en **Unity** como parte de la asignatura **Diseño Multimedia 2** de la Universidad Autónoma de Occidente (UAO). Está dirigido a estudiantes de Ingeniería Multimedia de séptimo y octavo semestre y busca explorar la relación entre los hábitos alimenticios y la memoria a corto plazo mediante una experiencia inmersiva e interactiva.
 
+---
 
-## 1\. Descripción del sistema
+## Tabla de contenidos
 
-**Inside Your Mind** es una experiencia inmersiva en realidad virtual que muestra a los estudiantes cómo sus **decisiones alimenticias durante un día** influyen en su **memoria a corto plazo**.
+- [Descripción del proyecto](#descripción-del-proyecto)
+- [Características principales](#características-principales)
+- [Tecnologías utilizadas](#tecnologías-utilizadas)
+- [Requisitos del sistema](#requisitos-del-sistema)
+- [Ejecución del demo](#ejecución-del-demo)
+  - [1. Meta Quest 3 (APK)](#1-meta-quest-3-apk)
+  - [2. PC sin Unity](#2-pc-sin-unity)
+  - [3. PC con simulador XR](#3-pc-con-simulador-xr)
+  - [4. Generar compilaciones desde Unity](#4-generar-compilaciones-desde-unity)
+- [Estructura del repositorio](#estructura-del-repositorio)
+- [Créditos](#créditos)
 
-### Flujo de la experiencia
+---
 
-La experiencia recorre **tres escenarios que corresponden a las comidas de un mismo día**:
+## Descripción del proyecto
 
-1. **Desayuno**
-2. **Almuerzo**
-3. **Cena**
+**Inside Your Mind** es una experiencia educativa en realidad virtual que permite explorar cómo las decisiones alimenticias tomadas durante un día pueden influir en el rendimiento de la memoria a corto plazo.
 
-En cada escenario el usuario toma decisiones alimenticias y juega **minijuegos**. La **dificultad de los minijuegos cambia según las decisiones alimenticias** que el usuario haya tomado: las elecciones que favorecen la memoria a corto plazo y las que la perjudican se reflejan directamente en el reto que enfrenta.
+La experiencia se desarrolla a través de tres escenarios que representan las principales comidas del día:
+
+1. **Desayuno:** primer escenario de la experiencia, donde el usuario comienza a tomar decisiones alimenticias y se enfrenta a los primeros retos de memoria.
+2. **Almuerzo:** segundo escenario, en el que las decisiones acumuladas continúan influyendo en la dificultad de los desafíos.
+3. **Cena:** último escenario del recorrido, donde se completa la experiencia y se refleja el impacto de las decisiones tomadas durante el día.
 
 ### Minijuegos
 
-La experiencia cuenta con dos minijuegos:
+El proyecto incorpora dos actividades interactivas para evaluar y estimular la memoria:
 
-* **Memorama**
-* **Moléculas**
+| Minijuego | Descripción |
+|---|---|
+| **Memorama** | Actividad de asociación y reconocimiento de parejas de elementos. |
+| **Moléculas** | Minijuego de reconocimiento y asociación de estructuras moleculares. |
 
-### Retroalimentación
+### Retroalimentación personalizada
 
-Una **enfermera virtual** da una retroalimentación personalizada según las **elecciones del usuario** y el estado de las **barras** del sistema, de modo que el estudiante entiende el efecto de cada decisión.
+Una **enfermera virtual** acompaña al usuario durante la experiencia y proporciona retroalimentación de acuerdo con:
 
-### Características técnicas
+- Las decisiones alimenticias realizadas.
+- El estado de las barras de seguimiento del sistema.
+- Los resultados obtenidos durante los minijuegos.
 
-* **Flujo basado en escenas:** cada comida es una escena independiente enlazada con las demás.
-* **Arquitectura por capas:** gestores persistentes (*managers*) que se mantienen entre escenas y datos de configuración en `ScriptableObjects`.
-* **Funcionamiento sin conexión:** no requiere internet.
-* **Persistencia local:** los datos se guardan de forma local en el dispositivo.
-* **Interacción con controles:** se maneja únicamente con los controles del visor (gatillo y botones); no usa seguimiento de manos.
-* **Multiplataforma de uso:** está pensado para usarse como **APK en las gafas Meta Quest 3** y en **PC mediante el simulador XR de Unity**. También puede usarse **sin tener Unity instalado** (ver sección 4).
+La dificultad de los desafíos se adapta a las decisiones alimenticias, permitiendo que el usuario experimente cómo sus elecciones afectan el desarrollo de la actividad.
 
+---
 
+## Características principales
 
-## 2\. Tecnologías utilizadas
+- **Realidad virtual inmersiva:** diseñada para Meta Quest 3.
+- **Tres escenarios interactivos:** desayuno, almuerzo y cena.
+- **Dificultad dinámica:** los minijuegos se adaptan según las decisiones alimenticias.
+- **Retroalimentación personalizada:** acompañamiento mediante una enfermera virtual.
+- **Arquitectura modular:** gestores persistentes (*Managers*) y configuración mediante ScriptableObjects.
+- **Sistema basado en escenas:** cada comida corresponde a una escena independiente.
+- **Funcionamiento offline:** no necesita conexión a internet.
+- **Persistencia local:** los datos se almacenan directamente en el dispositivo.
+- **Interacción mediante controladores:** utiliza los controles Meta Quest Touch, sin seguimiento de manos.
+- **Dos modalidades de ejecución en PC:** compilación independiente o simulador XR de Unity.
 
-|Tecnología|Uso en el proyecto|
-|-|-|
-|**Unity 6000.5.6f1**|Motor de desarrollo y ejecución de la experiencia|
-|**C#**|Lenguaje de programación de la lógica del sistema|
-|**Unity XR Interaction Toolkit**|Interacción en realidad virtual (controladores, selección) y simulador XR|
-|**Meta XR SDK**|Integración con el visor Meta Quest 3|
-|**ScriptableObjects**|Configuración y datos de la experiencia desacoplados de la lógica|
-|**Almacenamiento local**|Guardado de datos en el dispositivo|
-|**Visual Studio / VS Code**|Entorno de edición de código (`.vsconfig`, `.vscode`)|
-|**Figma**|Prototipo de diseño que sirvió de base para la arquitectura de escenas|
+---
 
+## Tecnologías utilizadas
 
+| Tecnología | Aplicación |
+|---|---|
+| **Unity 6000.5.6f1** | Motor de desarrollo y ejecución de la experiencia. |
+| **C#** | Programación de la lógica del sistema. |
+| **Unity XR Interaction Toolkit** | Interacciones en realidad virtual y simulación de dispositivos XR. |
+| **Meta XR SDK** | Integración con Meta Quest 3. |
+| **ScriptableObjects** | Gestión desacoplada de datos y configuraciones. |
+| **Almacenamiento local** | Persistencia de información en el dispositivo. |
+| **Visual Studio / VS Code** | Edición y desarrollo de scripts. |
+| **Figma** | Prototipado de la experiencia y diseño de referencia para las escenas. |
 
-## 3\. Requisitos mínimos del equipo
+---
 
-El demo está pensado para ejecutarse en computadores con:
+## Requisitos del sistema
 
-* **Sistema operativo:** Windows 10 o superior.
-* **Memoria RAM:** al menos 8 GB.
-* **Tarjeta gráfica:** compatible con DirectX 11.
-* **Conexión a internet:** no es necesaria; la experiencia guarda los datos de forma local.
+### Requisitos generales para PC
 
-Según la forma de ejecución se requiere además:
+| Componente | Requisito |
+|---|---|
+| Sistema operativo | Windows 10 o superior. |
+| Memoria RAM | 8 GB como mínimo. |
+| Tarjeta gráfica | Compatible con DirectX 11. |
+| Conexión a internet | No requerida para ejecutar la experiencia. |
 
-|Forma de ejecución|Requisitos adicionales|
-|-|-|
-|Visor (APK)|**Meta Quest 3** y un computador con Windows para instalar el APK|
-|PC con simulador XR|**Unity Hub** y el editor **Unity 6000.5.6f1**, teclado y mouse|
-|Sin Unity|Solo el APK (visor) o la compilación para Windows (PC), sin instalar Unity|
-|Generar el APK desde Unity|Módulo **Android Build Support** (con OpenJDK y Android SDK \& NDK Tools)|
+### Requisitos según la modalidad de ejecución
 
+| Modalidad | Requisitos adicionales |
+|---|---|
+| **Meta Quest 3 (APK)** | Visor Meta Quest 3 y computador Windows para instalar el APK. |
+| **PC sin Unity** | Compilación para Windows. |
+| **PC con simulador XR** | Unity Hub, Unity 6000.5.6f1, teclado y mouse. |
+| **Generación de APK** | Android Build Support, OpenJDK y Android SDK & NDK Tools. |
 
+---
 
-## 4\. Instrucciones para ejecutar el demo
+## Ejecución del demo
 
-Hay tres formas de ejecutar el demo.
+Existen tres formas de ejecutar la experiencia, dependiendo del dispositivo disponible.
 
-|Opción|¿Requiere Unity?|¿Requiere visor?|
-|-|-|-|
-|[4.1 APK en el visor Meta Quest 3](#41-apk-en-el-visor-meta-quest-3)|No|Sí|
-|[4.2 PC sin Unity](#42-pc-sin-unity)|No|No|
-|[4.3 PC con el simulador XR de Unity](#43-pc-con-el-simulador-xr-de-unity-teclado-y-mouse)|Sí|No|
+| Modalidad | ¿Requiere Unity? | ¿Requiere visor VR? |
+|---|:---:|:---:|
+| Meta Quest 3 (APK) | No | Sí |
+| PC sin Unity | No | No |
+| PC con simulador XR | Sí | No |
 
-### 4.1 APK en el visor Meta Quest 3
+### 1. Meta Quest 3 (APK)
 
-No requiere tener Unity instalado.
+Esta modalidad permite ejecutar la experiencia directamente en el visor, sin necesidad de instalar Unity.
 
-1. **Descargue la carpeta completa del proyecto** desde el repositorio (**Code → Download ZIP** y descomprímala por completo, o `git clone https://github.com/josuegallego/VisualOrbit.git`).
-2. Localice el archivo **`.apk`** de la experiencia. Si el repositorio no lo incluye, genérelo con la sección 4.4.
-3. Active el **modo desarrollador** del visor desde la aplicación móvil de Meta Quest.
-4. Conecte el visor al computador con un cable USB-C y acepte la depuración USB dentro del visor.
-5. Instale el APK con una de estas opciones:
+**Paso 1. Descargar el proyecto**
 
-   * **Meta Quest Developer Hub:** arrastre el `.apk` a la ventana de la aplicación.
-   * **SideQuest:** conecte el visor y use *Install APK file*.
-   * **ADB:**
+Descarga el repositorio mediante:
+
+- `Code → Download ZIP`, y descomprime el archivo.
+- O utiliza Git:
 
 ```bash
-     adb install -r InsideYourMind.apk
-     ```
-
-6. En el visor, abra Biblioteca → Orígenes desconocidos y ejecute Inside Your Mind.
-
-#### Controles en el visor (solo controles Meta Quest Touch)
-
-La experiencia se maneja únicamente con los controles; no usa seguimiento de manos.
-
-|Acción|Control|
-|-|-|
-|Apuntar a botones y objetos|Mover el control (rayo de apuntado)|
-|Seleccionar / interactuar / confirmar|Gatillo|
-|Abrir la configuración|Botón Y |
-
-### 4.2 PC sin Unity
-
-No requiere tener Unity instalado.
-
-1. Descargue la compilación para Windows de la experiencia (carpeta `Build/` o el archivo `.zip` publicado en la sección Releases del repositorio).
-2. Descomprima la carpeta completa. No ejecute el `.exe` desde dentro del ZIP ni lo mueva fuera de su carpeta: necesita los archivos `Player_Data` y `UnityPlayer.dll` que lo acompañan.
-3. Ejecute InsideYourMind.exe.
-4. Use los controles de la sección 4.3, que son los mismos del simulador.
-
-### 4.3 PC con el simulador XR de Unity (teclado y mouse)
-
-Esta opción no requiere visor. Utiliza el XR Device Simulator de Unity XR Interaction Toolkit para emular el visor y los controles con el teclado y el mouse.
-
-1. Descargue la carpeta completa del proyecto (no solo `Assets`: también se necesitan `Packages` y `ProjectSettings`).
-2. En Unity Hub, useAdd → Add project from disk y seleccione la carpeta descargada.
-3. Ábralo con Unity 6000.5.6f1 (instálela desde Unity Hub si no la tiene) y espere a que importe los recursos. La primera vez puede tardar varios minutos.
-4. Abra la escena inicial de la experiencia y verifique que contenga el prefab XR Device Simulator (se importa desde Package Manager → XR Interaction Toolkit → Samples).
-5. Presione Play.
-
-#### Controles del simulador XR (teclado y mouse)
-
-Se usan las teclas por defecto del XR Device Simulator.
-
-|Acción|Control|
-|-|-|
-|Moverse|`W` `A` `S` `D`|
-|Subir / bajar|`E` / `Q`|
-|Girar la cabeza (cámara)|Mover el mouse manteniendo presionado el botón derecho|
-|Controlar el control izquierdo|Mantener `Shift izquierdo`|
-|Controlar el control derecho|Mantener `Espacio`|
-|Apuntar con el control|Mover el mouse|
-|Gatillo (seleccionar / interactuar)|Clic izquierdo del mouse|
-|Abrir la configuración|`F1`|
-
-### 4.4 Generar el APK o la compilación de Windows desde Unity
-
-1. Abra el proyecto como se indica en 4.3.
-2. APK (Meta Quest 3):
-
-   File → Build Profiles, seleccione Android y haga clic en Switch Platform.
-   En Project Settings → XR Plug-in Management, habilite el proveedor Oculus para Android.
-   Haga clic en Build (o *Build And Run con el visor conectado).
-3. Windows (PC sin Unity):
-
-   File → Build Profiles, seleccione Windows y haga clic en Build.
-   Distribuya la carpeta completa generada.
-
-## 5. Estructura del repositorio
-
+git clone https://github.com/josuegallego/VisualOrbit.git
 ```
 
+**Paso 2. Localizar el APK**
+
+Busca el archivo `.apk` correspondiente a Inside Your Mind.
+
+Si el repositorio no incluye una compilación, puedes generarla siguiendo la sección [Generar compilaciones desde Unity](#4-generar-compilaciones-desde-unity).
+
+**Paso 3. Activar el modo desarrollador**
+
+Activa el modo desarrollador del visor desde la aplicación móvil de Meta Quest.
+
+**Paso 4. Conectar el visor**
+
+1. Conecta Meta Quest 3 al computador mediante un cable USB-C.
+2. Colócate el visor y acepta la solicitud de depuración USB.
+
+**Paso 5. Instalar el APK**
+
+Puedes utilizar cualquiera de las siguientes herramientas:
+
+- **Meta Quest Developer Hub:** arrastra el archivo `.apk` a la aplicación.
+- **SideQuest:** conecta el visor y selecciona `Install APK file`.
+- **ADB:** ejecuta el siguiente comando desde una terminal:
+
+```bash
+adb install -r InsideYourMind.apk
+```
+
+**Paso 6. Ejecutar la experiencia**
+
+Desde el visor, ingresa a:
+
+`Biblioteca → Orígenes desconocidos → Inside Your Mind`
+
+#### Controles en Meta Quest 3
+
+La experiencia utiliza exclusivamente los controles Meta Quest Touch.
+
+| Acción | Control |
+|---|---|
+| Apuntar a botones y objetos | Movimiento del control mediante el rayo de apuntado. |
+| Seleccionar e interactuar | Gatillo. |
+| Confirmar acciones | Gatillo. |
+| Abrir configuración | Botón Y. |
+
+---
+
+### 2. PC sin Unity
+
+Esta modalidad permite ejecutar una compilación independiente para Windows sin instalar Unity ni disponer de un visor VR.
+
+**Paso 1. Descargar la compilación**
+
+Descarga la carpeta `Build/` o el archivo `.zip` publicado en la sección **Releases** del repositorio.
+
+**Paso 2. Descomprimir los archivos**
+
+Descomprime la carpeta completa de la compilación.
+
+> Importante: no ejecutes el archivo `.exe` directamente desde el ZIP ni lo separes de los demás archivos. La aplicación necesita sus dependencias, como `Player_Data` y `UnityPlayer.dll`.
+
+**Paso 3. Ejecutar el proyecto**
+
+Abre:
+
+```text
+InsideYourMind.exe
+```
+
+**Paso 4. Interactuar con la experiencia**
+
+Utiliza los controles del simulador XR descritos en la siguiente sección.
+
+---
+
+### 3. PC con simulador XR
+
+Esta modalidad permite probar la experiencia desde un computador sin necesidad de un visor de realidad virtual.
+
+Se utiliza el **XR Device Simulator**, incluido en Unity XR Interaction Toolkit, para emular el visor y sus controladores mediante teclado y mouse.
+
+**Paso 1. Descargar el repositorio**
+
+Descarga el proyecto completo. Es importante conservar las siguientes carpetas:
+
+```text
+Assets/
+Packages/
+ProjectSettings/
+```
+
+**Paso 2. Abrir Unity Hub**
+
+1. Abre Unity Hub.
+2. Selecciona `Add → Add project from disk`.
+3. Busca y selecciona la carpeta del proyecto.
+
+**Paso 3. Abrir el proyecto**
+
+Abre el proyecto utilizando la versión:
+
+```text
+Unity 6000.5.6f1
+```
+
+Si no está instalada, puedes agregarla desde Unity Hub.
+
+Espera a que Unity importe los recursos y dependencias. Este proceso puede tardar varios minutos durante la primera ejecución.
+
+**Paso 4. Verificar el simulador XR**
+
+Abre la escena inicial y verifica que incluya el prefab `XR Device Simulator`.
+
+Si no está disponible:
+
+1. Abre `Window → Package Management → Package Manager`.
+2. Busca `XR Interaction Toolkit`.
+3. Ingresa a la sección `Samples`.
+4. Importa el ejemplo `XR Device Simulator`.
+
+**Paso 5. Ejecutar**
+
+Presiona el botón **Play** en el editor de Unity.
+
+#### Controles del simulador XR
+
+| Acción | Control |
+|---|---|
+| Moverse | `W` `A` `S` `D` |
+| Subir / bajar | `E` / `Q` |
+| Girar la cámara | Mantener clic derecho y mover el mouse. |
+| Controlar el mando izquierdo | Mantener `Shift izquierdo`. |
+| Controlar el mando derecho | Mantener `Espacio`. |
+| Apuntar con el control | Mover el mouse. |
+| Seleccionar / interactuar | Clic izquierdo. |
+| Abrir configuración | `F1` |
+
+---
+
+### 4. Generar compilaciones desde Unity
+
+Si necesitas generar tu propio APK para Meta Quest 3 o una compilación independiente para Windows, sigue estos pasos.
+
+#### Generar APK para Meta Quest 3
+
+1. Abre el proyecto en Unity.
+2. Ingresa a:
+
+```text
+File → Build Profiles
+```
+
+3. Selecciona **Android**.
+4. Presiona `Switch Platform`.
+5. Ingresa a `Project Settings → XR Plug-in Management`.
+6. Habilita el proveedor Oculus para Android.
+7. Verifica que esté configurado el soporte de Android.
+8. Presiona `Build` para generar el APK.
+
+También puedes utilizar `Build And Run` si el visor está conectado al computador.
+
+#### Generar compilación para Windows
+
+1. Abre el proyecto en Unity.
+2. Ingresa a:
+
+```text
+File → Build Profiles
+```
+
+3. Selecciona **Windows**.
+4. Presiona `Build`.
+5. Selecciona la carpeta de destino.
+6. Distribuye la carpeta completa generada.
+
+---
+
+## Estructura del repositorio
+
+La organización principal del proyecto es la siguiente:
+
+```text
 VisualOrbit/
-├── Assets/                  # Escenas, scripts, prefabs, ScriptableObjects y recursos
+│
+├── Assets/
+│   ├── Scenes/              # Escenarios de la experiencia
+│   ├── Scripts/             # Lógica y funcionalidades en C#
+│   ├── Prefabs/             # Objetos y componentes reutilizables
+│   └── ...                  # Recursos y configuraciones
+│
 ├── Packages/                # Dependencias del proyecto
-├── ProjectSettings/         # Configuración del proyecto Unity
-├── .vscode/                 # Configuración de VS Code
+├── ProjectSettings/         # Configuración de Unity
+│
+├── .vscode/                 # Configuración de Visual Studio Code
 ├── .vsconfig                # Componentes requeridos de Visual Studio
 ├── InsideYourMind2.0.slnx   # Solución de C#
 ├── .gitattributes
 └── .gitignore
-
 ```
 
-## 6. Créditos
+---
 
-Proyecto desarrollado para la clase de Diseño Multimedia 2, en el marco de Visual Orbit y la Universidad Autónoma de Occidente (UAO), Cali, Colombia.
+## Créditos
 
-Desarrolladores:
+**Inside Your Mind** fue desarrollado en el marco de la asignatura **Diseño Multimedia 2**, dentro del proyecto Visual Orbit de la Universidad Autónoma de Occidente (UAO), Cali, Colombia.
 
- Josué Santiago Gallego
- Estefanía del Amor Restrepo
- Daniel Muñoz
- Valentina Montero
- Mariana Parra
+### Equipo de desarrollo
 
+- **Josué Santiago Gallego**
+- **Estefanía del Amor Restrepo**
+- **Daniel Muñoz**
+- **Valentina Montero**
+- **Mariana Parra**
 
+---
 
+<p align="center">
+  <strong>Inside Your Mind · Visual Orbit</strong><br>
+  Universidad Autónoma de Occidente<br>
+  Cali, Colombia
+</p>
